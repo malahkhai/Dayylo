@@ -1,0 +1,72 @@
+import { Habit } from './types';
+
+export const INITIAL_HABITS: Habit[] = [
+    {
+        id: '1',
+        name: 'Drink Water',
+        type: 'build',
+        icon: 'Droplet',
+        color: '#3b82f6',
+        streak: 5,
+        completedToday: false,
+        private: false,
+        frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+        reminderTime: '08:00',
+        currentValue: 2,
+        targetValue: 8,
+        unit: 'Times'
+    },
+    {
+        id: '2',
+        name: 'No Sugar',
+        type: 'break',
+        icon: 'Ban',
+        color: '#f97316',
+        streak: 12,
+        completedToday: true,
+        private: true,
+        frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+    },
+    {
+        id: '3',
+        name: 'Meditate',
+        type: 'build',
+        icon: 'Leaf',
+        color: '#30e8ab',
+        streak: 24,
+        completedToday: true,
+        private: false,
+        frequency: ['M', 'W', 'F'],
+        unit: 'min',
+        targetValue: 15,
+        currentValue: 15
+    },
+    {
+        id: '4',
+        name: 'Read a book',
+        type: 'build',
+        icon: 'BookOpen',
+        color: '#a855f7',
+        streak: 24,
+        completedToday: false,
+        private: false,
+        frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+        currentValue: 5,
+        targetValue: 20,
+        unit: 'Pages'
+    },
+    {
+        id: '5',
+        name: 'Exercise',
+        type: 'build',
+        icon: 'Dumbbell',
+        color: '#22c55e',
+        streak: 24,
+        completedToday: true,
+        private: false,
+        frequency: ['M', 'W', 'F'],
+        unit: 'min',
+        targetValue: 30,
+        currentValue: 30
+    }
+];
