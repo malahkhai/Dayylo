@@ -17,48 +17,66 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, isLocked }) => {
     if (!isLocked) onToggle(habit.id);
   };
 
+  const isCompleted = habit.completedToday;
+  const isBreak = habit.type === 'break';
+
   return (
     <div 
       onClick={() => !isLocked && navigate(`/habit/${habit.id}`)}
-      className={`aspect-square flex flex-col justify-between p-5 rounded-3xl border shadow-sm relative group cursor-pointer active:scale-95 transition-all duration-200 
-        ${habit.completedToday 
-          ? 'bg-primary/10 border-primary/20' 
-          : habit.type === 'break' 
-            ? 'bg-[#fffaf5] dark:bg-[#1c1917] border-orange-100 dark:border-stone-800' 
-            : 'bg-white dark:bg-surface-dark border-slate-100 dark:border-white/5'
-        }`}
+      className={`relative group aspect-[0.9/1] p-5 rounded-[2rem] border transition-all duration-300 active:scale-95 cursor-pointer flex flex-col justify-between overflow-hidden
+        ${isCompleted 
+          ? 'bg-primary/10 border-primary/20 shadow-[0_8px_20px_-8px_rgba(48,232,171,0.2)]' 
+          : 'bg-surface-dark border-white/5 shadow-lg'
+        }
+      `}
     >
-      <div className="flex justify-between items-start">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl 
-          ${habit.completedToday ? 'bg-primary text-black' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}
+      {/* Background Glow for completed habits */}
+      {isCompleted && (
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 blur-[40px] rounded-full pointer-events-none"></div>
+      )}
+
+      <div className="flex justify-between items-start z-10">
+        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300
+          ${isCompleted 
+            ? 'bg-primary text-black' 
+            : isBreak ? 'bg-orange-500/10 text-orange-500' : 'bg-white/5 text-slate-400'
+          }
         `}>
-          <span className="material-symbols-outlined filled">{habit.icon}</span>
+          <span className="material-symbols-outlined filled !text-[24px]">{habit.icon}</span>
         </div>
         
-        <div className="relative h-8 w-8 flex items-center justify-center" onClick={handleToggle}>
-          {isLocked ? (
-             <span className="material-symbols-outlined text-slate-400">lock</span>
-          ) : habit.completedToday ? (
-            <div className="h-full w-full rounded-full bg-primary flex items-center justify-center">
-              <span className="material-symbols-outlined text-black text-lg font-bold">check</span>
-            </div>
-          ) : (
-            <div className="h-full w-full rounded-full border-2 border-slate-200 dark:border-slate-700"></div>
-          )}
-        </div>
+        <button 
+          onClick={handleToggle}
+          className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 border-2
+            ${isCompleted 
+              ? 'bg-primary border-primary' 
+              : 'bg-transparent border-white/10 hover:border-white/30'
+            }
+          `}
+        >
+          {isCompleted && <span className="material-symbols-outlined text-black !text-[20px] font-black">check</span>}
+        </button>
       </div>
 
-      <div>
-        <h3 className={`text-lg font-bold leading-tight mb-1 ${habit.completedToday ? 'text-primary' : ''}`}>
+      <div className="z-10">
+        <h3 className={`text-lg font-extrabold leading-tight tracking-tight mb-1 transition-colors
+          ${isCompleted ? 'text-primary' : 'text-white'}
+        `}>
           {habit.name}
         </h3>
-        <p className="text-xs font-medium text-slate-400 flex items-center gap-1">
-          <span className="text-orange-500">🔥</span> {habit.streak} days
-        </p>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[14px]">🔥</span>
+          <p className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500">{habit.streak} day streak</p>
+        </div>
       </div>
 
       {isLocked && (
-         <div className="absolute inset-0 bg-black/5 dark:bg-white/5 backdrop-blur-[2px] rounded-3xl z-10"></div>
+        <div className="absolute inset-0 bg-[#0a1512]/80 backdrop-blur-[6px] z-20 flex flex-col items-center justify-center gap-2 p-4 text-center">
+          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-400 !text-[20px]">lock</span>
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Private</span>
+        </div>
       )}
     </div>
   );

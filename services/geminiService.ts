@@ -2,8 +2,39 @@
 import { GoogleGenAI } from "@google/genai";
 import { Habit } from "../types";
 
+export async function getAIRoast(habits: Habit[]) {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  const habitSummary = habits.map(h => `- ${h.name}: ${h.streak} day streak, ${h.completedToday ? 'Done today' : 'Not done today'}`).join('\n');
+  
+  const prompt = `
+    You are an AI Habit Coach with a personality. 
+    Analyze the following habit data. 
+    If the user is doing great (high streaks, most done today), give them a high-energy praise. 
+    If they are slacking (low streaks, many missed today), give them a witty, slightly sarcastic roast to motivate them.
+    Keep it under 3 sentences. Be very modern and relatable.
+    
+    Data:
+    ${habitSummary}
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        temperature: 0.9,
+      }
+    });
+
+    return response.text?.trim() || "You're doing okay, but 'okay' doesn't build empires. Get to work!";
+  } catch (error) {
+    console.error("Gemini Roast Error:", error);
+    return "The AI is too stunned by your performance to comment right now. Keep going!";
+  }
+}
+
 export async function getHabitInsights(habits: Habit[]) {
-  // Use API key directly from process.env.API_KEY as per guidelines
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const habitSummary = habits.map(h => `- ${h.name} (${h.type}): ${h.streak} day streak`).join('\n');
@@ -26,7 +57,6 @@ export async function getHabitInsights(habits: Habit[]) {
       }
     });
 
-    // response.text is a property, not a method
     const text = response.text;
     if (text) {
       return JSON.parse(text.trim());
@@ -35,7 +65,6 @@ export async function getHabitInsights(habits: Habit[]) {
     console.error("Gemini Insight Error:", error);
   }
 
-  // Fallback defaults
   return [
     {
       title: "Tuesday is your power day",
