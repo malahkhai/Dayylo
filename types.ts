@@ -13,6 +13,10 @@ export interface Habit {
   frequency: string[]; // ['M', 'T', ...]
   reminderTime?: string;
   description?: string;
+  // Quantity tracking fields
+  currentValue?: number;
+  targetValue?: number;
+  unit?: string; // 'Times', 'Pages', 'min', 'L'
 }
 
 export interface User {
@@ -21,4 +25,5 @@ export interface User {
   isLoggedIn: boolean;
   isUnlocked: boolean;
   onboardingStep: number;
+  joinDate?: string;
 }

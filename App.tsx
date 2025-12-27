@@ -20,11 +20,12 @@ const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<User>({
-    name: 'Alex Johnson',
-    email: 'alex.j@example.com',
+    name: 'Emma Jackson',
+    email: 'emma.j@example.com',
     isLoggedIn: false,
     isUnlocked: false,
-    onboardingStep: 0
+    onboardingStep: 0,
+    joinDate: 'April 2024'
   });
   const [habits, setHabits] = useState<Habit[]>(INITIAL_HABITS);
 
@@ -43,6 +44,20 @@ const AppContent: React.FC = () => {
     } : h));
   };
 
+  const updateHabitValue = (id: string, delta: number) => {
+    setHabits(prev => prev.map(h => {
+      if (h.id !== id) return h;
+      const current = h.currentValue ?? 0;
+      const next = Math.max(0, current + delta);
+      const isCompleted = h.targetValue !== undefined && next >= h.targetValue;
+      return { 
+        ...h, 
+        currentValue: next,
+        completedToday: isCompleted
+      };
+    }));
+  };
+
   const removeHabit = (id: string) => {
     setHabits(prev => prev.filter(h => h.id !== id));
   };
@@ -54,8 +69,8 @@ const AppContent: React.FC = () => {
 
   const handleLogout = () => {
     setUser({
-      name: 'Alex Johnson',
-      email: 'alex.j@example.com',
+      name: 'Emma Jackson',
+      email: 'emma.j@example.com',
       isLoggedIn: false,
       isUnlocked: false,
       onboardingStep: 0
@@ -71,20 +86,20 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-md min-h-screen bg-background-light dark:bg-background-dark shadow-2xl overflow-x-hidden relative">
+    <div className="mx-auto max-w-md min-h-screen bg-[#f6f8f7] dark:bg-background-dark shadow-2xl overflow-x-hidden relative">
       <Routes>
         <Route path="/welcome" element={<WelcomeScreen onStart={() => navigate('/login')} />} />
         <Route path="/login" element={<LoginScreen onLogin={() => { setUser(p => ({ ...p, isLoggedIn: true })); navigate('/onboarding'); }} />} />
         <Route path="/onboarding" element={<OnboardingScreen onComplete={() => navigate('/dashboard')} />} />
-        <Route path="/dashboard" element={<DashboardScreen habits={habits} user={user} onToggleHabit={toggleHabit} onOpenLock={() => navigate('/lock')} />} />
+        <Route path="/dashboard" element={<DashboardScreen habits={habits} user={user} onToggleHabit={toggleHabit} onUpdateHabitValue={updateHabitValue} onOpenLock={() => navigate('/lock')} />} />
         <Route path="/habit/:id" element={<HabitDetailScreen habits={habits} />} />
         <Route path="/add" element={<AddHabitScreen onAdd={(h) => { setHabits(p => [...p, h]); navigate('/dashboard'); }} />} />
         <Route path="/manage" element={<ManageHabitsScreen habits={habits} onRemove={removeHabit} />} />
         <Route path="/insights" element={<InsightsScreen habits={habits} />} />
         <Route path="/lock" element={<LockScreen onUnlock={handleUnlock} onCancel={() => navigate('/dashboard')} />} />
-        <Route path="/profile" element={<ProfileScreen user={user} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />} />
+        <Route path="/profile" element={<ProfileScreen user={user} habits={habits} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />} />
         <Route path="/paywall" element={<PaywallScreen onClose={() => navigate(-1)} />} />
-        <Route path="/" element={<DashboardScreen habits={habits} user={user} onToggleHabit={toggleHabit} onOpenLock={() => navigate('/lock')} />} />
+        <Route path="/" element={<DashboardScreen habits={habits} user={user} onToggleHabit={toggleHabit} onUpdateHabitValue={updateHabitValue} onOpenLock={() => navigate('/lock')} />} />
       </Routes>
     </div>
   );

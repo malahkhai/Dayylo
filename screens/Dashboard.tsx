@@ -10,180 +10,213 @@ interface DashboardProps {
   user: User;
   onToggleHabit: (id: string) => void;
   onOpenLock: () => void;
+  onUpdateHabitValue?: (id: string, delta: number) => void;
 }
 
-const DashboardScreen: React.FC<DashboardProps> = ({ habits, user, onToggleHabit, onOpenLock }) => {
+const DashboardScreen: React.FC<DashboardProps> = ({ habits, user, onToggleHabit, onOpenLock, onUpdateHabitValue }) => {
   const navigate = useNavigate();
-  const [activeClass, setActiveClass] = useState<'build' | 'break'>('build');
-  
+  const [activeDate, setActiveDate] = useState(11);
+  const [showBuildList, setShowBuildList] = useState(true);
+  const [showBreakList, setShowBreakList] = useState(false);
+
   const buildHabits = habits.filter(h => h.type === 'build');
   const breakHabits = habits.filter(h => h.type === 'break');
   
+  const completedBuild = buildHabits.filter(h => h.completedToday).length;
   const totalCompleted = habits.filter(h => h.completedToday).length;
   const progressPercent = habits.length > 0 ? Math.round((totalCompleted / habits.length) * 100) : 0;
-  
-  const currentHabits = activeClass === 'build' ? buildHabits : breakHabits;
-  const habitsLeft = currentHabits.filter(h => !h.completedToday).length;
+
+  const dates = [
+    { label: 'SA', num: 9 },
+    { label: 'SU', num: 10 },
+    { label: 'MO', num: 11 },
+    { label: 'TU', num: 12 },
+    { label: 'WE', num: 13 },
+  ];
 
   return (
-    <div className="flex flex-col h-screen bg-background-dark pb-32 relative overflow-hidden transition-colors duration-200">
-      {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-primary/5 blur-[120px] pointer-events-none z-0"></div>
-
-      {/* Header */}
-      <header className="flex flex-col px-6 pt-12 pb-4 z-10">
-        <div className="flex items-end justify-between">
-          <div className="flex flex-col">
-            <h2 className="text-slate-500 text-sm font-black uppercase tracking-[0.2em] mb-1">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-            </h2>
-            <h1 className="text-4xl font-black tracking-tighter text-white">Dashboard</h1>
+    <div className="flex flex-col h-screen bg-[#f6f8f7] dark:bg-background-dark transition-colors duration-200 overflow-hidden">
+      <main className="flex-1 overflow-y-auto no-scrollbar pb-40">
+        {/* Header Section */}
+        <header className="px-6 pt-16 pb-6 flex justify-between items-start">
+          <div className="space-y-1">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Tuesday, Oct 24</p>
+            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
           </div>
-          <div 
-            onClick={() => navigate('/profile')}
-            className="h-11 w-11 rounded-2xl bg-surface-dark overflow-hidden border border-white/10 cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-xl flex items-center justify-center"
-          >
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-white/10 shadow-sm ring-1 ring-black/5">
             <img 
-              className="h-full w-full object-cover opacity-80" 
-              alt="User" 
-              src="https://i.pravatar.cc/100?img=12"
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" 
+              alt="Profile" 
+              className="w-full h-full object-cover"
             />
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="flex-1 overflow-y-auto no-scrollbar px-6 space-y-8 pt-4 z-10 animate-fade-in-up">
-        {/* Daily Progress Section */}
-        <section className="bg-surface-dark rounded-[2.5rem] p-7 border border-white/5 shadow-2xl relative overflow-hidden group">
-          <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/5 blur-[50px] rounded-full pointer-events-none"></div>
-          
-          <div className="flex justify-between items-end mb-5">
-            <div>
-              <h2 className="text-xl font-black text-white tracking-tight">Daily Progress</h2>
-              <p className="text-slate-400 text-sm mt-0.5 font-bold uppercase tracking-widest opacity-60">Keep the momentum</p>
+        {/* Daily Progress Card */}
+        <section className="px-6 mb-6">
+          <div className="bg-white dark:bg-surface-dark-alt rounded-[2.5rem] p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white dark:border-white/5">
+            <div className="flex justify-between items-start mb-4">
+              <div className="space-y-1">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">Daily Progress</h3>
+                <p className="text-sm font-medium text-slate-400">Keep up the momentum!</p>
+              </div>
+              <p className="text-4xl font-black text-[#137fec] tracking-tighter">{progressPercent}%</p>
             </div>
-            <div className="text-right">
-              <span className="text-5xl font-black text-primary tracking-tighter drop-shadow-[0_0_10px_rgba(48,232,171,0.4)]">
-                {progressPercent}%
-              </span>
+            
+            <div className="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden mb-5">
+              <div 
+                className="h-full bg-gradient-to-r from-[#137fec] to-[#59a8f5] rounded-full transition-all duration-1000"
+                style={{ width: `${progressPercent}%` }}
+              ></div>
             </div>
-          </div>
-          
-          <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden mb-5">
-            <div 
-              className="h-full bg-gradient-to-r from-primary via-[#5ac8fa] to-primary rounded-full transition-all duration-1000 ease-out" 
-              style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
 
-          <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-            <span className="text-white/60">{totalCompleted} of {habits.length} Habits Completed</span>
-            <span className="text-primary flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[18px] font-black">trending_up</span> On Track
-            </span>
+            <div className="flex justify-between items-center">
+              <p className="text-sm font-bold text-slate-900 dark:text-white">
+                {totalCompleted} of {habits.length} Habits Completed
+              </p>
+              <div className="flex items-center gap-1 text-primary">
+                <span className="material-symbols-outlined !text-[18px] font-black">trending_up</span>
+                <span className="text-[11px] font-black uppercase tracking-widest">On Track</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Streak Grid */}
-        <section className="grid grid-cols-2 gap-4">
-          <div className="bg-surface-dark rounded-[2rem] p-6 border border-white/5 flex flex-col justify-between h-40 relative overflow-hidden shadow-xl">
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
-            <div className="flex items-center gap-2.5 z-10">
-              <span className="material-symbols-outlined text-orange-500 filled !text-[22px]">local_fire_department</span>
-              <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">Build Streak</span>
+        {/* Streaks Grid */}
+        <section className="px-6 grid grid-cols-2 gap-4 mb-8">
+          <div className="bg-[#fff9f2] dark:bg-orange-950/20 rounded-[2.5rem] p-6 border border-orange-100 dark:border-orange-500/10">
+            <div className="flex items-center gap-2 mb-4">
+               <span className="text-orange-500 text-lg">🔥</span>
+               <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">Build Streak</span>
             </div>
-            <div className="z-10 mt-4">
-              <span className="text-5xl font-black text-white tracking-tighter">12</span>
-              <span className="text-xs font-black text-slate-500 ml-2 uppercase tracking-[0.3em]">Days</span>
+            <div className="flex items-baseline gap-1">
+              <p className="text-4xl font-black text-slate-900 dark:text-white">12</p>
+              <p className="text-xs font-bold text-slate-400">Days</p>
             </div>
           </div>
 
-          <div className="bg-surface-dark rounded-[2rem] p-6 border border-white/5 flex flex-col justify-between h-40 relative overflow-hidden shadow-xl">
-            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
-            <div className="flex items-center gap-2.5 z-10">
-              <span className="material-symbols-outlined text-blue-500 !text-[22px]">shield</span>
-              <span className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Break Streak</span>
+          <div className="bg-[#f0f7ff] dark:bg-blue-950/20 rounded-[2.5rem] p-6 border border-blue-100 dark:border-blue-500/10">
+            <div className="flex items-center gap-2 mb-4">
+               <span className="material-symbols-outlined text-blue-500 !text-[18px] filled">shield</span>
+               <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Break Streak</span>
             </div>
-            <div className="z-10 mt-4">
-              <span className="text-5xl font-black text-white tracking-tighter">5</span>
-              <span className="text-xs font-black text-slate-500 ml-2 uppercase tracking-[0.3em]">Days</span>
+            <div className="flex items-baseline gap-1">
+              <p className="text-4xl font-black text-slate-900 dark:text-white">5</p>
+              <p className="text-xs font-bold text-slate-400">Days</p>
             </div>
           </div>
+        </section>
+
+        {/* Interactive Calendar Strip Section (Below Summary) */}
+        <section className="px-6 mb-10">
+           <div className="bg-[#1c1c1e] text-white p-4 rounded-[2.5rem] shadow-xl">
+             <div className="flex items-center justify-between gap-2">
+               {dates.map((d) => (
+                 <div 
+                   key={d.num}
+                   onClick={() => setActiveDate(d.num)}
+                   className={`flex-1 flex flex-col items-center justify-center h-16 rounded-2xl transition-all cursor-pointer border
+                     ${activeDate === d.num ? 'bg-white text-black border-white shadow-lg' : 'bg-white/5 text-slate-500 border-white/5'}
+                   `}
+                 >
+                   <span className={`text-[9px] font-black uppercase tracking-widest mb-1 ${activeDate === d.num ? 'opacity-60' : 'opacity-40'}`}>
+                     {d.label}
+                   </span>
+                   <span className="text-base font-black tracking-tight">{d.num}</span>
+                 </div>
+               ))}
+             </div>
+           </div>
         </section>
 
         {/* Your Habits Section */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-1">
-            <div className="flex flex-col">
-              <h3 className="text-2xl font-black text-white tracking-tight">Your Habits</h3>
-              <p className="text-[11px] font-black uppercase tracking-widest text-primary mt-1">
-                You have <span className="text-white">{habitsLeft} habits</span> left
-              </p>
-            </div>
-          </div>
-
-          {/* Segmented Class Selector */}
-          <div className="bg-white/5 p-1 rounded-2xl flex relative ring-1 ring-white/5">
-            <button 
-              onClick={() => setActiveClass('build')}
-              className={`flex-1 py-3 text-sm font-black rounded-xl transition-all duration-300 ${activeClass === 'build' ? 'bg-[#24342f] shadow-lg text-primary' : 'text-slate-500 hover:text-slate-300'}`}
-            >
-              Build Class
-            </button>
-            <button 
-              onClick={() => setActiveClass('break')}
-              className={`flex-1 py-3 text-sm font-black rounded-xl transition-all duration-300 ${activeClass === 'break' ? 'bg-[#2a231b] shadow-lg text-orange-500' : 'text-slate-500 hover:text-slate-300'}`}
-            >
-              Break Class
-            </button>
-          </div>
-
-          {/* Habit Grid */}
-          {currentHabits.length === 0 ? (
-            <div className="bg-white/5 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center gap-4 border border-dashed border-white/10">
-              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-slate-700">
-                <span className="material-symbols-outlined text-4xl">inventory_2</span>
-              </div>
-              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No habits in this class</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {currentHabits.map((habit) => (
-                <HabitTile 
-                  key={habit.id} 
-                  habit={habit} 
-                  onToggle={onToggleHabit} 
-                  isLocked={habit.private && !user.isUnlocked}
-                />
-              ))}
-              
-              {/* Add New Placeholder Tile */}
-              <button 
-                onClick={() => navigate('/add')}
-                className="aspect-[0.9/1] rounded-[2rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-3 text-slate-600 hover:text-primary hover:border-primary/20 hover:bg-primary/5 transition-all group active:scale-95"
-              >
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-all">
-                  <span className="material-symbols-outlined text-2xl font-bold">add</span>
+        <section className="px-6">
+          <h2 className="text-xl font-black text-slate-900 dark:text-white mb-6">Your Habits</h2>
+          
+          <div className="space-y-4">
+            {/* Build Habits Category Card */}
+            <div className="bg-white dark:bg-surface-dark-alt rounded-[2.5rem] p-5 shadow-sm border border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-2xl bg-[#f0f7ff] dark:bg-blue-500/10 flex items-center justify-center text-[#137fec]">
+                  <span className="material-symbols-outlined !text-[32px] filled">fitness_center</span>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest">New Habit</span>
-              </button>
+                <div className="flex-1">
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white">Build Habits</h3>
+                  <p className="text-sm font-bold text-slate-400">
+                    {buildHabits.length} Active • {completedBuild} Completed Today
+                  </p>
+                  <button 
+                    onClick={() => setShowBuildList(!showBuildList)}
+                    className="mt-2 text-[#137fec] text-xs font-black uppercase tracking-widest flex items-center gap-1"
+                  >
+                    {showBuildList ? 'Hide List' : 'View List'}
+                    <span className={`material-symbols-outlined !text-[16px] transition-transform ${showBuildList ? 'rotate-90' : ''}`}>chevron_right</span>
+                  </button>
+                </div>
+              </div>
+              
+              {showBuildList && (
+                <div className="mt-6 pt-6 border-t border-slate-50 dark:border-white/5 animate-fade-in-up">
+                  {buildHabits.map(habit => (
+                    <HabitTile key={habit.id} habit={habit} onToggle={onToggleHabit} onUpdateValue={onUpdateHabitValue} />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </section>
 
-        {/* Quick Actions Footer */}
-        <section className="pt-2 pb-16 grid grid-cols-2 gap-4">
-           <button 
-            onClick={onOpenLock}
-            className="flex items-center justify-center gap-3 p-5 rounded-[1.5rem] bg-surface-dark text-slate-400 border border-white/5 active:scale-95 transition-all"
-           >
-              <span className="material-symbols-outlined text-xl">shield_lock</span>
-              <span className="text-[11px] font-black uppercase tracking-widest">Privacy Settings</span>
-           </button>
-           <button className="flex items-center justify-center gap-3 p-5 rounded-[1.5rem] bg-surface-dark text-slate-400 border border-white/5 active:scale-95 transition-all">
-              <span className="material-symbols-outlined text-xl">notifications_active</span>
-              <span className="text-[11px] font-black uppercase tracking-widest">Daily Focus</span>
-           </button>
+            {/* Break Habits Category Card */}
+            <div className="bg-white dark:bg-surface-dark-alt rounded-[2.5rem] p-5 shadow-sm border border-slate-100 dark:border-white/5">
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400/20 to-red-400/20 flex items-center justify-center text-orange-600 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-orange-400/5 blur-lg"></div>
+                  <span className="material-symbols-outlined !text-[32px] filled z-10">lock</span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-black text-slate-900 dark:text-white">Break Habits</h3>
+                    <span className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[10px] font-black text-slate-400 uppercase tracking-widest">Locked</span>
+                  </div>
+                  <p className="text-sm font-bold text-slate-400">
+                    {breakHabits.length} Active • Protected View
+                  </p>
+                  
+                  {!user.isUnlocked ? (
+                    <button 
+                      onClick={onOpenLock}
+                      className="mt-3 px-4 py-2 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white text-[11px] font-black uppercase tracking-widest flex items-center gap-2 border border-slate-100 dark:border-white/10"
+                    >
+                      <span className="material-symbols-outlined !text-[16px]">face</span>
+                      Unlock to View
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => setShowBreakList(!showBreakList)}
+                      className="mt-2 text-orange-500 text-xs font-black uppercase tracking-widest flex items-center gap-1"
+                    >
+                      {showBreakList ? 'Hide List' : 'View List'}
+                      <span className={`material-symbols-outlined !text-[16px] transition-transform ${showBreakList ? 'rotate-90' : ''}`}>chevron_right</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {user.isUnlocked && showBreakList && (
+                <div className="mt-6 pt-6 border-t border-slate-50 dark:border-white/5 animate-fade-in-up">
+                  {breakHabits.map(habit => (
+                    <HabitTile key={habit.id} habit={habit} onToggle={onToggleHabit} onUpdateValue={onUpdateHabitValue} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button 
+            onClick={() => navigate('/add')}
+            className="w-full mt-8 flex items-center justify-center gap-2 py-4 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-white/10 text-slate-400 font-black text-sm hover:text-primary transition-all active:scale-[0.98]"
+          >
+            <span className="material-symbols-outlined">add</span>
+            New Habit
+          </button>
         </section>
       </main>
 
