@@ -5,6 +5,7 @@ import { INITIAL_HABITS } from '../../constants';
 import HabitTile from '../../components/HabitTile';
 import { User, Habit } from '../../types';
 import * as LucideIcons from 'lucide-react-native';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
 
@@ -23,16 +24,22 @@ export default function Dashboard() {
     const [showBuildList, setShowBuildList] = useState(true);
     const [showBreakList, setShowBreakList] = useState(false);
 
-    const buildHabits = habits.filter(h => h.type === 'build');
-    const breakHabits = habits.filter(h => h.type === 'break');
+    const buildHabits = habits.filter((h: Habit) => h.type === 'build');
+    const breakHabits = habits.filter((h: Habit) => h.type === 'break');
 
-    const totalCompleted = habits.filter(h => {
+    const totalCompleted = habits.filter((h: Habit) => {
         if (h.completedToday) return true;
         if (h.targetValue !== undefined && h.currentValue !== undefined && h.currentValue >= h.targetValue) return true;
         return false;
     }).length;
 
-    const progressPercent = habits.length > 0 ? Math.round((totalCompleted / habits.length) * 100) : 0;
+    const progressPercent = habits.length > 0 ? (totalCompleted / habits.length) * 100 : 0;
+
+    const progressStyle = useAnimatedStyle(() => {
+        return {
+            width: withSpring(`${progressPercent}%`, { damping: 15 }),
+        };
+    });
 
     const dates = [
         { label: 'SA', num: 9 },
@@ -43,13 +50,13 @@ export default function Dashboard() {
     ];
 
     const onToggleHabit = (id: string) => {
-        setHabits(prev => prev.map(h =>
+        setHabits((prev: Habit[]) => prev.map((h: Habit) =>
             h.id === id ? { ...h, completedToday: !h.completedToday } : h
         ));
     };
 
     const onUpdateHabitValue = (id: string, delta: number) => {
-        setHabits(prev => prev.map(h => {
+        setHabits((prev: Habit[]) => prev.map((h: Habit) => {
             if (h.id === id && h.currentValue !== undefined) {
                 const newVal = Math.max(0, h.currentValue + delta);
                 return { ...h, currentValue: newVal };
@@ -86,9 +93,10 @@ export default function Dashboard() {
                     </View>
 
                     <View className="w-full h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden mb-5">
-                        <View
+                        {/* @ts-ignore */}
+                        <Animated.View
                             className="h-full bg-[#137fec] rounded-full"
-                            style={{ width: `${progressPercent}%` }}
+                            style={progressStyle}
                         />
                     </View>
 
@@ -169,7 +177,7 @@ export default function Dashboard() {
 
                     {showBuildList && (
                         <View className="mt-6 pt-6 border-t border-slate-50 dark:border-white/5">
-                            {buildHabits.map(habit => (
+                            {buildHabits.map((habit: Habit) => (
                                 <HabitTile key={habit.id} habit={habit} onToggle={onToggleHabit} onUpdateValue={onUpdateHabitValue} />
                             ))}
                         </View>
@@ -203,7 +211,7 @@ export default function Dashboard() {
 
                     {showBreakList && user.isUnlocked && (
                         <View className="mt-6 pt-6 border-t border-slate-50 dark:border-white/5">
-                            {breakHabits.map(habit => (
+                            {breakHabits.map((habit: Habit) => (
                                 <HabitTile key={habit.id} habit={habit} onToggle={onToggleHabit} onUpdateValue={onUpdateHabitValue} />
                             ))}
                         </View>

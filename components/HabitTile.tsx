@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Habit } from '../types';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 
 interface HabitTileProps {
     habit: Habit;
@@ -11,13 +12,27 @@ interface HabitTileProps {
     isLocked?: boolean;
 }
 
-const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, isLocked }) => {
+const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, isLocked }: HabitTileProps) => {
     const router = useRouter();
 
     const IconComponent = (LucideIcons as any)[habit.icon] || LucideIcons.Circle;
 
     const isCompleted = habit.completedToday || (habit.targetValue && habit.currentValue && habit.currentValue >= habit.targetValue);
     const hasStepper = habit.targetValue !== undefined && habit.unit !== 'min';
+
+    const animatedCheckStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: withSpring(isCompleted ? 1 : 0) }],
+            opacity: withTiming(isCompleted ? 1 : 0),
+        };
+    });
+
+    const animatedBgStyle = useAnimatedStyle(() => {
+        return {
+            backgroundColor: withTiming(isCompleted ? 'rgba(48, 232, 171, 0.1)' : 'rgba(241, 245, 249, 1)'),
+            borderColor: withTiming(isCompleted ? 'rgba(48, 232, 171, 0.2)' : 'rgba(241, 245, 249, 1)'),
+        };
+    });
 
     return (
         <TouchableOpacity
@@ -71,12 +86,18 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, i
                 ) : (
                     <TouchableOpacity
                         onPress={() => onToggle(habit.id)}
-                        className={`w-10 h-10 rounded-[16px] items-center justify-center border ${isCompleted
-                                ? 'bg-primary/10 border-primary/20'
-                                : 'bg-slate-50 dark:bg-transparent border-slate-100 dark:border-white/10'
-                            }`}
+                        activeOpacity={0.8}
                     >
-                        {isCompleted && <LucideIcons.Check size={20} color="#30e8ab" strokeWidth={3} />}
+                        {/* @ts-ignore */}
+                        <Animated.View
+                            style={animatedBgStyle}
+                            className="w-10 h-10 rounded-[16px] items-center justify-center border"
+                        >
+                            {/* @ts-ignore */}
+                            <Animated.View style={animatedCheckStyle}>
+                                <LucideIcons.Check size={20} color="#30e8ab" strokeWidth={3} />
+                            </Animated.View>
+                        </Animated.View>
                     </TouchableOpacity>
                 )}
             </View>
