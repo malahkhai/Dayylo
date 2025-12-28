@@ -24,6 +24,7 @@ export default function AddHabitScreen() {
     const [selectedColor, setSelectedColor] = useState(AppleColors.systemBlue);
     const [selectedFrequency, setSelectedFrequency] = useState('daily');
     const [habitType, setHabitType] = useState<'build' | 'break'>('build');
+    const [difficulty, setDifficulty] = useState(5);
     const [isPrivate, setIsPrivate] = useState(false);
 
     const colors = [
@@ -51,6 +52,7 @@ export default function AddHabitScreen() {
             isPrivate: isPrivate,
             description: description,
             frequency: [selectedFrequency],
+            difficulty: difficulty,
         });
 
         if (success) {
@@ -184,6 +186,44 @@ export default function AddHabitScreen() {
                             />
                         </View>
                     </View>
+
+                    {/* Difficulty Selection */}
+                    <View style={styles.section}>
+                        <View style={styles.labelRow}>
+                            <Text style={styles.label}>Difficulty</Text>
+                            <View style={[
+                                styles.difficultyIndicator,
+                                { backgroundColor: (difficulty < 4 ? AppleColors.systemGreen : difficulty > 7 ? AppleColors.systemRed : AppleColors.systemOrange) + '20' }
+                            ]}>
+                                <Text style={[
+                                    styles.difficultyIndicatorText,
+                                    { color: difficulty < 4 ? AppleColors.systemGreen : difficulty > 7 ? AppleColors.systemRed : AppleColors.systemOrange }
+                                ]}>
+                                    {difficulty < 4 ? 'Easy' : difficulty > 7 ? 'Hard' : 'Moderate'} • {difficulty}
+                                </Text>
+                            </View>
+                        </View>
+                        <View style={styles.difficultyPicker}>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((d) => (
+                                <TouchableOpacity
+                                    key={d}
+                                    onPress={() => setDifficulty(d)}
+                                    style={[
+                                        styles.difficultyNode,
+                                        difficulty === d && {
+                                            backgroundColor: difficulty < 4 ? AppleColors.systemGreen : difficulty > 7 ? AppleColors.systemRed : AppleColors.systemOrange,
+                                            borderColor: 'transparent'
+                                        }
+                                    ]}
+                                >
+                                    <Text style={[
+                                        styles.difficultyNodeText,
+                                        difficulty === d && { color: 'white' }
+                                    ]}>{d}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
                 </ScrollView>
 
                 {/* Bottom Actions */}
@@ -205,7 +245,7 @@ export default function AddHabitScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppleColors.background.secondary,
+        backgroundColor: AppleColors.background.primary,
     },
     keyboardView: {
         flex: 1,
@@ -216,17 +256,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: AppleSpacing.base,
         paddingVertical: AppleSpacing.md,
-        backgroundColor: AppleColors.background.secondary,
-        borderBottomWidth: 0.5,
-        borderBottomColor: AppleColors.separator.nonOpaque,
+        backgroundColor: AppleColors.background.primary,
     },
     cancelButton: {
         ...AppleTypography.body,
-        color: AppleColors.systemBlue,
+        fontWeight: '700',
+        color: AppleColors.primary,
     },
     headerTitle: {
         ...AppleTypography.headline,
-        fontWeight: '600',
+        fontWeight: '900',
         color: AppleColors.label.primary,
     },
     scrollView: {
@@ -237,12 +276,15 @@ const styles = StyleSheet.create({
         paddingBottom: AppleSpacing.xxxl,
     },
     section: {
-        marginBottom: AppleSpacing.xl,
+        marginBottom: 32,
     },
     label: {
-        ...AppleTypography.headline,
-        color: AppleColors.label.primary,
-        marginBottom: AppleSpacing.sm,
+        ...AppleTypography.caption2,
+        fontWeight: '900',
+        color: AppleColors.label.tertiary,
+        marginBottom: 12,
+        textTransform: 'uppercase',
+        letterSpacing: 2,
     },
     typeContainer: {
         flexDirection: 'row',
@@ -253,42 +295,47 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
+        paddingVertical: 16,
         backgroundColor: AppleColors.background.tertiary,
-        borderRadius: 16,
+        borderRadius: 20,
         gap: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
         ...AppleShadows.small,
     },
     typeText: {
         ...AppleTypography.callout,
-        fontWeight: '600',
+        fontWeight: '800',
         color: AppleColors.label.primary,
     },
     inputContainer: {
         backgroundColor: AppleColors.background.tertiary,
-        borderRadius: AppleBorderRadius.button,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
         ...AppleShadows.small,
     },
     input: {
         ...AppleTypography.body,
+        fontWeight: '600',
         color: AppleColors.label.primary,
-        padding: AppleSpacing.base,
+        padding: 20,
     },
     textAreaContainer: {
-        minHeight: 100,
+        minHeight: 120,
     },
     textArea: {
-        minHeight: 80,
+        minHeight: 100,
     },
     colorGrid: {
         flexDirection: 'row',
-        gap: AppleSpacing.md,
-        paddingVertical: AppleSpacing.sm,
+        gap: 16,
+        paddingVertical: 4,
     },
     colorOption: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
         ...AppleShadows.medium,
@@ -296,17 +343,18 @@ const styles = StyleSheet.create({
     colorOptionSelected: {
         borderWidth: 3,
         borderColor: '#FFFFFF',
-        shadowOpacity: 0.15,
     },
     colorCheckmark: {
         color: '#FFFFFF',
-        fontSize: 24,
-        fontWeight: '700',
+        fontSize: 20,
+        fontWeight: '900',
     },
     privacyCard: {
         backgroundColor: AppleColors.background.tertiary,
-        borderRadius: AppleBorderRadius.card,
-        padding: AppleSpacing.base,
+        borderRadius: 24,
+        padding: 24,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
         ...AppleShadows.small,
     },
     privacyContent: {
@@ -319,37 +367,76 @@ const styles = StyleSheet.create({
     },
     privacyTitle: {
         ...AppleTypography.body,
-        fontWeight: '600',
+        fontWeight: '900',
         color: AppleColors.label.primary,
     },
     privacySubtitle: {
         ...AppleTypography.footnote,
-        color: AppleColors.label.secondary,
+        fontWeight: '600',
+        color: AppleColors.label.tertiary,
     },
     toggle: {
         width: 51,
         height: 31,
         borderRadius: 16,
-        backgroundColor: AppleColors.fill.tertiary,
+        backgroundColor: 'rgba(255,255,255,0.1)',
         padding: 2,
     },
     toggleOn: {
-        backgroundColor: AppleColors.systemBlue,
+        backgroundColor: AppleColors.primary,
     },
     toggleThumb: {
         width: 27,
         height: 27,
         borderRadius: 14,
         backgroundColor: '#FFFFFF',
-        ...AppleShadows.small,
     },
     toggleThumbOn: {
         transform: [{ translateX: 20 }],
     },
     bottomContainer: {
-        padding: AppleSpacing.base,
-        backgroundColor: AppleColors.background.secondary,
-        borderTopWidth: 0.5,
-        borderTopColor: AppleColors.separator.nonOpaque,
+        padding: AppleSpacing.lg,
+        paddingBottom: AppleSpacing.xxl,
+        backgroundColor: AppleColors.background.primary,
+    },
+    labelRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    difficultyIndicator: {
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        borderRadius: 10,
+    },
+    difficultyIndicatorText: {
+        ...AppleTypography.caption2,
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+    },
+    difficultyPicker: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: AppleColors.background.tertiary,
+        padding: 8,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+    },
+    difficultyNode: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'transparent',
+    },
+    difficultyNodeText: {
+        ...AppleTypography.footnote,
+        fontWeight: '900',
+        color: AppleColors.label.secondary,
     },
 });

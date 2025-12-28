@@ -24,144 +24,148 @@ export default function DashboardScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-black">
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
                 {/* Header */}
-                <View className="pt-8 pb-6 flex-row justify-between items-start">
+                <View className="pt-8 pb-10 flex-row justify-between items-center">
                     <View>
-                        <Text className="text-[11px] font-black uppercase tracking-[2px] text-slate-400 mb-1">
+                        <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40 mb-1">
                             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                         </Text>
-                        <Text className="text-3xl font-black text-slate-900 tracking-tight">Dashboard</Text>
+                        <Text className="text-3xl font-black text-white tracking-tight">Dashboard</Text>
                     </View>
-                    <Pressable className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-slate-50">
+                    <Pressable className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/10 p-1">
                         <Image
                             source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
-                            className="w-full h-full"
+                            className="w-full h-full rounded-xl"
                         />
                     </Pressable>
                 </View>
 
                 {/* Daily Progress Card */}
-                <View className="bg-white rounded-[32px] p-8 mb-6 border border-slate-100 shadow-sm">
+                <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl">
                     <View className="flex-row justify-between items-start mb-6">
                         <View>
-                            <Text className="text-[15px] font-black text-slate-900">Daily Progress</Text>
-                            <Text className="text-[13px] font-bold text-slate-400">Keep up the momentum!</Text>
+                            <Text className="text-[15px] font-black text-white">Daily Progress</Text>
+                            <Text className="text-[13px] font-bold text-white/40">Keep up the momentum!</Text>
                         </View>
-                        <Text className="text-3xl font-black text-accent-blue">{progressPercent}%</Text>
+                        <Text className="text-3xl font-black text-primary">{progressPercent}%</Text>
                     </View>
 
-                    <View className="w-full h-2.5 bg-slate-50 rounded-full overflow-hidden mb-6">
+                    <View className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-6">
                         <View
-                            className="h-full bg-accent-blue rounded-full"
+                            className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(48,232,171,0.5)]"
                             style={{ width: `${progressPercent}%` }}
                         />
                     </View>
 
-                    <View className="flex-row justify-between items-center bg-slate-50/50 p-4 rounded-2xl">
-                        <Text className="text-slate-400 font-bold text-xs">{totalDone} of {habits.length} Habits Completed</Text>
-                        <View className="bg-green-50 px-3 py-1.5 rounded-full flex-row items-center border border-green-100">
-                            <View className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2" />
-                            <Text className="text-[10px] font-black text-green-600 uppercase">On Track</Text>
+                    <View className="flex-row justify-between items-center bg-white/5 p-5 rounded-3xl">
+                        <Text className="text-white/40 font-black text-[10px] uppercase tracking-widest">{totalDone} of {habits.length} COMPLETED</Text>
+                        <View className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center border border-primary/20">
+                            <View className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
+                            <Text className="text-[10px] font-black text-primary uppercase">On Track</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* Stats Grid */}
-                <View className="flex-row gap-4 mb-8">
-                    <View className="flex-1 bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                <View className="flex-row gap-4 mb-10">
+                    <View className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg">
                         <View className="flex-row items-center mb-4">
-                            <LucideIcons.Flame size={16} color="#f97316" fill="#f97316" />
-                            <Text className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Build Streak</Text>
+                            <View className="p-2 bg-orange-500/10 rounded-lg">
+                                <LucideIcons.Flame size={14} color="#f97316" fill="#f97316" />
+                            </View>
+                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">Build</Text>
                         </View>
                         <View className="flex-row items-baseline">
-                            <Text className="text-2xl font-black text-slate-900">
+                            <Text className="text-3xl font-black text-white">
                                 {Math.max(...buildHabits.map(h => h.streak), 0)}
                             </Text>
-                            <Text className="text-[13px] font-bold text-slate-400 ml-1">Days</Text>
+                            <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
                     </View>
 
-                    <View className="flex-1 bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
+                    <View className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg">
                         <View className="flex-row items-center mb-4">
-                            <LucideIcons.Shield size={16} color="#3b82f6" />
-                            <Text className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-2">Break Streak</Text>
+                            <View className="p-2 bg-primary/10 rounded-lg">
+                                <LucideIcons.Shield size={14} color="#30e8ab" />
+                            </View>
+                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">Break</Text>
                         </View>
                         <View className="flex-row items-baseline">
-                            <Text className="text-2xl font-black text-slate-900">
+                            <Text className="text-3xl font-black text-white">
                                 {isUnlocked ? Math.max(...breakHabits.map(h => h.streak), 0) : '--'}
                             </Text>
-                            <Text className="text-[13px] font-bold text-slate-400 ml-1">Days</Text>
+                            <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* Your Habits Section */}
-                <View className="mb-8">
-                    <Text className="text-[13px] font-black text-slate-900 mb-4 px-1">Your Habits</Text>
+                <View className="mb-12">
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">Your Categories</Text>
 
                     {/* Build Habits Block */}
-                    <View className="bg-blue-50/50 rounded-[32px] p-6 mb-4 border border-blue-100/50 flex-row items-center">
-                        <View className="w-14 h-14 bg-white rounded-2xl items-center justify-center shadow-sm">
+                    <Pressable className="bg-surface-dark rounded-[32px] p-6 mb-4 border border-white/5 flex-row items-center active:bg-white/5">
+                        <View className="w-14 h-14 bg-white/5 rounded-2xl items-center justify-center">
                             <LucideIcons.TrendingUp size={24} color="#3b82f6" />
                         </View>
                         <View className="ml-5 flex-1">
-                            <Text className="text-lg font-black text-slate-900">Build Habits</Text>
-                            <Text className="text-[13px] font-bold text-slate-400">
-                                {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Completed Today
+                            <Text className="text-lg font-black text-white">Build Habits</Text>
+                            <Text className="text-[13px] font-bold text-white/40">
+                                {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Done
                             </Text>
                         </View>
-                        <LucideIcons.ChevronRight size={20} color="#cbd5e1" />
-                    </View>
+                        <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
+                    </Pressable>
 
                     {/* Break Habits Block */}
-                    <View className="bg-orange-50/50 rounded-[32px] p-6 mb-8 border border-orange-100/50 flex-row items-center">
-                        <View className={`w-14 h-14 rounded-2xl items-center justify-center shadow-sm ${isUnlocked ? 'bg-white' : 'bg-slate-900'}`}>
+                    <Pressable className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5">
+                        <View className={`w-14 h-14 rounded-2xl items-center justify-center ${isUnlocked ? 'bg-white/5' : 'bg-primary/20'}`}>
                             {isUnlocked ? (
                                 <LucideIcons.ShieldCheck size={24} color="#f97316" />
                             ) : (
-                                <LucideIcons.Lock size={24} color="#ffffff" opacity={0.6} />
+                                <LucideIcons.Lock size={24} color="#30e8ab" />
                             )}
                         </View>
                         <View className="ml-5 flex-1">
-                            <Text className="text-lg font-black text-slate-900">Break Habits</Text>
-                            <Text className="text-[13px] font-bold text-slate-400">
+                            <Text className="text-lg font-black text-white">Break Habits</Text>
+                            <Text className="text-[13px] font-bold text-white/40">
                                 {isUnlocked ? `${breakHabits.length} Active` : 'Protected View'}
                             </Text>
                         </View>
                         {!isUnlocked ? (
                             <Pressable
                                 onPress={handlePrivacyPress}
-                                className="bg-white px-3 py-2 rounded-xl shadow-sm border border-slate-100"
+                                className="bg-primary py-2 px-4 rounded-xl"
                             >
-                                <Text className="text-[10px] font-black text-slate-900 uppercase">Unlock</Text>
+                                <Text className="text-[10px] font-black text-black uppercase">Unlock</Text>
                             </Pressable>
                         ) : (
-                            <LucideIcons.ChevronRight size={20} color="#cbd5e1" />
+                            <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
                         )}
-                    </View>
+                    </Pressable>
                 </View>
 
                 {/* Quick Actions */}
                 <View className="pb-32">
-                    <Text className="text-[13px] font-black text-slate-900 mb-4 px-1">Quick Actions</Text>
-                    <View className="flex-row justify-between">
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">Quick Actions</Text>
+                    <View className="flex-row justify-between px-1">
                         {[
-                            { icon: 'Plus', label: 'Add Habit', onPress: () => router.push('/add') },
-                            { icon: 'Bell', label: 'Reminders' },
-                            { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress }
+                            { icon: 'Plus', label: 'Add', onPress: () => router.push('/add'), color: '#30e8ab' },
+                            { icon: 'Bell', label: 'Alerts', color: '#8b5cf6' },
+                            { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress, color: '#f97316' }
                         ].map((action, i) => {
                             const Icon = (LucideIcons as any)[action.icon];
                             return (
-                                <View key={i} className="items-center" style={{ width: (width - 48) / 3 }}>
+                                <View key={i} className="items-center" style={{ width: (width - 64) / 3 }}>
                                     <Pressable
                                         onPress={action.onPress}
-                                        className="w-16 h-16 bg-accent-blue rounded-full items-center justify-center shadow-lg shadow-blue-500/30 active:opacity-80"
+                                        className="w-16 h-16 bg-surface-dark rounded-[24px] items-center justify-center border border-white/5 shadow-xl active:bg-white/5"
                                     >
-                                        <Icon size={24} color="white" />
+                                        <Icon size={24} color={action.color} />
                                     </Pressable>
-                                    <Text className="mt-3 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center">
+                                    <Text className="mt-3 text-[10px] font-black text-white/30 uppercase tracking-widest text-center">
                                         {action.label}
                                     </Text>
                                 </View>

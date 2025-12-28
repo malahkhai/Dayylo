@@ -11,6 +11,7 @@ export interface Habit {
     completedToday: boolean;
     isPrivate: boolean;
     frequency: string[];
+    difficulty: number;
     reminderTime?: string;
     description?: string;
     currentValue?: number;

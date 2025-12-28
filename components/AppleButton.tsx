@@ -54,38 +54,38 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
   };
 
   const getButtonStyle = () => {
-    const baseStyle = [styles.button];
-    
+    const baseStyle: any[] = [styles.button];
+
     // Size
     if (size === 'small') baseStyle.push(styles.buttonSmall);
     if (size === 'large') baseStyle.push(styles.buttonLarge);
-    
+
     // Variant
     if (variant === 'primary') baseStyle.push(styles.buttonPrimary);
     if (variant === 'secondary') baseStyle.push(styles.buttonSecondary);
     if (variant === 'tertiary') baseStyle.push(styles.buttonTertiary);
     if (variant === 'destructive') baseStyle.push(styles.buttonDestructive);
-    
+
     // States
     if (disabled) baseStyle.push(styles.buttonDisabled);
     if (fullWidth) baseStyle.push(styles.buttonFullWidth);
-    
+
     return baseStyle;
   };
 
   const getTextStyle = () => {
-    const baseStyle = [styles.buttonText];
-    
+    const baseStyle: any[] = [styles.buttonText];
+
     if (size === 'small') baseStyle.push(styles.buttonTextSmall);
     if (size === 'large') baseStyle.push(styles.buttonTextLarge);
-    
+
     if (variant === 'primary') baseStyle.push(styles.buttonTextPrimary);
     if (variant === 'secondary') baseStyle.push(styles.buttonTextSecondary);
     if (variant === 'tertiary') baseStyle.push(styles.buttonTextTertiary);
     if (variant === 'destructive') baseStyle.push(styles.buttonTextDestructive);
-    
+
     if (disabled) baseStyle.push(styles.buttonTextDisabled);
-    
+
     return baseStyle;
   };
 
@@ -101,7 +101,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
       >
         {loading ? (
           <ActivityIndicator
-            color={variant === 'primary' || variant === 'destructive' ? '#FFFFFF' : AppleColors.systemBlue}
+            color={variant === 'primary' || variant === 'destructive' ? '#000000' : AppleColors.primary}
           />
         ) : (
           <View style={styles.buttonContent}>
@@ -119,7 +119,7 @@ export const AppleFAB: React.FC<{
   onPress: () => void;
   icon: string;
   color?: string;
-}> = ({ onPress, icon, color = AppleColors.systemBlue }) => {
+}> = ({ onPress, icon, color = AppleColors.primary }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
 
   const handlePressIn = () => {
@@ -178,11 +178,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonPrimary: {
-    backgroundColor: AppleColors.systemBlue,
+    backgroundColor: AppleColors.primary,
     ...AppleShadows.small,
   },
   buttonSecondary: {
-    backgroundColor: AppleColors.fill.secondary,
+    backgroundColor: AppleColors.fill.tertiary,
   },
   buttonTertiary: {
     backgroundColor: 'transparent',
@@ -212,15 +212,16 @@ const styles = StyleSheet.create({
   },
   buttonTextLarge: {
     ...AppleTypography.title3,
+    fontWeight: '900',
   },
   buttonTextPrimary: {
-    color: '#FFFFFF',
+    color: '#000000',
   },
   buttonTextSecondary: {
-    color: AppleColors.systemBlue,
+    color: AppleColors.label.primary,
   },
   buttonTextTertiary: {
-    color: AppleColors.systemBlue,
+    color: AppleColors.primary,
   },
   buttonTextDestructive: {
     color: '#FFFFFF',

@@ -14,7 +14,7 @@ export const AppleColors = {
   systemTeal: '#5AC8FA',
   systemMint: '#00C7BE',
   systemCyan: '#32ADE6',
-  
+
   // Grays
   systemGray: '#8E8E93',
   systemGray2: '#AEAEB2',
@@ -22,44 +22,40 @@ export const AppleColors = {
   systemGray4: '#D1D1D6',
   systemGray5: '#E5E5EA',
   systemGray6: '#F2F2F7',
-  
+
+  // Dayylo Premium Palette
+  primary: '#30e8ab',
+  backgroundDark: '#0a0a0a',
+  surfaceDark: '#1c1c1e',
+  surfaceDarkAlt: '#2c2c2e',
+
   // Backgrounds
   background: {
-    primary: '#FFFFFF',
-    secondary: '#F2F2F7',
-    tertiary: '#FFFFFF',
+    primary: '#000000',
+    secondary: '#0a0a0a',
+    tertiary: '#1c1c1e',
   },
-  
-  // Dark Mode
-  dark: {
-    background: {
-      primary: '#000000',
-      secondary: '#1C1C1E',
-      tertiary: '#2C2C2E',
-    },
-    systemGray6: '#1C1C1E',
-  },
-  
+
   // Labels
   label: {
-    primary: '#000000',
-    secondary: '#3C3C43',
-    tertiary: '#3C3C4399', // 60% opacity
-    quaternary: '#3C3C434D', // 30% opacity
+    primary: '#FFFFFF',
+    secondary: 'rgba(255,255,255,0.7)',
+    tertiary: 'rgba(255,255,255,0.45)',
+    quaternary: 'rgba(255,255,255,0.25)',
   },
-  
+
   // Fills
   fill: {
-    primary: '#78788033', // 20% opacity
-    secondary: '#78788028', // 16% opacity
-    tertiary: '#7676801E', // 12% opacity
-    quaternary: '#74748014', // 8% opacity
+    primary: 'rgba(120, 120, 128, 0.35)',
+    secondary: 'rgba(120, 120, 128, 0.28)',
+    tertiary: 'rgba(118, 118, 128, 0.22)',
+    quaternary: 'rgba(116, 116, 128, 0.16)',
   },
-  
+
   // Separator
   separator: {
-    opaque: '#C6C6C8',
-    nonOpaque: '#3C3C4349', // 29% opacity
+    opaque: '#38383A',
+    nonOpaque: 'rgba(84, 84, 88, 0.6)',
   },
 };
 
@@ -68,55 +64,55 @@ export const AppleTypography = {
   largeTitle: {
     fontSize: 34,
     lineHeight: 41,
-    fontWeight: '700' as const,
+    fontWeight: '900' as const,
     letterSpacing: 0.37,
   },
   title1: {
     fontSize: 28,
     lineHeight: 34,
-    fontWeight: '700' as const,
+    fontWeight: '900' as const,
     letterSpacing: 0.36,
   },
   title2: {
     fontSize: 22,
     lineHeight: 28,
-    fontWeight: '700' as const,
+    fontWeight: '800' as const,
     letterSpacing: 0.35,
   },
   title3: {
     fontSize: 20,
     lineHeight: 25,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     letterSpacing: 0.38,
   },
   headline: {
     fontSize: 17,
     lineHeight: 22,
-    fontWeight: '600' as const,
+    fontWeight: '900' as const,
     letterSpacing: -0.41,
   },
   body: {
     fontSize: 17,
     lineHeight: 22,
-    fontWeight: '400' as const,
+    fontWeight: '600' as const,
     letterSpacing: -0.41,
   },
   callout: {
     fontSize: 16,
     lineHeight: 21,
-    fontWeight: '400' as const,
+    fontWeight: '700' as const,
     letterSpacing: -0.32,
   },
   subheadline: {
     fontSize: 15,
     lineHeight: 20,
-    fontWeight: '400' as const,
+    fontWeight: '500' as const,
     letterSpacing: -0.24,
   },
   footnote: {
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: '400' as const,
+    fontWeight: '500' as const,
     letterSpacing: -0.08,
   },
   caption1: {

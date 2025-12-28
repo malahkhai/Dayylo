@@ -26,7 +26,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   description,
   streak,
   isCompleted,
-  color = AppleColors.systemBlue,
+  color = AppleColors.primary,
   icon,
   onPress,
   onComplete,
@@ -155,8 +155,10 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: AppleColors.background.tertiary,
-    borderRadius: AppleBorderRadius.card,
-    padding: AppleSpacing.base,
+    borderRadius: 32,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
     ...AppleShadows.card,
   },
   content: {
@@ -198,12 +200,14 @@ const styles = StyleSheet.create({
     marginRight: AppleSpacing.sm,
   },
   title: {
-    ...AppleTypography.headline,
+    ...AppleTypography.body,
+    fontWeight: '900',
     color: AppleColors.label.primary,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   description: {
     ...AppleTypography.footnote,
+    fontWeight: '600',
     color: AppleColors.label.secondary,
   },
   streakBadge: {
@@ -219,8 +223,8 @@ const styles = StyleSheet.create({
   },
   streakText: {
     ...AppleTypography.caption1,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: '900',
+    color: '#000000',
   },
   progressContainer: {
     marginTop: AppleSpacing.sm,

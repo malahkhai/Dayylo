@@ -15,25 +15,26 @@ interface StarterHabit {
     type: 'build' | 'break';
     icon: keyof typeof LucideIcons;
     color: string;
+    difficulty: number;
 }
 
 const STARTER_HABITS: StarterHabit[] = [
-    { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue },
-    { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan },
-    { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple },
-    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemGreen },
-    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemMint },
-    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemRed },
-    { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink },
-    { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo },
-    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemOrange },
-    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemYellow },
+    { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue, difficulty: 7 },
+    { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan, difficulty: 2 },
+    { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple, difficulty: 4 },
+    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemGreen, difficulty: 3 },
+    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemMint, difficulty: 5 },
+    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemRed, difficulty: 9 },
+    { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink, difficulty: 6 },
+    { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo, difficulty: 8 },
+    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemOrange, difficulty: 5 },
+    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemYellow, difficulty: 5 },
 ];
 
 export default function OnboardingScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
-    const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
+    const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
     const [isPrivate, setIsPrivate] = useState(false);
 
@@ -44,12 +45,16 @@ export default function OnboardingScreen() {
         }
 
         setSelectedHabits(prev => {
-            const isRemoving = prev.includes(id);
-            const newState = isRemoving ? prev.filter(h => h !== id) : [...prev, id];
+            const isRemoving = !!prev[id];
+            const newState = { ...prev };
 
-            if (!isRemoving) {
+            if (isRemoving) {
+                delete newState[id];
+            } else {
                 const habit = STARTER_HABITS.find(h => h.id === id);
-                if (habit?.type === 'break' && !prev.some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
+                newState[id] = habit?.difficulty || 5;
+
+                if (habit?.type === 'break' && !Object.keys(prev).some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
                     setShowPrivacyPrompt(true);
                 }
             }
@@ -57,9 +62,16 @@ export default function OnboardingScreen() {
         });
     };
 
+    const updateDifficulty = (id: string, diff: number) => {
+        setSelectedHabits(prev => ({
+            ...prev,
+            [id]: diff
+        }));
+    };
+
     const handleStartTracking = async () => {
         // Add selected habits to context
-        for (const hid of selectedHabits) {
+        for (const hid of Object.keys(selectedHabits)) {
             const h = STARTER_HABITS.find(sh => sh.id === hid);
             if (h) {
                 await addHabit({
@@ -69,6 +81,7 @@ export default function OnboardingScreen() {
                     color: h.color,
                     isPrivate: h.type === 'break' ? isPrivate : false,
                     frequency: ['daily'],
+                    difficulty: selectedHabits[hid],
                 });
             }
         }
@@ -76,36 +89,70 @@ export default function OnboardingScreen() {
     };
 
     const renderHabitItem = (h: StarterHabit) => {
-        const isSelected = selectedHabits.includes(h.id);
+        const isSelected = !!selectedHabits[h.id];
+        const difficulty = selectedHabits[h.id] || h.difficulty;
         const isCustom = h.id.includes('custom');
         const Icon = LucideIcons[h.icon] as any;
 
-        return (
-            <Pressable
-                key={h.id}
-                onPress={() => toggleHabit(h.id)}
-                style={[
-                    styles.habitItem,
-                    { backgroundColor: h.color + '08', borderColor: h.color + '20' },
-                    isSelected && { backgroundColor: h.color + '20', borderColor: h.color }
-                ]}
-            >
-                <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
-                    <Icon size={24} color={h.color} />
-                </View>
-                <Text style={[styles.habitName, isSelected && { color: h.color }]} numberOfLines={1}>{h.name}</Text>
+        const getDifficultyColor = (d: number) => {
+            if (d < 4) return AppleColors.systemGreen;
+            if (d > 7) return AppleColors.systemRed;
+            return AppleColors.systemOrange;
+        };
 
-                {!isCustom && (
-                    <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
-                        {isSelected && <LucideIcons.Check size={14} color="white" />}
+        return (
+            <View key={h.id} style={styles.habitContainer}>
+                <Pressable
+                    onPress={() => toggleHabit(h.id)}
+                    style={[
+                        styles.habitItem,
+                        { backgroundColor: h.color + '08', borderColor: h.color + '20' },
+                        isSelected && { backgroundColor: h.color + '20', borderColor: h.color, height: isCustom ? 'auto' : 180 }
+                    ]}
+                >
+                    <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
+                        <Icon size={24} color={h.color} />
+                    </View>
+                    <Text style={[styles.habitName, isSelected && { color: h.color }]} numberOfLines={1}>{h.name}</Text>
+
+                    {isSelected && !isCustom && (
+                        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(difficulty) + '20', borderColor: getDifficultyColor(difficulty) }]}>
+                            <Text style={[styles.difficultyText, { color: getDifficultyColor(difficulty) }]}>Lv.{difficulty}</Text>
+                        </View>
+                    )}
+
+                    {!isCustom && (
+                        <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
+                            {isSelected && <LucideIcons.Check size={14} color="white" />}
+                        </View>
+                    )}
+                    {isCustom && (
+                        <View style={styles.plusIcon}>
+                            <LucideIcons.Plus size={14} color={AppleColors.label.tertiary} />
+                        </View>
+                    )}
+                </Pressable>
+
+                {isSelected && !isCustom && (
+                    <View style={styles.difficultySelector}>
+                        <Text style={styles.selectorLabel}>Set Difficulty</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.difficultyRange}>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(d => (
+                                <Pressable
+                                    key={d}
+                                    onPress={() => updateDifficulty(h.id, d)}
+                                    style={[
+                                        styles.difficultyNode,
+                                        difficulty === d && { backgroundColor: getDifficultyColor(d), borderColor: getDifficultyColor(d) }
+                                    ]}
+                                >
+                                    <Text style={[styles.difficultyNodeText, difficulty === d && { color: '#000000' }]}>{d}</Text>
+                                </Pressable>
+                            ))}
+                        </ScrollView>
                     </View>
                 )}
-                {isCustom && (
-                    <View style={styles.plusIcon}>
-                        <LucideIcons.Plus size={14} color={AppleColors.label.tertiary} />
-                    </View>
-                )}
-            </Pressable>
+            </View>
         );
     };
 
@@ -193,20 +240,28 @@ const styles = StyleSheet.create({
     },
     title: {
         ...AppleTypography.largeTitle,
+        fontWeight: '900',
         color: AppleColors.label.primary,
-        marginBottom: 8,
+        marginBottom: 12,
+        letterSpacing: -0.5,
     },
     subtitle: {
         ...AppleTypography.body,
+        fontWeight: '600',
         color: AppleColors.label.secondary,
+        lineHeight: 24,
     },
     scrollView: {
         flex: 1,
     },
     sectionTitle: {
         ...AppleTypography.headline,
-        color: AppleColors.label.primary,
-        marginBottom: 16,
+        fontWeight: '900',
+        color: AppleColors.label.tertiary,
+        marginBottom: 20,
+        textTransform: 'uppercase',
+        letterSpacing: 2,
+        fontSize: 11,
     },
     grid: {
         flexDirection: 'row',
@@ -214,8 +269,12 @@ const styles = StyleSheet.create({
         gap: 12,
         justifyContent: 'space-between',
     },
-    habitItem: {
+    habitContainer: {
         width: (width - AppleSpacing.base * 2 - 12) / 2,
+        marginBottom: 12,
+    },
+    habitItem: {
+        width: '100%',
         aspectRatio: 1,
         alignItems: 'center',
         justifyContent: 'center',
@@ -236,10 +295,57 @@ const styles = StyleSheet.create({
     },
     habitName: {
         ...AppleTypography.body,
-        fontWeight: '600',
+        fontWeight: '900',
         color: AppleColors.label.primary,
         textAlign: 'center',
         marginBottom: 8,
+    },
+    difficultyBadge: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
+        borderWidth: 1,
+        marginTop: 4,
+    },
+    difficultyText: {
+        ...AppleTypography.caption2,
+        fontWeight: '900',
+        textTransform: 'uppercase',
+    },
+    difficultySelector: {
+        marginTop: 12,
+        backgroundColor: AppleColors.background.tertiary,
+        borderRadius: 20,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+    },
+    selectorLabel: {
+        ...AppleTypography.caption2,
+        fontWeight: '900',
+        color: AppleColors.label.tertiary,
+        textTransform: 'uppercase',
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    difficultyRange: {
+        gap: 8,
+        paddingHorizontal: 4,
+    },
+    difficultyNode: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    difficultyNodeText: {
+        ...AppleTypography.caption1,
+        fontWeight: '900',
+        color: AppleColors.label.primary,
     },
     checkbox: {
         position: 'absolute',
@@ -267,7 +373,10 @@ const styles = StyleSheet.create({
     },
     skipText: {
         ...AppleTypography.callout,
-        color: AppleColors.label.secondary,
+        fontWeight: '800',
+        color: AppleColors.primary,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     modalOverlay: {
         flex: 1,
