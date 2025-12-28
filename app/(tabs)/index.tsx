@@ -18,7 +18,7 @@ import { usePrivacy } from '../../context/PrivacyContext';
 
 export default function HomeScreen() {
     const router = useRouter();
-    const { habits, toggleHabit } = useHabits();
+    const { habits, recordHabitResult } = useHabits();
     const { isUnlocked } = usePrivacy();
     const [refreshing, setRefreshing] = useState(false);
     const [scrollY] = useState(new Animated.Value(0));
@@ -126,13 +126,16 @@ export default function HomeScreen() {
                         {visibleHabits.map((habit) => (
                             <AppleHabitCard
                                 key={habit.id}
+                                id={habit.id}
                                 title={habit.name}
                                 description={habit.description}
                                 streak={habit.streak}
                                 isCompleted={habit.completedToday}
                                 color={habit.color}
+                                icon={habit.icon}
                                 onPress={() => console.log('Habit pressed:', habit.id)}
-                                onComplete={() => toggleHabit(habit.id)}
+                                onComplete={() => recordHabitResult(habit.id, true)}
+                                onFail={() => recordHabitResult(habit.id, false)}
                             />
                         ))}
                     </>

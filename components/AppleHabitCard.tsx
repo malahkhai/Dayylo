@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
-  Animated,
-  Pressable,
+  Dimensions,
 } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
 import * as LucideIcons from 'lucide-react-native';
-import { AppleColors, AppleTypography, AppleShadows, AppleBorderRadius, AppleSpacing } from '../constants/AppleTheme';
+import { AppleColors, AppleTypography, AppleShadows, AppleSpacing } from '../constants/AppleTheme';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
 
 interface HabitCardProps {
+  id: string;
   title: string;
   description?: string;
   streak: number;
@@ -19,6 +28,7 @@ interface HabitCardProps {
   icon?: string;
   onPress?: () => void;
   onComplete?: () => void;
+  onFail?: () => void;
 }
 
 export const AppleHabitCard: React.FC<HabitCardProps> = ({
@@ -30,121 +40,82 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   icon,
   onPress,
   onComplete,
+  onFail,
 }) => {
-  const [scaleAnim] = useState(new Animated.Value(1));
-  const [completionAnim] = useState(new Animated.Value(isCompleted ? 1 : 0));
+  const translateX = useSharedValue(0);
 
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.96,
-      useNativeDriver: true,
-      damping: 20,
-      stiffness: 300,
-    }).start();
-  };
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = event.translationX;
+    })
+    .onEnd((event) => {
+      if (translateX.value > SWIPE_THRESHOLD) {
+        translateX.value = withSpring(SCREEN_WIDTH);
+        runOnJS(onComplete!)();
+      } else if (translateX.value < -SWIPE_THRESHOLD) {
+        translateX.value = withSpring(-SCREEN_WIDTH);
+        runOnJS(onFail!)();
+      } else {
+        translateX.value = withSpring(0);
+      }
+    });
 
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      damping: 20,
-      stiffness: 300,
-    }).start();
-  };
-
-  const handleComplete = () => {
-    Animated.spring(completionAnim, {
-      toValue: isCompleted ? 0 : 1,
-      useNativeDriver: true,
-      damping: 15,
-      stiffness: 300,
-    }).start();
-    onComplete?.();
-  };
-
-  const renderIcon = () => {
-    if (!icon) return null;
-    const IconComponent = (LucideIcons as any)[icon];
-    if (IconComponent) {
-      return <IconComponent size={20} color={color} />;
-    }
-    return <Text style={styles.iconEmoji}>{icon}</Text>;
-  };
+  const rStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
 
   return (
-    <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        style={styles.card}
-      >
-        <View style={styles.content}>
-          <View style={styles.leftSection}>
-            <TouchableOpacity
-              onPress={handleComplete}
-              style={[
-                styles.completionButton,
-                { borderColor: color },
-                isCompleted && { backgroundColor: color },
-              ]}
-              activeOpacity={0.7}
-            >
-              <Animated.Text
-                style={[
-                  styles.checkmark,
-                  {
-                    opacity: completionAnim,
-                    transform: [{ scale: completionAnim }],
-                  },
-                ]}
-              >
-                ✓
-              </Animated.Text>
-            </TouchableOpacity>
+    <View style={styles.container}>
+      {/* Background Actions */}
+      <View style={styles.backgroundContainer}>
+        <View style={[styles.actionSide, styles.doneSide]}>
+          <LucideIcons.CheckCircle2 size={24} color="white" />
+          <Text style={styles.actionText}>DONE</Text>
+        </View>
+        <View style={[styles.actionSide, styles.missedSide]}>
+          <Text style={styles.actionText}>MISSED</Text>
+          <LucideIcons.XCircle size={24} color="white" />
+        </View>
+      </View>
 
-            <View style={[styles.iconContainer, { backgroundColor: color + '15' }]}>
-              {renderIcon()}
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.card, rStyle]}>
+          <View style={styles.content}>
+            <View style={[styles.iconContainer, { backgroundColor: isCompleted ? color : color + '15' }]}>
+              {icon ? (
+                React.createElement((LucideIcons as any)[icon], { size: 20, color: isCompleted ? '#FFF' : color })
+              ) : (
+                <LucideIcons.Activity size={20} color={isCompleted ? '#FFF' : color} />
+              )}
             </View>
-          </View>
 
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>
-              {title}
-            </Text>
-            {description && (
-              <Text style={styles.description} numberOfLines={2}>
-                {description}
+            <View style={styles.info}>
+              <Text style={styles.title} numberOfLines={1}>
+                {title}
               </Text>
+              {description && (
+                <Text style={styles.description} numberOfLines={2}>
+                  {description}
+                </Text>
+              )}
+            </View>
+
+            {streak > 0 && (
+              <View style={[styles.streakBadge, { backgroundColor: color }]}>
+                <Text style={styles.streakEmoji}>🔥</Text>
+                <Text style={styles.streakText}>{streak}</Text>
+              </View>
             )}
           </View>
 
-          {streak > 0 && (
-            <View style={[styles.streakBadge, { backgroundColor: color }]}>
-              <Text style={styles.streakEmoji}>🔥</Text>
-              <Text style={styles.streakText}>{streak}</Text>
+          <View style={styles.progressContainer}>
+            <View style={[styles.progressBar, { backgroundColor: 'rgba(255,255,255,0.05)' }]}>
+              <View style={[styles.progressFill, { backgroundColor: color, width: isCompleted ? '100%' : '0%' }]} />
             </View>
-          )}
-        </View>
-
-        <View style={styles.progressContainer}>
-          <View style={[styles.progressBar, { backgroundColor: AppleColors.fill.tertiary }]}>
-            <Animated.View
-              style={[
-                styles.progressFill,
-                {
-                  backgroundColor: color,
-                  width: completionAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0%', '100%'],
-                  }),
-                },
-              ]}
-            />
           </View>
-        </View>
-      </Pressable>
-    </Animated.View>
+        </Animated.View>
+      </GestureDetector>
+    </View>
   );
 };
 
@@ -152,6 +123,38 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: AppleSpacing.base,
     marginVertical: AppleSpacing.sm,
+    height: 110,
+    justifyContent: 'center',
+  },
+  backgroundContainer: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 32,
+    overflow: 'hidden',
+  },
+  actionSide: {
+    flex: 1,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    gap: 12,
+  },
+  doneSide: {
+    backgroundColor: AppleColors.systemGreen,
+    justifyContent: 'flex-start',
+  },
+  missedSide: {
+    backgroundColor: AppleColors.systemRed,
+    justifyContent: 'flex-end',
+  },
+  actionText: {
+    ...AppleTypography.caption1,
+    fontWeight: '900',
+    color: 'white',
+    letterSpacing: 1,
   },
   card: {
     backgroundColor: AppleColors.background.tertiary,
@@ -160,40 +163,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
     ...AppleShadows.card,
+    height: '100%',
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: AppleSpacing.md,
-  },
-  leftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: AppleSpacing.md,
-  },
-  completionButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: AppleSpacing.sm,
+    flex: 1,
   },
   iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 16,
   },
   iconEmoji: {
-    fontSize: 18,
-  },
-  checkmark: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 22,
   },
   info: {
     flex: 1,
@@ -213,9 +199,9 @@ const styles = StyleSheet.create({
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: AppleSpacing.sm,
-    paddingVertical: 4,
-    borderRadius: AppleBorderRadius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
   },
   streakEmoji: {
     fontSize: 14,
@@ -227,7 +213,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   progressContainer: {
-    marginTop: AppleSpacing.sm,
+    marginTop: 12,
   },
   progressBar: {
     height: 4,

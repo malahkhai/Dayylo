@@ -9,6 +9,7 @@ interface HabitContextType {
     toggleHabit: (id: string) => Promise<void>;
     updateHabitValue: (id: string, delta: number) => Promise<void>;
     deleteHabit: (id: string) => Promise<void>;
+    recordHabitResult: (id: string, success: boolean) => Promise<void>;
     isPremium: boolean;
     setPremium: (val: boolean) => void;
     loading: boolean;
@@ -116,8 +117,32 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await saveHabits(habits.filter(h => h.id !== id));
     };
 
+    const recordHabitResult = async (id: string, success: boolean) => {
+        const newHabits = habits.map(h => {
+            if (h.id === id) {
+                if (success) {
+                    const newStreak = h.streak + 1;
+                    return {
+                        ...h,
+                        completedToday: true,
+                        streak: newStreak,
+                        longestStreak: Math.max(h.longestStreak, newStreak)
+                    };
+                } else {
+                    return {
+                        ...h,
+                        completedToday: false,
+                        streak: 0
+                    };
+                }
+            }
+            return h;
+        });
+        await saveHabits(newHabits);
+    };
+
     return (
-        <HabitContext.Provider value={{ habits, addHabit, toggleHabit, updateHabitValue, deleteHabit, isPremium, setPremium, loading }}>
+        <HabitContext.Provider value={{ habits, addHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult, isPremium, setPremium, loading }}>
             {children}
         </HabitContext.Provider>
     );
