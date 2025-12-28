@@ -1,148 +1,291 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
+import { AppleButton } from '../../components/AppleButton';
+import { useHabits } from '../../context/HabitContext';
 
 const { width } = Dimensions.get('window');
 
-type Step = 'grow' | 'define';
+interface StarterHabit {
+    id: string;
+    name: string;
+    type: 'build' | 'break';
+    icon: keyof typeof LucideIcons;
+    color: string;
+}
+
+const STARTER_HABITS: StarterHabit[] = [
+    { id: 'h1', name: 'Go to the gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue },
+    { id: 'h2', name: 'Drink water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan },
+    { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple },
+    { id: 'h4', name: 'Read 10 minutes', type: 'build', icon: 'BookOpen', color: AppleColors.systemOrange },
+    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemGray },
+    { id: 'h6', name: 'Social Media', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink },
+    { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo },
+    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemRed },
+];
 
 export default function OnboardingScreen() {
     const router = useRouter();
-    const [step, setStep] = useState<Step>('grow');
-    const [selectedType, setSelectedType] = useState<'build' | 'break' | null>(null);
+    const { addHabit } = useHabits();
+    const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
+    const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
+    const [isPrivate, setIsPrivate] = useState(false);
 
-    const handleContinue = () => {
-        if (step === 'grow') setStep('define');
-        else router.replace('/(tabs)');
+    const toggleHabit = (id: string) => {
+        setSelectedHabits(prev => {
+            const isRemoving = prev.includes(id);
+            const newState = isRemoving ? prev.filter(h => h !== id) : [...prev, id];
+
+            // Show privacy prompt if a "break" habit is selected for the first time
+            if (!isRemoving) {
+                const habit = STARTER_HABITS.find(h => h.id === id);
+                if (habit?.type === 'break' && !prev.some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
+                    setShowPrivacyPrompt(true);
+                }
+            }
+            return newState;
+        });
     };
 
-    if (step === 'grow') {
+    const handleStartTracking = async () => {
+        // Add selected habits to context
+        for (const hid of selectedHabits) {
+            const h = STARTER_HABITS.find(sh => sh.id === hid);
+            if (h) {
+                await addHabit({
+                    name: h.name,
+                    type: h.type,
+                    icon: h.icon,
+                    color: h.color,
+                    isPrivate: h.type === 'break' ? isPrivate : false,
+                    frequency: ['daily'],
+                });
+            }
+        }
+        router.replace('/(tabs)');
+    };
+
+    const renderHabitItem = (h: StarterHabit) => {
+        const isSelected = selectedHabits.includes(h.id);
+        const Icon = LucideIcons[h.icon] as any;
+
         return (
-            <SafeAreaView className="flex-1 bg-black">
-                <View className="flex-1 px-8 pt-12 pb-12">
-                    {/* Progress Bar */}
-                    <View className="flex-row gap-2 mb-12">
-                        <View className="flex-1 h-1 bg-primary rounded-full" />
-                        <View className="flex-1 h-1 bg-white/10 rounded-full" />
-                        <View className="flex-1 h-1 bg-white/10 rounded-full" />
-                    </View>
-
-                    <Text className="text-4xl font-black text-white leading-tight mb-4">How do you want{"\n"}to grow?</Text>
-                    <Text className="text-white/40 font-bold text-lg mb-12">Choose the path that fits your goals. You can always add more later.</Text>
-
-                    <View className="gap-6 flex-1">
-                        <Pressable
-                            onPress={() => setSelectedType('build')}
-                            className={`p-6 rounded-[32px] overflow-hidden ${selectedType === 'build' ? 'bg-primary/20 border-2 border-primary' : 'bg-surface-dark border-2 border-transparent'}`}
-                        >
-                            <View className="flex-row justify-between items-center mb-4">
-                                <Text className="text-xl font-black text-white">Build Habits</Text>
-                                <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${selectedType === 'build' ? 'border-primary bg-primary' : 'border-white/20'}`}>
-                                    {selectedType === 'build' && <LucideIcons.Check size={14} color="black" />}
-                                </View>
-                            </View>
-                            <View className="h-40 bg-white/10 rounded-2xl overflow-hidden mb-4">
-                                <Image
-                                    source={{ uri: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=400&auto=format&fit=crop' }}
-                                    className="w-full h-full opacity-60"
-                                />
-                            </View>
-                            <Pressable
-                                onPress={() => { setSelectedType('build'); handleContinue(); }}
-                                className="bg-primary py-4 rounded-2xl items-center"
-                            >
-                                <Text className="text-black font-black uppercase text-xs tracking-widest">Start Building</Text>
-                            </Pressable>
-                        </Pressable>
-
-                        <Pressable
-                            onPress={() => setSelectedType('break')}
-                            className={`p-6 rounded-[32px] overflow-hidden ${selectedType === 'break' ? 'bg-accent-orange/20 border-2 border-accent-orange' : 'bg-surface-dark border-2 border-transparent'}`}
-                        >
-                            <View className="flex-row justify-between items-center mb-4">
-                                <Text className="text-xl font-black text-white">Break Habits</Text>
-                                <View className={`w-6 h-6 rounded-full border-2 items-center justify-center ${selectedType === 'break' ? 'border-accent-orange bg-accent-orange' : 'border-white/20'}`}>
-                                    {selectedType === 'break' && <LucideIcons.Check size={14} color="black" />}
-                                </View>
-                            </View>
-                            <View className="h-40 bg-white/10 rounded-2xl overflow-hidden mb-4">
-                                <Image
-                                    source={{ uri: 'https://images.unsplash.com/photo-1493723843671-1d655e7d98f0?q=80&w=400&auto=format&fit=crop' }}
-                                    className="w-full h-full opacity-60"
-                                />
-                            </View>
-                            <Pressable
-                                onPress={() => { setSelectedType('break'); handleContinue(); }}
-                                className="bg-accent-orange py-4 rounded-2xl items-center"
-                            >
-                                <Text className="text-black font-black uppercase text-xs tracking-widest">Start Breaking</Text>
-                            </Pressable>
-                        </Pressable>
-                    </View>
+            <Pressable
+                key={h.id}
+                onPress={() => toggleHabit(h.id)}
+                style={[
+                    styles.habitItem,
+                    isSelected && { backgroundColor: h.color + '15', borderColor: h.color }
+                ]}
+            >
+                <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
+                    <Icon size={20} color={h.color} />
                 </View>
-            </SafeAreaView>
+                <Text style={[styles.habitName, isSelected && { color: h.color }]}>{h.name}</Text>
+                <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
+                    {isSelected && <LucideIcons.Check size={14} color="white" />}
+                </View>
+            </Pressable>
         );
-    }
+    };
 
     return (
-        <SafeAreaView className="flex-1 bg-black">
-            <View className="flex-1 px-8 pt-12 pb-12">
-                <Pressable onPress={() => setStep('grow')} className="mb-6">
-                    <LucideIcons.ChevronLeft size={24} color="white" />
-                </Pressable>
-
-                {/* Progress Bar */}
-                <View className="flex-row gap-2 mb-12">
-                    <View className="flex-1 h-1 bg-primary rounded-full" />
-                    <View className="flex-1 h-1 bg-primary rounded-full" />
-                    <View className="flex-1 h-1 bg-white/10 rounded-full" />
+        <SafeAreaView style={styles.container}>
+            <View style={styles.content}>
+                <View style={styles.header}>
+                    <Text style={styles.title}>Define your path</Text>
+                    <Text style={styles.subtitle}>Select the habits you want to track. You can always change this later.</Text>
                 </View>
 
-                <Text className="text-4xl font-black text-white leading-tight mb-4">Define your path</Text>
-                <Text className="text-white/40 font-bold text-lg mb-8">Select the type of habits you want to track. You can choose both.</Text>
-
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                    <View className="bg-white/5 p-6 rounded-[32px] mb-6">
-                        <View className="flex-row items-center mb-4">
-                            <LucideIcons.TrendingUp size={18} color="#30e8ab" />
-                            <Text className="text-white font-black text-lg ml-2">Build Habits</Text>
-                        </View>
-                        <View className="gap-3">
-                            {['Drink Water', 'Meditate', 'Run'].map(h => (
-                                <View key={h} className="bg-white/5 p-4 rounded-2xl flex-row justify-between items-center">
-                                    <Text className="text-white/80 font-bold">{h}</Text>
-                                    <LucideIcons.CheckCircle2 size={18} color="#30e8ab" fill="#30e8ab" opacity={0.2} />
-                                </View>
-                            ))}
-                        </View>
+                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+                    <Text style={styles.sectionTitle}>Build Habits</Text>
+                    <View style={styles.grid}>
+                        {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
                     </View>
 
-                    <View className="bg-white/5 p-6 rounded-[32px] mb-8">
-                        <View className="flex-row items-center mb-4">
-                            <LucideIcons.Shield size={18} color="#f97316" />
-                            <Text className="text-white font-black text-lg ml-2">Break Habits</Text>
-                        </View>
-                        <View className="gap-3">
-                            {['No Sugar', 'Limit Social', 'Quit Smoking'].map(h => (
-                                <View key={h} className="bg-white/5 p-4 rounded-2xl flex-row justify-between items-center">
-                                    <Text className="text-white/80 font-bold">{h}</Text>
-                                    <LucideIcons.Circle size={18} color="white" opacity={0.1} />
-                                </View>
-                            ))}
-                        </View>
+                    <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Break Habits</Text>
+                    <View style={styles.grid}>
+                        {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
                     </View>
                 </ScrollView>
 
-                <Pressable
-                    onPress={handleContinue}
-                    className="bg-primary py-5 rounded-[24px] items-center flex-row justify-center mt-6"
-                >
-                    <Text className="text-black text-lg font-black uppercase tracking-widest mr-2">Continue</Text>
-                    <LucideIcons.ArrowRight size={18} color="black" />
-                </Pressable>
+                <View style={styles.footer}>
+                    <AppleButton
+                        title="Start Tracking"
+                        onPress={handleStartTracking}
+                        size="large"
+                        fullWidth
+                    />
+                    <Pressable onPress={() => router.replace('/(tabs)')} style={styles.skipButton}>
+                        <Text style={styles.skipText}>Skip for now</Text>
+                    </Pressable>
+                </View>
             </View>
+
+            {/* Privacy Prompt Modal */}
+            <Modal
+                visible={showPrivacyPrompt}
+                transparent
+                animationType="fade"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalIconBg}>
+                            <LucideIcons.Lock size={32} color={AppleColors.systemBlue} />
+                        </View>
+                        <Text style={styles.modalTitle}>Keep them private?</Text>
+                        <Text style={styles.modalText}>
+                            Would you like to protect your "Break Habits" with a PIN? They will be hidden from the main view unless unlocked.
+                        </Text>
+                        <View style={styles.modalActions}>
+                            <AppleButton
+                                title="Protect Habits"
+                                onPress={() => { setIsPrivate(true); setShowPrivacyPrompt(false); }}
+                                fullWidth
+                                style={{ marginBottom: 12 }}
+                            />
+                            <Pressable
+                                onPress={() => { setIsPrivate(false); setShowPrivacyPrompt(false); }}
+                                style={styles.modalCancel}
+                            >
+                                <Text style={styles.modalCancelText}>No, keep them visible</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: AppleColors.background.primary,
+    },
+    content: {
+        flex: 1,
+        paddingHorizontal: AppleSpacing.base,
+    },
+    header: {
+        marginTop: 40,
+        marginBottom: 32,
+    },
+    title: {
+        ...AppleTypography.largeTitle,
+        color: AppleColors.label.primary,
+        marginBottom: 8,
+    },
+    subtitle: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    sectionTitle: {
+        ...AppleTypography.headline,
+        color: AppleColors.label.primary,
+        marginBottom: 16,
+    },
+    grid: {
+        gap: 12,
+    },
+    habitItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: AppleColors.background.tertiary,
+        padding: 16,
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: 'transparent',
+        ...AppleShadows.small,
+    },
+    habitIconBg: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
+    },
+    habitName: {
+        ...AppleTypography.body,
+        fontWeight: '600',
+        color: AppleColors.label.primary,
+        flex: 1,
+    },
+    checkbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: AppleColors.separator.opaque,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    footer: {
+        paddingVertical: 24,
+    },
+    skipButton: {
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    skipText: {
+        ...AppleTypography.callout,
+        color: AppleColors.label.tertiary,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 40,
+    },
+    modalContent: {
+        backgroundColor: AppleColors.background.tertiary,
+        borderRadius: 32,
+        padding: 32,
+        alignItems: 'center',
+        width: '100%',
+        ...AppleShadows.card,
+    },
+    modalIconBg: {
+        width: 64,
+        height: 64,
+        borderRadius: 20,
+        backgroundColor: AppleColors.systemBlue + '15',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 24,
+    },
+    modalTitle: {
+        ...AppleTypography.title2,
+        color: AppleColors.label.primary,
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    modalText: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+        textAlign: 'center',
+        marginBottom: 32,
+        lineHeight: 22,
+    },
+    modalActions: {
+        width: '100%',
+    },
+    modalCancel: {
+        alignItems: 'center',
+        paddingVertical: 12,
+    },
+    modalCancelText: {
+        ...AppleTypography.callout,
+        color: AppleColors.label.tertiary,
+        fontWeight: '600',
+    }
+});

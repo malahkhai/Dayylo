@@ -1,4 +1,3 @@
-// app/(tabs)/index.tsx
 import React, { useState } from 'react';
 import {
     View,
@@ -10,49 +9,32 @@ import {
     RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton, AppleFAB } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing } from '../../constants/AppleTheme';
+import { useHabits } from '../../context/HabitContext';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 export default function HomeScreen() {
+    const router = useRouter();
+    const { habits, toggleHabit } = useHabits();
+    const { isUnlocked } = usePrivacy();
     const [refreshing, setRefreshing] = useState(false);
     const [scrollY] = useState(new Animated.Value(0));
 
-    // Sample habits data
-    const habits = [
-        {
-            id: '1',
-            title: 'Morning Meditation',
-            description: 'Start the day with 10 minutes of mindfulness',
-            streak: 15,
-            isCompleted: true,
-            color: AppleColors.systemPurple,
-        },
-        {
-            id: '2',
-            title: 'Drink Water',
-            description: '8 glasses throughout the day',
-            streak: 7,
-            isCompleted: false,
-            color: AppleColors.systemCyan,
-        },
-        {
-            id: '3',
-            title: 'Exercise',
-            description: '30 minutes of physical activity',
-            streak: 12,
-            isCompleted: true,
-            color: AppleColors.systemOrange,
-        },
-        {
-            id: '4',
-            title: 'Read Before Bed',
-            description: 'Read for at least 20 minutes',
-            streak: 3,
-            isCompleted: false,
-            color: AppleColors.systemGreen,
-        },
-    ];
+    // Filter habits based on privacy
+    const visibleHabits = habits.filter(h => !h.isPrivate || isUnlocked);
+
+    // Stats calculations
+    const activeHabits = visibleHabits.length;
+    const completedHabits = visibleHabits.filter(h => h.completedToday).length;
+    const remainingHabits = activeHabits - completedHabits;
+
+    // Bad habits (break) specialized stat
+    const breakHabits = visibleHabits.filter(h => h.type === 'break');
+    const breakTotal = breakHabits.length;
+    const breakCompleted = breakHabits.filter(h => h.completedToday).length;
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -92,8 +74,8 @@ export default function HomeScreen() {
                         <Text style={styles.headerTitle}>Today's Habits</Text>
                     </View>
                     <View style={styles.streakContainer}>
-                        <Text style={styles.streakNumber}>15</Text>
-                        <Text style={styles.streakLabel}>Day Streak 🔥</Text>
+                        <Text style={styles.streakNumber}>{habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0}</Text>
+                        <Text style={styles.streakLabel}>Max Streak 🔥</Text>
                     </View>
                 </View>
             </Animated.View>
@@ -101,20 +83,28 @@ export default function HomeScreen() {
             {/* Stats Card */}
             <View style={styles.statsCard}>
                 <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>4</Text>
-                    <Text style={styles.statLabel}>Active Habits</Text>
+                    <Text style={styles.statNumber}>{activeHabits}</Text>
+                    <Text style={styles.statLabel}>Active</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                    <Text style={[styles.statNumber, { color: AppleColors.systemGreen }]}>2</Text>
-                    <Text style={styles.statLabel}>Completed</Text>
+                    <Text style={[styles.statNumber, { color: AppleColors.systemGreen }]}>{completedHabits}</Text>
+                    <Text style={styles.statLabel}>Done</Text>
                 </View>
                 <View style={styles.statDivider} />
                 <View style={styles.statItem}>
-                    <Text style={[styles.statNumber, { color: AppleColors.systemOrange }]}>2</Text>
-                    <Text style={styles.statLabel}>Remaining</Text>
+                    <Text style={[styles.statNumber, { color: AppleColors.systemOrange }]}>
+                        {breakTotal > 0 ? `${breakCompleted}/${breakTotal}` : remainingHabits}
+                    </Text>
+                    <Text style={styles.statLabel}>{breakTotal > 0 ? 'Bad Habits' : 'Remaining'}</Text>
                 </View>
             </View>
+
+            {!isUnlocked && habits.some(h => h.isPrivate) && (
+                <View style={styles.privacyBanner}>
+                    <Text style={styles.privacyText}>Some habits are hidden. Unlock to view.</Text>
+                </View>
+            )}
 
             {/* Scrollable Habit List */}
             <Animated.ScrollView
@@ -130,28 +120,29 @@ export default function HomeScreen() {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <Text style={styles.sectionTitle}>Your Habits</Text>
-
-                {habits.map((habit) => (
-                    <AppleHabitCard
-                        key={habit.id}
-                        title={habit.title}
-                        description={habit.description}
-                        streak={habit.streak}
-                        isCompleted={habit.isCompleted}
-                        color={habit.color}
-                        onPress={() => console.log('Habit pressed:', habit.id)}
-                        onComplete={() => console.log('Complete toggled:', habit.id)}
-                    />
-                ))}
-
-                {/* Empty State Hint */}
-                <View style={styles.hintCard}>
-                    <Text style={styles.hintEmoji}>💡</Text>
-                    <Text style={styles.hintText}>
-                        Tap the + button to add a new habit
-                    </Text>
-                </View>
+                {visibleHabits.length > 0 ? (
+                    <>
+                        <Text style={styles.sectionTitle}>Your Habits</Text>
+                        {visibleHabits.map((habit) => (
+                            <AppleHabitCard
+                                key={habit.id}
+                                title={habit.name}
+                                description={habit.description}
+                                streak={habit.streak}
+                                isCompleted={habit.completedToday}
+                                color={habit.color}
+                                onPress={() => console.log('Habit pressed:', habit.id)}
+                                onComplete={() => toggleHabit(habit.id)}
+                            />
+                        ))}
+                    </>
+                ) : (
+                    <View style={styles.emptyState}>
+                        <Text style={styles.emptyEmoji}>🌱</Text>
+                        <Text style={styles.emptyTitle}>Start your journey</Text>
+                        <Text style={styles.emptyText}>Tap the + button to add your first habit</Text>
+                    </View>
+                )}
 
                 {/* Bottom Spacing */}
                 <View style={{ height: 100 }} />
@@ -159,7 +150,7 @@ export default function HomeScreen() {
 
             {/* Floating Action Button */}
             <AppleFAB
-                onPress={() => console.log('Add habit')}
+                onPress={() => router.push('/add-habit')}
                 icon="+"
                 color={AppleColors.systemBlue}
             />
@@ -249,22 +240,40 @@ const styles = StyleSheet.create({
         paddingHorizontal: AppleSpacing.base,
         marginBottom: AppleSpacing.md,
     },
-    hintCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: AppleColors.fill.tertiary,
+    privacyBanner: {
+        backgroundColor: AppleColors.systemBlue + '10',
+        paddingVertical: 8,
+        paddingHorizontal: AppleSpacing.base,
         marginHorizontal: AppleSpacing.base,
-        marginTop: AppleSpacing.lg,
-        padding: AppleSpacing.base,
         borderRadius: 12,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: AppleColors.systemBlue + '20',
     },
-    hintEmoji: {
-        fontSize: 24,
-        marginRight: AppleSpacing.md,
+    privacyText: {
+        ...AppleTypography.footnote,
+        color: AppleColors.systemBlue,
+        textAlign: 'center',
     },
-    hintText: {
-        ...AppleTypography.callout,
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 60,
+        paddingHorizontal: 40,
+    },
+    emptyEmoji: {
+        fontSize: 64,
+        marginBottom: 24,
+    },
+    emptyTitle: {
+        ...AppleTypography.title2,
+        color: AppleColors.label.primary,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    emptyText: {
+        ...AppleTypography.body,
         color: AppleColors.label.secondary,
-        flex: 1,
+        textAlign: 'center',
     },
 });

@@ -1,58 +1,109 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, Dimensions, TextInput } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
+import { AppleButton } from '../../components/AppleButton';
 
 const { width } = Dimensions.get('window');
 
-type AuthMode = 'splash' | 'signup' | 'signin';
+type AuthMode = 'welcome' | 'focus' | 'signup' | 'signin';
 
 export default function AuthScreen() {
     const router = useRouter();
-    const [mode, setMode] = useState<AuthMode>('splash');
+    const [mode, setMode] = useState<AuthMode>('welcome');
+    const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
 
-    const handleGetStarted = () => setMode('signup');
+    const handleContinue = () => setMode('focus');
+    const handleNext = () => setMode('signup');
     const handleLoginLink = () => setMode('signin');
-    const handleBackToSplash = () => setMode('splash');
+    const handleBack = () => {
+        if (mode === 'focus') setMode('welcome');
+        else if (mode === 'signup' || mode === 'signin') setMode('focus');
+    };
 
     const handleAuthAction = () => {
         // Mock auth
         router.replace('/(auth)/onboarding');
     };
 
-    if (mode === 'splash') {
+    const toggleFocus = (type: 'build' | 'break') => {
+        setSelectedFocus(prev => ({ ...prev, [type]: !prev[type] }));
+    };
+
+    if (mode === 'welcome') {
         return (
-            <SafeAreaView className="flex-1 bg-black">
-                <View className="flex-1 px-8 justify-between pb-12">
-                    <View className="flex-1 items-center justify-center">
-                        <View className="w-20 h-20 bg-focus-dark rounded-[24px] items-center justify-center mb-6 shadow-2xl">
-                            <LucideIcons.Flame size={40} color="#f97316" fill="#f97316" />
+            <SafeAreaView style={styles.container}>
+                <View style={styles.content}>
+                    <View style={styles.centerContent}>
+                        <View style={styles.logoContainer}>
+                            <LucideIcons.Flame size={48} color={AppleColors.systemOrange} fill={AppleColors.systemOrange} />
                         </View>
-                        <Text className="text-4xl font-black text-white tracking-tighter mb-2">Dayylo</Text>
-                        <Text className="text-white/60 font-bold text-center text-[15px] px-4 leading-6">
-                            Your daily path to better habits.{"\n"}Stay consistent, stay focused.
-                        </Text>
+                        <Text style={styles.headline}>Welcome to Dayylo</Text>
+                        <Text style={styles.subtext}>Build what matters. Break what holds you back.</Text>
+                    </View>
+                    <AppleButton
+                        title="Continue"
+                        onPress={handleContinue}
+                        size="large"
+                        fullWidth
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    if (mode === 'focus') {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={[styles.content, { paddingBottom: 20 }]}>
+                    <Pressable onPress={handleBack} style={styles.backButton}>
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
+                    </Pressable>
+
+                    <View style={{ flex: 1, paddingTop: 40 }}>
+                        <Text style={styles.focusHeadline}>This is where the magic happens.</Text>
+                        <Text style={styles.focusSubtext}>Choose your focus areas. You can select both.</Text>
+
+                        <View style={styles.focusGrid}>
+                            <Pressable
+                                onPress={() => toggleFocus('build')}
+                                style={[
+                                    styles.focusCard,
+                                    selectedFocus.build && { borderColor: AppleColors.systemGreen, borderWidth: 2, backgroundColor: AppleColors.systemGreen + '10' }
+                                ]}
+                            >
+                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemGreen + '20' }]}>
+                                    <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
+                                </View>
+                                <Text style={styles.focusCardTitle}>Build Habits</Text>
+                                <Text style={styles.focusCardDesc}>Start positive routines like Gym, Meditation, Reading.</Text>
+                            </Pressable>
+
+                            <Pressable
+                                onPress={() => toggleFocus('break')}
+                                style={[
+                                    styles.focusCard,
+                                    selectedFocus.break && { borderColor: AppleColors.systemOrange, borderWidth: 2, backgroundColor: AppleColors.systemOrange + '10' }
+                                ]}
+                            >
+                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemOrange + '20' }]}>
+                                    <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
+                                </View>
+                                <Text style={styles.focusCardTitle}>Break Habits</Text>
+                                <Text style={styles.focusCardDesc}>Reduce behaviors you want to stop like Smoking, Junk Food.</Text>
+                            </Pressable>
+                        </View>
                     </View>
 
-                    <View>
-                        <Pressable
-                            onPress={handleGetStarted}
-                            className="bg-accent-blue py-5 rounded-[20px] items-center flex-row justify-center shadow-lg active:opacity-90"
-                        >
-                            <Text className="text-white text-lg font-black uppercase tracking-widest mr-2">Get Started</Text>
-                            <LucideIcons.ArrowRight size={18} color="white" />
-                        </Pressable>
-
-                        <Pressable
-                            onPress={handleLoginLink}
-                            className="py-6 items-center"
-                        >
-                            <Text className="text-white/40 font-bold text-xs uppercase tracking-[1.5px]">
-                                I already have an account <Text className="text-accent-blue font-black underline">Log In</Text>
-                            </Text>
-                        </Pressable>
-                    </View>
+                    <AppleButton
+                        title="Next"
+                        onPress={handleNext}
+                        size="large"
+                        fullWidth
+                        disabled={!selectedFocus.build && !selectedFocus.break}
+                    />
                 </View>
             </SafeAreaView>
         );
@@ -60,140 +111,244 @@ export default function AuthScreen() {
 
     if (mode === 'signup') {
         return (
-            <SafeAreaView className="flex-1 bg-white">
-                <View className="flex-1 px-8 pb-12">
-                    <Pressable onPress={handleBackToSplash} className="pt-6">
+            <SafeAreaView style={styles.containerWhite}>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <Pressable onPress={handleBack} style={styles.backButton}>
                         <LucideIcons.ChevronLeft size={24} color="black" />
                     </Pressable>
 
-                    <View className="items-center mt-12 mb-12">
-                        <View className="w-12 h-12 bg-accent-blue/10 rounded-xl items-center justify-center mb-6">
-                            <LucideIcons.CheckCircle2 size={24} color="#3b82f6" />
-                        </View>
-                        <Text className="text-3xl font-black text-slate-900 tracking-tight">Create Account</Text>
-                        <Text className="text-slate-400 font-bold mt-2">Start building better habits today.</Text>
+                    <View style={styles.authHeader}>
+                        <Text style={styles.authTitle}>Create Account</Text>
+                        <Text style={styles.authSub}>Start building better habits today.</Text>
                     </View>
 
-                    <View className="gap-4">
-                        <Pressable className="flex-row items-center justify-center py-4 bg-black rounded-2xl">
-                            <LucideIcons.Apple size={20} color="white" />
-                            <Text className="text-white font-black ml-2">Continue with Apple</Text>
-                        </Pressable>
-                        <Pressable className="flex-row items-center justify-center py-4 bg-white border border-slate-200 rounded-2xl">
-                            <LucideIcons.Chrome size={20} color="black" />
-                            <Text className="text-slate-900 font-black ml-2">Continue with Google</Text>
-                        </Pressable>
+                    <View style={styles.authForm}>
+                        <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color="black" />} fullWidth style={{ marginBottom: 12 }} />
+                        <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color="black" />} fullWidth />
 
-                        <View className="flex-row items-center my-4">
-                            <View className="flex-1 h-[1px] bg-slate-100" />
-                            <Text className="mx-4 text-slate-300 text-[10px] font-black uppercase">Or sign up with email</Text>
-                            <View className="flex-1 h-[1px] bg-slate-100" />
+                        <View style={styles.divider}>
+                            <View style={styles.line} />
+                            <Text style={styles.dividerText}>OR SIGN UP WITH EMAIL</Text>
+                            <View style={styles.line} />
                         </View>
 
-                        <TextInput
-                            placeholder="Email address"
-                            className="bg-slate-50 p-4 rounded-xl text-slate-900 font-bold border border-slate-100"
-                        />
-                        <TextInput
-                            placeholder="Password"
-                            secureTextEntry
-                            className="bg-slate-50 p-4 rounded-xl text-slate-900 font-bold border border-slate-100"
-                        />
-                        <TextInput
-                            placeholder="Confirm Password"
-                            secureTextEntry
-                            className="bg-slate-50 p-4 rounded-xl text-slate-900 font-bold border border-slate-100"
-                        />
+                        <TextInput placeholder="Email address" style={styles.input} placeholderTextColor="#999" />
+                        <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
+                        <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
 
-                        <Pressable
-                            onPress={handleAuthAction}
-                            className="bg-accent-blue py-4 rounded-2xl items-center mt-4 shadow-blue-500/20 shadow-lg"
-                        >
-                            <Text className="text-white font-black">Sign Up</Text>
-                        </Pressable>
+                        <AppleButton title="Sign Up" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 12 }} />
 
-                        <Text className="text-[11px] text-slate-400 text-center mt-4">
-                            By signing up, you agree to our <Text className="underline font-bold">Terms</Text> and <Text className="underline font-bold">Privacy Policy</Text>.
+                        <Text style={styles.legalText}>
+                            By signing up, you agree to our <Text style={styles.link}>Terms</Text> and <Text style={styles.link}>Privacy Policy</Text>.
                         </Text>
                     </View>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         );
     }
 
     // Sign In Mode
     return (
-        <SafeAreaView className="flex-1 bg-white">
-            <View className="flex-1 px-8 pb-12">
-                <Pressable onPress={handleBackToSplash} className="pt-6">
+        <SafeAreaView style={styles.containerWhite}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Pressable onPress={handleBack} style={styles.backButton}>
                     <LucideIcons.ChevronLeft size={24} color="black" />
                 </Pressable>
 
-                <View className="items-center mt-20 mb-12">
-                    <View className="w-12 h-12 bg-accent-blue/10 rounded-xl items-center justify-center mb-6">
-                        <LucideIcons.LogIn size={24} color="#3b82f6" />
-                    </View>
-                    <Text className="text-3xl font-black text-slate-900 tracking-tight">Welcome Back</Text>
-                    <Text className="text-slate-400 font-bold mt-2">Let's get you focused.</Text>
+                <View style={styles.authHeader}>
+                    <Text style={styles.authTitle}>Welcome Back</Text>
+                    <Text style={styles.authSub}>Let's get you focused.</Text>
                 </View>
 
-                <View className="gap-4">
-                    <Pressable className="flex-row items-center justify-center py-4 bg-black rounded-2xl">
-                        <LucideIcons.Apple size={20} color="white" />
-                        <Text className="text-white font-black ml-2">Continue with Apple</Text>
-                    </Pressable>
-                    <Pressable className="flex-row items-center justify-center py-4 bg-white border border-slate-200 rounded-2xl">
-                        <LucideIcons.Chrome size={20} color="black" />
-                        <Text className="text-slate-900 font-black ml-2">Continue with Google</Text>
-                    </Pressable>
+                <View style={styles.authForm}>
+                    <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color="black" />} fullWidth style={{ marginBottom: 12 }} />
+                    <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color="black" />} fullWidth />
 
-                    <View className="flex-row items-center my-6">
-                        <View className="flex-1 h-[1px] bg-slate-100" />
-                        <Text className="mx-4 text-slate-300 text-[10px] font-black uppercase">Or log in with email</Text>
-                        <View className="flex-1 h-[1px] bg-slate-100" />
+                    <View style={styles.divider}>
+                        <View style={styles.line} />
+                        <Text style={styles.dividerText}>OR LOG IN WITH EMAIL</Text>
+                        <View style={styles.line} />
                     </View>
 
-                    <TextInput
-                        placeholder="Email address"
-                        value="you@example.com"
-                        className="bg-slate-50 p-4 rounded-xl text-slate-900 font-bold border border-slate-100"
-                    />
-                    <TextInput
-                        placeholder="Password"
-                        value="********"
-                        secureTextEntry
-                        className="bg-slate-50 p-4 rounded-xl text-slate-900 font-bold border border-slate-100"
-                    />
+                    <TextInput placeholder="Email address" style={styles.input} placeholderTextColor="#999" />
+                    <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
 
-                    <Pressable className="items-end">
-                        <Text className="text-accent-blue font-bold text-xs">Forgot password?</Text>
+                    <Pressable style={styles.forgotPass}>
+                        <Text style={styles.linkText}>Forgot password?</Text>
                     </Pressable>
 
-                    <Pressable
-                        onPress={handleAuthAction}
-                        className="bg-accent-blue py-4 rounded-2xl items-center mt-4 shadow-blue-500/20 shadow-lg"
-                    >
-                        <Text className="text-white font-black">Sign In</Text>
-                    </Pressable>
+                    <AppleButton title="Sign In" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 12 }} />
 
-                    <View className="flex-row justify-center mt-8">
-                        <Text className="text-slate-400 font-bold text-xs">New here? </Text>
+                    <View style={styles.switchAuth}>
+                        <Text style={styles.switchText}>New here? </Text>
                         <Pressable onPress={() => setMode('signup')}>
-                            <Text className="text-accent-blue font-black text-xs underline">Create an account</Text>
+                            <Text style={styles.linkText}>Create an account</Text>
                         </Pressable>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    shadow: {
-        shadowColor: '#3b82f6',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.2,
-        shadowRadius: 15,
-        elevation: 10,
+    container: {
+        flex: 1,
+        backgroundColor: AppleColors.background.primary,
+    },
+    containerWhite: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+    },
+    content: {
+        flex: 1,
+        paddingHorizontal: 30,
+        paddingTop: 60,
+        paddingBottom: 40,
+        justifyContent: 'space-between',
+    },
+    scrollContent: {
+        paddingHorizontal: 30,
+        paddingTop: 20,
+        paddingBottom: 40,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        justifyContent: 'center',
+    },
+    centerContent: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    logoContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 24,
+        backgroundColor: AppleColors.systemGray6,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 32,
+        ...AppleShadows.medium,
+    },
+    headline: {
+        ...AppleTypography.largeTitle,
+        color: AppleColors.label.primary,
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+    subtext: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+        textAlign: 'center',
+        paddingHorizontal: 20,
+    },
+    focusHeadline: {
+        ...AppleTypography.title1,
+        color: AppleColors.label.primary,
+        marginBottom: 8,
+    },
+    focusSubtext: {
+        ...AppleTypography.subheadline,
+        color: AppleColors.label.secondary,
+        marginBottom: 32,
+    },
+    focusGrid: {
+        gap: 20,
+    },
+    focusCard: {
+        backgroundColor: AppleColors.background.tertiary,
+        borderRadius: 24,
+        padding: 24,
+        borderWidth: 2,
+        borderColor: 'transparent',
+        ...AppleShadows.small,
+    },
+    focusIconBg: {
+        width: 56,
+        height: 56,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+    },
+    focusCardTitle: {
+        ...AppleTypography.title3,
+        color: AppleColors.label.primary,
+        marginBottom: 4,
+    },
+    focusCardDesc: {
+        ...AppleTypography.footnote,
+        color: AppleColors.label.secondary,
+    },
+    authHeader: {
+        marginTop: 40,
+        marginBottom: 40,
+        alignItems: 'center',
+    },
+    authTitle: {
+        ...AppleTypography.largeTitle,
+        color: '#000',
+        marginBottom: 4,
+    },
+    authSub: {
+        ...AppleTypography.body,
+        color: '#666',
+    },
+    authForm: {
+        gap: 12,
+    },
+    divider: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 24,
+    },
+    line: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#EEE',
+    },
+    dividerText: {
+        marginHorizontal: 16,
+        ...AppleTypography.caption2,
+        color: '#BBB',
+        fontWeight: '700',
+    },
+    input: {
+        backgroundColor: '#F7F7F7',
+        padding: 18,
+        borderRadius: 16,
+        ...AppleTypography.body,
+        color: '#000',
+        marginBottom: 4,
+    },
+    legalText: {
+        ...AppleTypography.caption2,
+        color: '#999',
+        textAlign: 'center',
+        marginTop: 16,
+    },
+    link: {
+        color: AppleColors.systemBlue,
+        fontWeight: '600',
+    },
+    forgotPass: {
+        alignItems: 'flex-end',
+        marginBottom: 8,
+    },
+    linkText: {
+        color: AppleColors.systemBlue,
+        ...AppleTypography.callout,
+        fontWeight: '600',
+    },
+    switchAuth: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+    switchText: {
+        ...AppleTypography.callout,
+        color: '#666',
     }
 });

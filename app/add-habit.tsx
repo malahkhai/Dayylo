@@ -1,4 +1,3 @@
-// app/add-habit.tsx
 import React, { useState } from 'react';
 import {
     View,
@@ -11,14 +10,21 @@ import {
     Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import * as LucideIcons from 'lucide-react-native';
 import { AppleButton } from '../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../constants/AppleTheme';
+import { useHabits } from '../context/HabitContext';
 
 export default function AddHabitScreen() {
+    const router = useRouter();
+    const { addHabit } = useHabits();
     const [habitName, setHabitName] = useState('');
     const [description, setDescription] = useState('');
     const [selectedColor, setSelectedColor] = useState(AppleColors.systemBlue);
     const [selectedFrequency, setSelectedFrequency] = useState('daily');
+    const [habitType, setHabitType] = useState<'build' | 'break'>('build');
+    const [isPrivate, setIsPrivate] = useState(false);
 
     const colors = [
         { name: 'Blue', value: AppleColors.systemBlue },
@@ -31,11 +37,26 @@ export default function AddHabitScreen() {
         { name: 'Indigo', value: AppleColors.systemIndigo },
     ];
 
-    const frequencies = [
-        { label: 'Daily', value: 'daily' },
-        { label: 'Weekly', value: 'weekly' },
-        { label: 'Custom', value: 'custom' },
+    const types = [
+        { label: 'Build', value: 'build', icon: 'TrendingUp' },
+        { label: 'Break', value: 'break', icon: 'ShieldOff' },
     ];
+
+    const handleCreate = async () => {
+        const success = await addHabit({
+            name: habitName,
+            type: habitType,
+            icon: habitType === 'build' ? 'Zap' : 'Ban',
+            color: selectedColor,
+            isPrivate: isPrivate,
+            description: description,
+            frequency: [selectedFrequency],
+        });
+
+        if (success) {
+            router.back();
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -45,7 +66,7 @@ export default function AddHabitScreen() {
             >
                 {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => console.log('Back')}>
+                    <TouchableOpacity onPress={() => router.back()}>
                         <Text style={styles.cancelButton}>Cancel</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>New Habit</Text>
@@ -57,6 +78,30 @@ export default function AddHabitScreen() {
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
+                    {/* Habit Type */}
+                    <View style={styles.section}>
+                        <Text style={styles.label}>Type</Text>
+                        <View style={styles.typeContainer}>
+                            {types.map((type) => {
+                                const Icon = (LucideIcons as any)[type.icon];
+                                const isSelected = habitType === type.value;
+                                return (
+                                    <TouchableOpacity
+                                        key={type.value}
+                                        onPress={() => setHabitType(type.value as any)}
+                                        style={[
+                                            styles.typeOption,
+                                            isSelected && { backgroundColor: type.value === 'build' ? AppleColors.systemGreen : AppleColors.systemOrange },
+                                        ]}
+                                    >
+                                        <Icon size={18} color={isSelected ? 'white' : AppleColors.label.secondary} />
+                                        <Text style={[styles.typeText, isSelected && { color: 'white' }]}>{type.label}</Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    </View>
+
                     {/* Habit Name */}
                     <View style={styles.section}>
                         <Text style={styles.label}>Habit Name</Text>
@@ -68,24 +113,6 @@ export default function AddHabitScreen() {
                                 value={habitName}
                                 onChangeText={setHabitName}
                                 maxLength={50}
-                            />
-                        </View>
-                    </View>
-
-                    {/* Description */}
-                    <View style={styles.section}>
-                        <Text style={styles.label}>Description</Text>
-                        <View style={[styles.inputContainer, styles.textAreaContainer]}>
-                            <TextInput
-                                style={[styles.input, styles.textArea]}
-                                placeholder="Add a description (optional)"
-                                placeholderTextColor={AppleColors.label.tertiary}
-                                value={description}
-                                onChangeText={setDescription}
-                                multiline
-                                numberOfLines={3}
-                                textAlignVertical="top"
-                                maxLength={200}
                             />
                         </View>
                     </View>
@@ -120,54 +147,42 @@ export default function AddHabitScreen() {
                         </ScrollView>
                     </View>
 
-                    {/* Frequency */}
+                    {/* Privacy Toggle */}
                     <View style={styles.section}>
-                        <Text style={styles.label}>Frequency</Text>
-                        <View style={styles.frequencyContainer}>
-                            {frequencies.map((freq) => (
-                                <TouchableOpacity
-                                    key={freq.value}
-                                    onPress={() => setSelectedFrequency(freq.value)}
-                                    style={[
-                                        styles.frequencyOption,
-                                        selectedFrequency === freq.value && styles.frequencyOptionSelected,
-                                    ]}
-                                    activeOpacity={0.7}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.frequencyText,
-                                            selectedFrequency === freq.value && styles.frequencyTextSelected,
-                                        ]}
-                                    >
-                                        {freq.label}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-
-                    {/* Reminder Section */}
-                    <View style={styles.section}>
-                        <Text style={styles.label}>Reminder</Text>
-                        <TouchableOpacity style={styles.reminderCard} activeOpacity={0.7}>
-                            <View style={styles.reminderContent}>
-                                <Text style={styles.reminderIcon}>🔔</Text>
-                                <View style={styles.reminderInfo}>
-                                    <Text style={styles.reminderTitle}>Set Reminder</Text>
-                                    <Text style={styles.reminderSubtitle}>Get notified at a specific time</Text>
+                        <TouchableOpacity
+                            style={styles.privacyCard}
+                            onPress={() => setIsPrivate(!isPrivate)}
+                            activeOpacity={0.7}
+                        >
+                            <View style={styles.privacyContent}>
+                                <LucideIcons.Lock size={20} color={isPrivate ? AppleColors.systemBlue : AppleColors.label.tertiary} />
+                                <View style={styles.privacyInfo}>
+                                    <Text style={styles.privacyTitle}>Private Habit</Text>
+                                    <Text style={styles.privacySubtitle}>Hide this habit behind PIN protection</Text>
                                 </View>
-                                <Text style={styles.chevron}>›</Text>
+                                <View style={[styles.toggle, isPrivate && styles.toggleOn]}>
+                                    <View style={[styles.toggleThumb, isPrivate && styles.toggleThumbOn]} />
+                                </View>
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    {/* Info Card */}
-                    <View style={styles.infoCard}>
-                        <Text style={styles.infoEmoji}>💡</Text>
-                        <Text style={styles.infoText}>
-                            Building a new habit takes an average of 66 days. Stay consistent!
-                        </Text>
+                    {/* Description */}
+                    <View style={styles.section}>
+                        <Text style={styles.label}>Description (Optional)</Text>
+                        <View style={[styles.inputContainer, styles.textAreaContainer]}>
+                            <TextInput
+                                style={[styles.input, styles.textArea]}
+                                placeholder="Add a description"
+                                placeholderTextColor={AppleColors.label.tertiary}
+                                value={description}
+                                onChangeText={setDescription}
+                                multiline
+                                numberOfLines={3}
+                                textAlignVertical="top"
+                                maxLength={200}
+                            />
+                        </View>
                     </View>
                 </ScrollView>
 
@@ -175,7 +190,7 @@ export default function AddHabitScreen() {
                 <View style={styles.bottomContainer}>
                     <AppleButton
                         title="Create Habit"
-                        onPress={() => console.log('Create habit')}
+                        onPress={handleCreate}
                         variant="primary"
                         size="large"
                         fullWidth
@@ -229,6 +244,26 @@ const styles = StyleSheet.create({
         color: AppleColors.label.primary,
         marginBottom: AppleSpacing.sm,
     },
+    typeContainer: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    typeOption: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        backgroundColor: AppleColors.background.tertiary,
+        borderRadius: 16,
+        gap: 8,
+        ...AppleShadows.small,
+    },
+    typeText: {
+        ...AppleTypography.callout,
+        fontWeight: '600',
+        color: AppleColors.label.primary,
+    },
     inputContainer: {
         backgroundColor: AppleColors.background.tertiary,
         borderRadius: AppleBorderRadius.button,
@@ -268,79 +303,48 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '700',
     },
-    frequencyContainer: {
-        flexDirection: 'row',
-        backgroundColor: AppleColors.fill.tertiary,
-        borderRadius: AppleBorderRadius.button,
-        padding: 4,
-    },
-    frequencyOption: {
-        flex: 1,
-        paddingVertical: AppleSpacing.sm,
-        alignItems: 'center',
-        borderRadius: AppleBorderRadius.sm,
-    },
-    frequencyOptionSelected: {
-        backgroundColor: AppleColors.background.tertiary,
-        ...AppleShadows.small,
-    },
-    frequencyText: {
-        ...AppleTypography.callout,
-        color: AppleColors.label.secondary,
-        fontWeight: '500',
-    },
-    frequencyTextSelected: {
-        color: AppleColors.label.primary,
-        fontWeight: '600',
-    },
-    reminderCard: {
+    privacyCard: {
         backgroundColor: AppleColors.background.tertiary,
         borderRadius: AppleBorderRadius.card,
         padding: AppleSpacing.base,
         ...AppleShadows.small,
     },
-    reminderContent: {
+    privacyContent: {
         flexDirection: 'row',
         alignItems: 'center',
     },
-    reminderIcon: {
-        fontSize: 24,
-        marginRight: AppleSpacing.md,
-    },
-    reminderInfo: {
+    privacyInfo: {
         flex: 1,
+        marginLeft: AppleSpacing.md,
     },
-    reminderTitle: {
+    privacyTitle: {
         ...AppleTypography.body,
+        fontWeight: '600',
         color: AppleColors.label.primary,
-        marginBottom: 2,
     },
-    reminderSubtitle: {
+    privacySubtitle: {
         ...AppleTypography.footnote,
         color: AppleColors.label.secondary,
     },
-    chevron: {
-        ...AppleTypography.title2,
-        color: AppleColors.label.quaternary,
-        fontWeight: '300',
+    toggle: {
+        width: 51,
+        height: 31,
+        borderRadius: 16,
+        backgroundColor: AppleColors.fill.tertiary,
+        padding: 2,
     },
-    infoCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: AppleColors.systemBlue + '15',
-        padding: AppleSpacing.base,
-        borderRadius: AppleBorderRadius.card,
-        marginTop: AppleSpacing.lg,
+    toggleOn: {
+        backgroundColor: AppleColors.systemBlue,
     },
-    infoEmoji: {
-        fontSize: 20,
-        marginRight: AppleSpacing.md,
+    toggleThumb: {
+        width: 27,
+        height: 27,
+        borderRadius: 14,
+        backgroundColor: '#FFFFFF',
+        ...AppleShadows.small,
     },
-    infoText: {
-        ...AppleTypography.footnote,
-        color: AppleColors.systemBlue,
-        flex: 1,
-        lineHeight: 18,
+    toggleThumbOn: {
+        transform: [{ translateX: 20 }],
     },
     bottomContainer: {
         padding: AppleSpacing.base,

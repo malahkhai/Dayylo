@@ -1,4 +1,3 @@
-// components/AppleHabitCard.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -8,6 +7,7 @@ import {
   Animated,
   Pressable,
 } from 'react-native';
+import * as LucideIcons from 'lucide-react-native';
 import { AppleColors, AppleTypography, AppleShadows, AppleBorderRadius, AppleSpacing } from '../constants/AppleTheme';
 
 interface HabitCardProps {
@@ -27,7 +27,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   streak,
   isCompleted,
   color = AppleColors.systemBlue,
-  icon = '✓',
+  icon,
   onPress,
   onComplete,
 }) => {
@@ -62,6 +62,15 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
     onComplete?.();
   };
 
+  const renderIcon = () => {
+    if (!icon) return null;
+    const IconComponent = (LucideIcons as any)[icon];
+    if (IconComponent) {
+      return <IconComponent size={20} color={color} />;
+    }
+    return <Text style={styles.iconEmoji}>{icon}</Text>;
+  };
+
   return (
     <Animated.View style={[styles.container, { transform: [{ scale: scaleAnim }] }]}>
       <Pressable
@@ -71,30 +80,34 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
         style={styles.card}
       >
         <View style={styles.content}>
-          {/* Completion Button */}
-          <TouchableOpacity
-            onPress={handleComplete}
-            style={[
-              styles.completionButton,
-              { borderColor: color },
-              isCompleted && { backgroundColor: color },
-            ]}
-            activeOpacity={0.7}
-          >
-            <Animated.Text
+          <View style={styles.leftSection}>
+            <TouchableOpacity
+              onPress={handleComplete}
               style={[
-                styles.checkmark,
-                {
-                  opacity: completionAnim,
-                  transform: [{ scale: completionAnim }],
-                },
+                styles.completionButton,
+                { borderColor: color },
+                isCompleted && { backgroundColor: color },
               ]}
+              activeOpacity={0.7}
             >
-              ✓
-            </Animated.Text>
-          </TouchableOpacity>
+              <Animated.Text
+                style={[
+                  styles.checkmark,
+                  {
+                    opacity: completionAnim,
+                    transform: [{ scale: completionAnim }],
+                  },
+                ]}
+              >
+                ✓
+              </Animated.Text>
+            </TouchableOpacity>
 
-          {/* Habit Info */}
+            <View style={[styles.iconContainer, { backgroundColor: color + '15' }]}>
+              {renderIcon()}
+            </View>
+          </View>
+
           <View style={styles.info}>
             <Text style={styles.title} numberOfLines={1}>
               {title}
@@ -106,7 +119,6 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
             )}
           </View>
 
-          {/* Streak Badge */}
           {streak > 0 && (
             <View style={[styles.streakBadge, { backgroundColor: color }]}>
               <Text style={styles.streakEmoji}>🔥</Text>
@@ -115,7 +127,6 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
           )}
         </View>
 
-        {/* Progress Indicator */}
         <View style={styles.progressContainer}>
           <View style={[styles.progressBar, { backgroundColor: AppleColors.fill.tertiary }]}>
             <Animated.View
@@ -153,6 +164,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: AppleSpacing.md,
   },
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: AppleSpacing.md,
+  },
   completionButton: {
     width: 32,
     height: 32,
@@ -160,7 +176,17 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: AppleSpacing.md,
+    marginRight: AppleSpacing.sm,
+  },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconEmoji: {
+    fontSize: 18,
   },
   checkmark: {
     color: '#FFFFFF',
