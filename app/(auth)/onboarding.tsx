@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     },
     skipText: {
         ...AppleTypography.callout,
-        color: AppleColors.label.tertiary,
+        color: AppleColors.label.secondary,
     },
     modalOverlay: {
         flex: 1,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     },
     modalCancelText: {
         ...AppleTypography.callout,
-        color: AppleColors.label.tertiary,
+        color: AppleColors.label.secondary,
         fontWeight: '600',
     }
 });

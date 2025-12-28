@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton, AppleFAB } from '../../components/AppleButton';
-import { AppleColors, AppleTypography, AppleSpacing } from '../../constants/AppleTheme';
+import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
 import { usePrivacy } from '../../context/PrivacyContext';
 
@@ -203,11 +203,7 @@ const styles = StyleSheet.create({
         marginBottom: AppleSpacing.base,
         padding: AppleSpacing.base,
         borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 12,
-        elevation: 2,
+        ...AppleShadows.card,
     },
     statItem: {
         flex: 1,

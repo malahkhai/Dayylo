@@ -65,7 +65,7 @@ export default function AuthScreen() {
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
 
-                    <View style={{ flex: 1, paddingTop: 40 }}>
+                    <View style={{ flex: 1, paddingTop: 20 }}>
                         <Text style={styles.focusHeadline}>This is where the magic happens.</Text>
                         <Text style={styles.focusSubtext}>Choose your focus areas. You can select both.</Text>
 
@@ -74,28 +74,38 @@ export default function AuthScreen() {
                                 onPress={() => toggleFocus('build')}
                                 style={[
                                     styles.focusCard,
-                                    selectedFocus.build && { borderColor: AppleColors.systemGreen, borderWidth: 2, backgroundColor: AppleColors.systemGreen + '10' }
+                                    selectedFocus.build && styles.focusCardSelectedBuild
                                 ]}
                             >
-                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemGreen + '20' }]}>
+                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
                                     <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
                                 </View>
-                                <Text style={styles.focusCardTitle}>Build Habits</Text>
-                                <Text style={styles.focusCardDesc}>Start positive routines like Gym, Meditation, Reading.</Text>
+                                <View style={styles.focusCardContent}>
+                                    <Text style={styles.focusCardTitle}>Build Habits</Text>
+                                    <Text style={styles.focusCardDesc}>Start positive routines like Gym, Meditation, and Reading.</Text>
+                                </View>
+                                <View style={[styles.focusCheckbox, selectedFocus.build && { backgroundColor: AppleColors.systemGreen, borderColor: AppleColors.systemGreen }]}>
+                                    {selectedFocus.build && <LucideIcons.Check size={14} color="white" />}
+                                </View>
                             </Pressable>
 
                             <Pressable
                                 onPress={() => toggleFocus('break')}
                                 style={[
                                     styles.focusCard,
-                                    selectedFocus.break && { borderColor: AppleColors.systemOrange, borderWidth: 2, backgroundColor: AppleColors.systemOrange + '10' }
+                                    selectedFocus.break && styles.focusCardSelectedBreak
                                 ]}
                             >
-                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemOrange + '20' }]}>
+                                <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
                                     <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
                                 </View>
-                                <Text style={styles.focusCardTitle}>Break Habits</Text>
-                                <Text style={styles.focusCardDesc}>Reduce behaviors you want to stop like Smoking, Junk Food.</Text>
+                                <View style={styles.focusCardContent}>
+                                    <Text style={styles.focusCardTitle}>Break Habits</Text>
+                                    <Text style={styles.focusCardDesc}>Reduce behaviors you want to stop like Smoking or Sugar.</Text>
+                                </View>
+                                <View style={[styles.focusCheckbox, selectedFocus.break && { backgroundColor: AppleColors.systemOrange, borderColor: AppleColors.systemOrange }]}>
+                                    {selectedFocus.break && <LucideIcons.Check size={14} color="white" />}
+                                </View>
                             </Pressable>
                         </View>
                     </View>
@@ -114,10 +124,10 @@ export default function AuthScreen() {
 
     if (mode === 'signup') {
         return (
-            <SafeAreaView style={styles.containerWhite}>
+            <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.scrollContent}>
                     <Pressable onPress={handleBack} style={styles.backButton}>
-                        <LucideIcons.ChevronLeft size={24} color="black" />
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
 
                     <View style={styles.authHeader}>
@@ -126,8 +136,8 @@ export default function AuthScreen() {
                     </View>
 
                     <View style={styles.authForm}>
-                        <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color="black" />} fullWidth style={{ marginBottom: 12 }} />
-                        <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color="black" />} fullWidth />
+                        <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color={AppleColors.label.primary} />} fullWidth style={{ marginBottom: 12 }} />
+                        <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color={AppleColors.label.primary} />} fullWidth />
 
                         <View style={styles.divider}>
                             <View style={styles.line} />
@@ -135,9 +145,9 @@ export default function AuthScreen() {
                             <View style={styles.line} />
                         </View>
 
-                        <TextInput placeholder="Email address" style={styles.input} placeholderTextColor="#999" />
-                        <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
-                        <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
+                        <TextInput placeholder="Email address" style={styles.input} placeholderTextColor={AppleColors.label.tertiary} />
+                        <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor={AppleColors.label.tertiary} />
+                        <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry placeholderTextColor={AppleColors.label.tertiary} />
 
                         <AppleButton title="Sign Up" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 12 }} />
 
@@ -263,10 +273,20 @@ const styles = StyleSheet.create({
     focusCard: {
         backgroundColor: AppleColors.background.tertiary,
         borderRadius: 24,
-        padding: 24,
+        padding: 20,
         borderWidth: 2,
         borderColor: 'transparent',
+        flexDirection: 'row',
+        alignItems: 'center',
         ...AppleShadows.small,
+    },
+    focusCardSelectedBuild: {
+        borderColor: AppleColors.systemGreen,
+        backgroundColor: AppleColors.systemGreen + '05',
+    },
+    focusCardSelectedBreak: {
+        borderColor: AppleColors.systemOrange,
+        backgroundColor: AppleColors.systemOrange + '05',
     },
     focusIconBg: {
         width: 56,
@@ -274,16 +294,29 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 16,
+        marginRight: 16,
+    },
+    focusCardContent: {
+        flex: 1,
     },
     focusCardTitle: {
-        ...AppleTypography.title3,
+        ...AppleTypography.headline,
         color: AppleColors.label.primary,
-        marginBottom: 4,
+        marginBottom: 2,
     },
     focusCardDesc: {
         ...AppleTypography.footnote,
         color: AppleColors.label.secondary,
+        paddingRight: 10,
+    },
+    focusCheckbox: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: AppleColors.separator.opaque,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     authHeader: {
         marginTop: 40,
@@ -292,12 +325,12 @@ const styles = StyleSheet.create({
     },
     authTitle: {
         ...AppleTypography.largeTitle,
-        color: '#000',
+        color: AppleColors.label.primary,
         marginBottom: 4,
     },
     authSub: {
         ...AppleTypography.body,
-        color: '#666',
+        color: AppleColors.label.secondary,
     },
     authForm: {
         gap: 12,
@@ -310,25 +343,25 @@ const styles = StyleSheet.create({
     line: {
         flex: 1,
         height: 1,
-        backgroundColor: '#EEE',
+        backgroundColor: AppleColors.separator.nonOpaque,
     },
     dividerText: {
         marginHorizontal: 16,
         ...AppleTypography.caption2,
-        color: '#BBB',
+        color: AppleColors.label.tertiary,
         fontWeight: '700',
     },
     input: {
-        backgroundColor: '#F7F7F7',
+        backgroundColor: AppleColors.background.secondary,
         padding: 18,
         borderRadius: 16,
         ...AppleTypography.body,
-        color: '#000',
+        color: AppleColors.label.primary,
         marginBottom: 4,
     },
     legalText: {
         ...AppleTypography.caption2,
-        color: '#999',
+        color: AppleColors.label.tertiary,
         textAlign: 'center',
         marginTop: 16,
     },
@@ -352,7 +385,7 @@ const styles = StyleSheet.create({
     },
     switchText: {
         ...AppleTypography.callout,
-        color: '#666',
+        color: AppleColors.label.secondary,
     },
     loginShortcut: {
         marginTop: 20,
