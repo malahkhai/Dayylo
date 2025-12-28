@@ -116,7 +116,7 @@ export default function AddHabitScreen() {
                                 <Pressable
                                     key={i}
                                     onPress={() => handleSuggestedAdd(item)}
-                                    className="mb-3 bg-surface-dark border border-white/5 rounded-[28px] p-5 justify-between"
+                                    className="mb-3 bg-surface-dark border border-white/5 rounded-[32px] p-5 justify-between"
                                     style={{ width: CARD_WIDTH, height: CARD_WIDTH + 10 }}
                                 >
                                     <View className="w-10 h-10 bg-white/5 rounded-xl items-center justify-center">
@@ -132,7 +132,7 @@ export default function AddHabitScreen() {
                     </View>
 
                     <Pressable
-                        className="bg-white/5 border border-white/5 rounded-[28px] p-6 flex-row items-center justify-between mt-6 mb-32"
+                        className="bg-white/5 border border-white/5 rounded-[32px] p-6 flex-row items-center justify-between mt-6 mb-32"
                     >
                         <View className="flex-row items-center">
                             <View className="w-10 h-10 bg-white/5 rounded-xl items-center justify-center mr-4">

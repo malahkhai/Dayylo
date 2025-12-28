@@ -18,7 +18,7 @@ export default function AnalyticsScreen() {
     }));
 
     const getHeatmapColor = (intensity: number) => {
-        const colors = ['rgba(255,255,255,0.05)', '#065f46', '#059669', '#30e8ab'];
+        const colors = ['rgba(255,255,255,0.05)', '#064e3b', '#059669', '#30e8ab'];
         return colors[intensity];
     };
 

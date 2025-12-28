@@ -41,7 +41,7 @@ export default function PaywallScreen() {
                     <View className="w-16 h-16 bg-primary rounded-[20px] items-center justify-center shadow-2xl mb-6 shadow-primary/50">
                         <LucideIcons.Crown size={32} color="black" />
                     </View>
-                    <Text className="text-4xl font-black text-white tracking-tight">Daylo Premium</Text>
+                    <Text className="text-4xl font-black text-white tracking-tight">Dayylo Premium</Text>
                     <Text className="text-white/60 font-bold mt-2 text-center text-[15px]">
                         Master your habits with total clarity.
                     </Text>
