@@ -9,7 +9,7 @@ import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 
 const { width } = Dimensions.get('window');
 
-export default function Dashboard() {
+function Dashboard() {
     const router = useRouter();
     const [habits, setHabits] = useState<Habit[]>(INITIAL_HABITS);
     const [user, setUser] = useState<User>({
@@ -229,3 +229,5 @@ export default function Dashboard() {
         </SafeAreaView>
     );
 }
+
+export default Dashboard;
