@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, Image, TouchableOpacity, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { INITIAL_HABITS } from '../../constants';
@@ -7,7 +7,6 @@ import HabitTile from '../../components/HabitTile';
 import { useRouter } from 'expo-router';
 
 export default function Profile() {
-    const router = useRouter();
     const [activeTab, setActiveTab] = useState<'Stats' | 'Habits'>('Stats');
 
     const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -37,17 +36,48 @@ export default function Profile() {
 
                 <View className="px-6 mb-8">
                     <View className="bg-surface-dark p-1.5 rounded-[20px] flex-row border border-white/5">
-                        {['Stats', 'Habits'].map((tab) => (
-                            <TouchableOpacity
-                                key={tab}
-                                onPress={() => setActiveTab(tab as any)}
-                                className={`flex-1 py-3 items-center rounded-[16px] ${activeTab === tab ? 'bg-white shadow-md' : ''}`}
-                            >
-                                <Text className={`text-[13px] font-black ${activeTab === tab ? 'text-black' : 'text-slate-500'}`}>
-                                    {tab}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
+                        <Pressable
+                            onPress={() => setActiveTab('Stats')}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 12,
+                                alignItems: 'center',
+                                borderRadius: 16,
+                                backgroundColor: activeTab === 'Stats' ? 'white' : 'transparent',
+                                ...(activeTab === 'Stats' ? {
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 4,
+                                    elevation: 2
+                                } : {})
+                            }}
+                        >
+                            <Text style={{ fontSize: 13, fontWeight: '900', color: activeTab === 'Stats' ? 'black' : '#94a3b8' }}>
+                                Stats
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => setActiveTab('Habits')}
+                            style={{
+                                flex: 1,
+                                paddingVertical: 12,
+                                alignItems: 'center',
+                                borderRadius: 16,
+                                backgroundColor: activeTab === 'Habits' ? 'white' : 'transparent',
+                                ...(activeTab === 'Habits' ? {
+                                    shadowColor: '#000',
+                                    shadowOffset: { width: 0, height: 2 },
+                                    shadowOpacity: 0.1,
+                                    shadowRadius: 4,
+                                    elevation: 2
+                                } : {})
+                            }}
+                        >
+                            <Text style={{ fontSize: 13, fontWeight: '900', color: activeTab === 'Habits' ? 'black' : '#94a3b8' }}>
+                                Habits
+                            </Text>
+                        </Pressable>
                     </View>
                 </View>
 
@@ -97,12 +127,12 @@ export default function Profile() {
                             ))}
                         </View>
 
-                        <TouchableOpacity className="bg-white dark:bg-surface-dark-alt rounded-[24px] py-5 items-center justify-center border border-slate-100 dark:border-white/5">
+                        <Pressable className="bg-white dark:bg-surface-dark-alt rounded-[24px] py-5 items-center justify-center border border-slate-100 dark:border-white/5 active:opacity-70">
                             <View className="flex-row items-center">
                                 <LucideIcons.LogOut size={18} color="#94a3b8" />
                                 <Text className="text-slate-400 font-black text-xs uppercase tracking-widest ml-2">Sign Out</Text>
                             </View>
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
                 )}
 
