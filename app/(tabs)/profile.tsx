@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
+import { INITIAL_HABITS } from '../../constants';
+import HabitTile from '../../components/HabitTile';
+import { useRouter } from 'expo-router';
 
 export default function Profile() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<'Stats' | 'Habits'>('Stats');
 
     const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -99,6 +103,19 @@ export default function Profile() {
                                 <Text className="text-slate-400 font-black text-xs uppercase tracking-widest ml-2">Sign Out</Text>
                             </View>
                         </TouchableOpacity>
+                    </View>
+                )}
+
+                {activeTab === 'Habits' && (
+                    <View className="px-6 mb-32">
+                        <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 ml-1">Current Habits</Text>
+                        {INITIAL_HABITS.map((habit) => (
+                            <HabitTile
+                                key={habit.id}
+                                habit={habit}
+                                onToggle={() => { }}
+                            />
+                        ))}
                     </View>
                 )}
             </ScrollView>
