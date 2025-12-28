@@ -38,8 +38,7 @@ export default function Profile() {
                             <TouchableOpacity
                                 key={tab}
                                 onPress={() => setActiveTab(tab as any)}
-                                className={`flex-1 py-3 items-center rounded-[16px] ${activeTab === tab ? 'bg-white shadow-md' : ''
-                                    }`}
+                                className={`flex-1 py-3 items-center rounded-[16px] ${activeTab === tab ? 'bg-white shadow-md' : ''}`}
                             >
                                 <Text className={`text-[13px] font-black ${activeTab === tab ? 'text-black' : 'text-slate-500'}`}>
                                     {tab}
