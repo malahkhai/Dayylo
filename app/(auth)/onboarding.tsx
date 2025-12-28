@@ -18,14 +18,16 @@ interface StarterHabit {
 }
 
 const STARTER_HABITS: StarterHabit[] = [
-    { id: 'h1', name: 'Go to the gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue },
-    { id: 'h2', name: 'Drink water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan },
+    { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue },
+    { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan },
     { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple },
-    { id: 'h4', name: 'Read 10 minutes', type: 'build', icon: 'BookOpen', color: AppleColors.systemOrange },
+    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemOrange },
+    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemBlue },
     { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemGray },
-    { id: 'h6', name: 'Social Media', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink },
+    { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink },
     { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo },
     { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemRed },
+    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemOrange },
 ];
 
 export default function OnboardingScreen() {
@@ -36,11 +38,15 @@ export default function OnboardingScreen() {
     const [isPrivate, setIsPrivate] = useState(false);
 
     const toggleHabit = (id: string) => {
+        if (id.includes('custom')) {
+            router.push('/add-habit');
+            return;
+        }
+
         setSelectedHabits(prev => {
             const isRemoving = prev.includes(id);
             const newState = isRemoving ? prev.filter(h => h !== id) : [...prev, id];
 
-            // Show privacy prompt if a "break" habit is selected for the first time
             if (!isRemoving) {
                 const habit = STARTER_HABITS.find(h => h.id === id);
                 if (habit?.type === 'break' && !prev.some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
@@ -71,6 +77,7 @@ export default function OnboardingScreen() {
 
     const renderHabitItem = (h: StarterHabit) => {
         const isSelected = selectedHabits.includes(h.id);
+        const isCustom = h.id.includes('custom');
         const Icon = LucideIcons[h.icon] as any;
 
         return (
@@ -83,12 +90,20 @@ export default function OnboardingScreen() {
                 ]}
             >
                 <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
-                    <Icon size={20} color={h.color} />
+                    <Icon size={24} color={h.color} />
                 </View>
-                <Text style={[styles.habitName, isSelected && { color: h.color }]}>{h.name}</Text>
-                <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
-                    {isSelected && <LucideIcons.Check size={14} color="white" />}
-                </View>
+                <Text style={[styles.habitName, isSelected && { color: h.color }]} numberOfLines={1}>{h.name}</Text>
+
+                {!isCustom && (
+                    <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
+                        {isSelected && <LucideIcons.Check size={14} color="white" />}
+                    </View>
+                )}
+                {isCustom && (
+                    <View style={styles.plusIcon}>
+                        <LucideIcons.Plus size={14} color={AppleColors.label.tertiary} />
+                    </View>
+                )}
             </Pressable>
         );
     };
@@ -193,40 +208,54 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
         gap: 12,
+        justifyContent: 'space-between',
     },
     habitItem: {
-        flexDirection: 'row',
+        width: (width - AppleSpacing.base * 2 - 12) / 2,
+        aspectRatio: 1,
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: AppleColors.background.tertiary,
         padding: 16,
-        borderRadius: 20,
+        borderRadius: 24,
         borderWidth: 2,
         borderColor: 'transparent',
         ...AppleShadows.small,
     },
     habitIconBg: {
-        width: 40,
-        height: 40,
-        borderRadius: 12,
+        width: 56,
+        height: 56,
+        borderRadius: 18,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 16,
+        marginBottom: 12,
     },
     habitName: {
         ...AppleTypography.body,
         fontWeight: '600',
         color: AppleColors.label.primary,
-        flex: 1,
+        textAlign: 'center',
+        marginBottom: 8,
     },
     checkbox: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        width: 22,
+        height: 22,
+        borderRadius: 11,
         borderWidth: 2,
         borderColor: AppleColors.separator.opaque,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    plusIcon: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
     },
     footer: {
         paddingVertical: 24,

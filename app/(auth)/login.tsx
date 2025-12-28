@@ -49,6 +49,9 @@ export default function AuthScreen() {
                         size="large"
                         fullWidth
                     />
+                    <Pressable onPress={() => router.replace('/(tabs)')} style={styles.loginShortcut}>
+                        <Text style={styles.loginShortcutText}>Already have an account? <Text style={styles.loginShortcutBold}>Log in</Text></Text>
+                    </Pressable>
                 </View>
             </SafeAreaView>
         );
@@ -350,5 +353,17 @@ const styles = StyleSheet.create({
     switchText: {
         ...AppleTypography.callout,
         color: '#666',
-    }
+    },
+    loginShortcut: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    loginShortcutText: {
+        ...AppleTypography.footnote,
+        color: AppleColors.label.secondary,
+    },
+    loginShortcutBold: {
+        color: AppleColors.systemBlue,
+        fontWeight: '600',
+    },
 });
