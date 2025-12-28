@@ -1,130 +1,270 @@
+// app/(tabs)/index.tsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Dimensions } from 'react-native';
+import {
+    View,
+    Text,
+    ScrollView,
+    StyleSheet,
+    StatusBar,
+    Animated,
+    RefreshControl,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { useHabits } from '../../context/HabitContext';
-import { usePrivacy } from '../../context/PrivacyContext';
-import * as LucideIcons from 'lucide-react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { AppleHabitCard } from '../../components/AppleHabitCard';
+import { AppleButton, AppleFAB } from '../../components/AppleButton';
+import { AppleColors, AppleTypography, AppleSpacing } from '../../constants/AppleTheme';
 
-const { width } = Dimensions.get('window');
-const TILE_WIDTH = (width - 48 - 16) / 2;
+export default function HomeScreen() {
+    const [refreshing, setRefreshing] = useState(false);
+    const [scrollY] = useState(new Animated.Value(0));
 
-export default function DailyActionsScreen() {
-    const router = useRouter();
-    const [activeType, setActiveType] = useState<'build' | 'break'>('build');
-    const { habits, toggleHabit, updateHabitValue } = useHabits();
-    const { isUnlocked, authenticate } = usePrivacy();
+    // Sample habits data
+    const habits = [
+        {
+            id: '1',
+            title: 'Morning Meditation',
+            description: 'Start the day with 10 minutes of mindfulness',
+            streak: 15,
+            isCompleted: true,
+            color: AppleColors.systemPurple,
+        },
+        {
+            id: '2',
+            title: 'Drink Water',
+            description: '8 glasses throughout the day',
+            streak: 7,
+            isCompleted: false,
+            color: AppleColors.systemCyan,
+        },
+        {
+            id: '3',
+            title: 'Exercise',
+            description: '30 minutes of physical activity',
+            streak: 12,
+            isCompleted: true,
+            color: AppleColors.systemOrange,
+        },
+        {
+            id: '4',
+            title: 'Read Before Bed',
+            description: 'Read for at least 20 minutes',
+            streak: 3,
+            isCompleted: false,
+            color: AppleColors.systemGreen,
+        },
+    ];
 
-    const filteredHabits = habits.filter(h => h.type === activeType);
-    const completedCount = filteredHabits.filter(h => h.completedToday).length;
-    const remainingCount = filteredHabits.length - completedCount;
-
-    const handleHabitPress = async (habitId: string, isPrivate: boolean) => {
-        if (isPrivate && !isUnlocked) {
-            const success = await authenticate();
-            if (success) toggleHabit(habitId);
-        } else {
-            toggleHabit(habitId);
-        }
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 1000);
     };
 
+    // Animated header opacity
+    const headerOpacity = scrollY.interpolate({
+        inputRange: [0, 60],
+        outputRange: [1, 0.9],
+        extrapolate: 'clamp',
+    });
+
+    const headerScale = scrollY.interpolate({
+        inputRange: [0, 60],
+        outputRange: [1, 0.97],
+        extrapolate: 'clamp',
+    });
+
     return (
-        <SafeAreaView className="flex-1 bg-black">
-            <View className="flex-1 px-6">
-                {/* Header */}
-                <View className="pt-8 pb-6 flex-row justify-between items-start">
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="dark-content" />
+
+            {/* Animated Header */}
+            <Animated.View
+                style={[
+                    styles.header,
+                    {
+                        opacity: headerOpacity,
+                        transform: [{ scale: headerScale }],
+                    },
+                ]}
+            >
+                <View style={styles.headerContent}>
                     <View>
-                        <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40 mb-1">
-                            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                        </Text>
-                        <Text className="text-3xl font-black text-white tracking-tight">Good Morning,{"\n"}Alex</Text>
+                        <Text style={styles.greeting}>Good Morning ☀️</Text>
+                        <Text style={styles.headerTitle}>Today's Habits</Text>
                     </View>
-                    <Pressable
-                        onPress={() => router.push('/add')}
-                        className="w-12 h-12 bg-white/10 rounded-2xl items-center justify-center border border-white/5 active:opacity-70"
-                    >
-                        <LucideIcons.Plus size={24} color="#30e8ab" />
-                    </Pressable>
-                </View>
-
-                {/* Segmented Control */}
-                <View className="bg-white/5 p-1.5 rounded-[24px] flex-row mb-6">
-                    <Pressable
-                        onPress={() => setActiveType('build')}
-                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'build' ? 'bg-white shadow-lg' : ''}`}
-                    >
-                        <Text className={`text-[13px] font-black ${activeType === 'build' ? 'text-black' : 'text-white/40'}`}>Build</Text>
-                    </Pressable>
-                    <Pressable
-                        onPress={() => setActiveType('break')}
-                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'break' ? 'bg-white shadow-lg' : ''}`}
-                    >
-                        <Text className={`text-[13px] font-black ${activeType === 'break' ? 'text-black' : 'text-white/40'}`}>Break</Text>
-                    </Pressable>
-                </View>
-
-                <View className="mb-6 flex-row items-center">
-                    <Text className="text-white/60 font-bold text-lg">You have </Text>
-                    <Text className="text-primary font-black text-lg">{remainingCount === 0 ? 'all' : remainingCount} </Text>
-                    <Text className="text-white/60 font-bold text-lg">habits {remainingCount === 0 ? 'completed' : 'left'} today</Text>
-                </View>
-
-                {/* Habit Grid */}
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                    <View className="flex-row flex-wrap justify-between pb-32">
-                        {filteredHabits.map((habit, index) => {
-                            const IconComp = (LucideIcons as any)[habit.icon] || LucideIcons.Circle;
-                            const isDone = habit.completedToday;
-                            const isLocked = habit.isPrivate && !isUnlocked;
-
-                            return (
-                                <Animated.View
-                                    key={habit.id}
-                                    entering={FadeInDown.delay(index * 50)}
-                                    style={{ width: TILE_WIDTH, height: TILE_WIDTH + 20 }}
-                                    className="mb-4"
-                                >
-                                    <Pressable
-                                        onPress={() => handleHabitPress(habit.id, habit.isPrivate)}
-                                        className={`flex-1 rounded-[32px] p-6 items-center justify-between border-2 ${isDone ? 'bg-primary/5 border-primary/20' : 'bg-surface-dark border-transparent'}`}
-                                    >
-                                        <View
-                                            className={`w-14 h-14 rounded-full items-center justify-center ${isDone ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-white/5'}`}
-                                        >
-                                            <IconComp size={28} color={isDone ? 'black' : (habit.color || 'white')} />
-                                        </View>
-
-                                        <View className="items-center">
-                                            <Text className={`text-[15px] font-black text-center mb-1 ${isDone ? 'text-white' : 'text-white/80'}`} numberOfLines={1}>
-                                                {isLocked ? '••••••••' : habit.name}
-                                            </Text>
-                                            <View className="flex-row items-center">
-                                                <LucideIcons.Flame size={12} color={isDone ? '#30e8ab' : '#f97316'} fill={isDone ? '#30e8ab' : 'transparent'} />
-                                                <Text className={`text-[11px] font-black ml-1 ${isDone ? 'text-primary' : 'text-white/30'}`}>
-                                                    {isLocked ? '??' : habit.streak} Days
-                                                </Text>
-                                            </View>
-                                        </View>
-
-                                        {isLocked && (
-                                            <View className="absolute inset-0 items-center justify-center bg-black/60 rounded-[32px]">
-                                                <LucideIcons.Lock size={20} color="white" opacity={0.6} />
-                                            </View>
-                                        )}
-                                    </Pressable>
-                                </Animated.View>
-                            );
-                        })}
-
-                        {filteredHabits.length === 0 && (
-                            <View className="w-full py-20 items-center">
-                                <Text className="text-white/20 font-black text-xl">No {activeType} habits yet</Text>
-                            </View>
-                        )}
+                    <View style={styles.streakContainer}>
+                        <Text style={styles.streakNumber}>15</Text>
+                        <Text style={styles.streakLabel}>Day Streak 🔥</Text>
                     </View>
-                </ScrollView>
+                </View>
+            </Animated.View>
+
+            {/* Stats Card */}
+            <View style={styles.statsCard}>
+                <View style={styles.statItem}>
+                    <Text style={styles.statNumber}>4</Text>
+                    <Text style={styles.statLabel}>Active Habits</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                    <Text style={[styles.statNumber, { color: AppleColors.systemGreen }]}>2</Text>
+                    <Text style={styles.statLabel}>Completed</Text>
+                </View>
+                <View style={styles.statDivider} />
+                <View style={styles.statItem}>
+                    <Text style={[styles.statNumber, { color: AppleColors.systemOrange }]}>2</Text>
+                    <Text style={styles.statLabel}>Remaining</Text>
+                </View>
             </View>
+
+            {/* Scrollable Habit List */}
+            <Animated.ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: true }
+                )}
+                scrollEventThrottle={16}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+            >
+                <Text style={styles.sectionTitle}>Your Habits</Text>
+
+                {habits.map((habit) => (
+                    <AppleHabitCard
+                        key={habit.id}
+                        title={habit.title}
+                        description={habit.description}
+                        streak={habit.streak}
+                        isCompleted={habit.isCompleted}
+                        color={habit.color}
+                        onPress={() => console.log('Habit pressed:', habit.id)}
+                        onComplete={() => console.log('Complete toggled:', habit.id)}
+                    />
+                ))}
+
+                {/* Empty State Hint */}
+                <View style={styles.hintCard}>
+                    <Text style={styles.hintEmoji}>💡</Text>
+                    <Text style={styles.hintText}>
+                        Tap the + button to add a new habit
+                    </Text>
+                </View>
+
+                {/* Bottom Spacing */}
+                <View style={{ height: 100 }} />
+            </Animated.ScrollView>
+
+            {/* Floating Action Button */}
+            <AppleFAB
+                onPress={() => console.log('Add habit')}
+                icon="+"
+                color={AppleColors.systemBlue}
+            />
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: AppleColors.background.secondary,
+    },
+    header: {
+        paddingHorizontal: AppleSpacing.base,
+        paddingTop: AppleSpacing.md,
+        paddingBottom: AppleSpacing.base,
+        backgroundColor: AppleColors.background.secondary,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    greeting: {
+        ...AppleTypography.subheadline,
+        color: AppleColors.label.secondary,
+        marginBottom: 4,
+    },
+    headerTitle: {
+        ...AppleTypography.largeTitle,
+        color: AppleColors.label.primary,
+    },
+    streakContainer: {
+        alignItems: 'flex-end',
+    },
+    streakNumber: {
+        ...AppleTypography.title1,
+        fontWeight: '700',
+        color: AppleColors.systemOrange,
+    },
+    streakLabel: {
+        ...AppleTypography.caption1,
+        color: AppleColors.label.secondary,
+        marginTop: 2,
+    },
+    statsCard: {
+        flexDirection: 'row',
+        backgroundColor: AppleColors.background.tertiary,
+        marginHorizontal: AppleSpacing.base,
+        marginBottom: AppleSpacing.base,
+        padding: AppleSpacing.base,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 12,
+        elevation: 2,
+    },
+    statItem: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    statNumber: {
+        ...AppleTypography.title1,
+        fontWeight: '700',
+        color: AppleColors.systemBlue,
+        marginBottom: 4,
+    },
+    statLabel: {
+        ...AppleTypography.caption1,
+        color: AppleColors.label.secondary,
+    },
+    statDivider: {
+        width: 1,
+        backgroundColor: AppleColors.separator.nonOpaque,
+        marginVertical: AppleSpacing.sm,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingTop: AppleSpacing.sm,
+    },
+    sectionTitle: {
+        ...AppleTypography.title3,
+        color: AppleColors.label.primary,
+        paddingHorizontal: AppleSpacing.base,
+        marginBottom: AppleSpacing.md,
+    },
+    hintCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: AppleColors.fill.tertiary,
+        marginHorizontal: AppleSpacing.base,
+        marginTop: AppleSpacing.lg,
+        padding: AppleSpacing.base,
+        borderRadius: 12,
+    },
+    hintEmoji: {
+        fontSize: 24,
+        marginRight: AppleSpacing.md,
+    },
+    hintText: {
+        ...AppleTypography.callout,
+        color: AppleColors.label.secondary,
+        flex: 1,
+    },
+});

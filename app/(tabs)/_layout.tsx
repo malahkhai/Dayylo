@@ -1,7 +1,8 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import * as LucideIcons from 'lucide-react-native';
+import { AppleColors } from '../../constants/AppleTheme';
 
 export default function TabLayout() {
     return (
@@ -9,34 +10,33 @@ export default function TabLayout() {
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: '#121212',
-                    borderTopWidth: 0,
+                    backgroundColor: AppleColors.background.tertiary,
+                    borderTopWidth: 0.5,
+                    borderTopColor: AppleColors.separator.nonOpaque,
                     height: 90,
                     paddingBottom: 30,
                     paddingTop: 10,
                 },
-                tabBarActiveTintColor: '#30e8ab',
-                tabBarInactiveTintColor: 'rgba(255,255,255,0.2)',
+                tabBarActiveTintColor: AppleColors.systemBlue,
+                tabBarInactiveTintColor: AppleColors.systemGray,
                 tabBarLabelStyle: {
                     fontSize: 10,
-                    fontWeight: '900',
-                    textTransform: 'uppercase',
-                    letterSpacing: 1,
+                    fontWeight: '600',
                 }
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Home',
+                    title: 'Today',
                     tabBarIcon: ({ color, size }) => <LucideIcons.Home size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="dashboard"
+                name="stats"
                 options={{
-                    title: 'Status',
-                    tabBarIcon: ({ color, size }) => <LucideIcons.LayoutGrid size={size} color={color} />,
+                    title: 'Progress',
+                    tabBarIcon: ({ color, size }) => <LucideIcons.BarChart3 size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
@@ -44,8 +44,8 @@ export default function TabLayout() {
                 options={{
                     title: 'Add',
                     tabBarIcon: ({ color }) => (
-                        <View className="bg-primary w-12 h-12 rounded-2xl items-center justify-center -mt-8 shadow-lg shadow-primary/40">
-                            <LucideIcons.Plus size={28} color="black" />
+                        <View style={styles.addButton}>
+                            <LucideIcons.Plus size={28} color="#FFFFFF" />
                         </View>
                     ),
                 }}
@@ -54,16 +54,39 @@ export default function TabLayout() {
                 name="analytics"
                 options={{
                     title: 'Insights',
-                    tabBarIcon: ({ color, size }) => <LucideIcons.BarChart3 size={size} color={color} />,
+                    tabBarIcon: ({ color, size }) => <LucideIcons.TrendingUp size={size} color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
-                    title: 'Profile',
+                    title: 'Settings',
                     tabBarIcon: ({ color, size }) => <LucideIcons.Settings size={size} color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="dashboard"
+                options={{
+                    href: null, // Hide from tab bar but keep for navigation
                 }}
             />
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    addButton: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: AppleColors.systemBlue,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: -20,
+        shadowColor: AppleColors.systemBlue,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+});
