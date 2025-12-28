@@ -21,13 +21,13 @@ const STARTER_HABITS: StarterHabit[] = [
     { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue },
     { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan },
     { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple },
-    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemOrange },
-    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemBlue },
-    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemGray },
+    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemGreen },
+    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemMint },
+    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemRed },
     { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink },
     { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo },
-    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemRed },
-    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemOrange },
+    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemOrange },
+    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemYellow },
 ];
 
 export default function OnboardingScreen() {
@@ -86,7 +86,8 @@ export default function OnboardingScreen() {
                 onPress={() => toggleHabit(h.id)}
                 style={[
                     styles.habitItem,
-                    isSelected && { backgroundColor: h.color + '15', borderColor: h.color }
+                    { backgroundColor: h.color + '08', borderColor: h.color + '20' },
+                    isSelected && { backgroundColor: h.color + '20', borderColor: h.color }
                 ]}
             >
                 <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
