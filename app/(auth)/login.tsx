@@ -29,7 +29,7 @@ export default function AuthScreen() {
                         <View className="w-20 h-20 bg-focus-dark rounded-[24px] items-center justify-center mb-6 shadow-2xl">
                             <LucideIcons.Flame size={40} color="#f97316" fill="#f97316" />
                         </View>
-                        <Text className="text-4xl font-black text-white tracking-tighter mb-2">FocusStreak</Text>
+                        <Text className="text-4xl font-black text-white tracking-tighter mb-2">Dayylo</Text>
                         <Text className="text-white/60 font-bold text-center text-[15px] px-4 leading-6">
                             Your daily path to better habits.{"\n"}Stay consistent, stay focused.
                         </Text>

@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, ScrollView, Dimensions, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 import { useHabits } from '../../context/HabitContext';
 
 const { width } = Dimensions.get('window');
 
 export default function AnalyticsScreen() {
     const { habits, isPremium } = useHabits();
+    const router = useRouter();
 
     // Mock data for heatmap
     const days = Array.from({ length: 35 }, (_, i) => ({

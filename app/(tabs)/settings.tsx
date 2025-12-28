@@ -13,7 +13,7 @@ export default function SettingsScreen() {
         {
             title: 'Account',
             items: [
-                { icon: 'Crown', label: 'FocusStreak Premium', value: isPremium ? 'Active' : 'Upgrade', color: '#f97316', onPress: () => router.push('/paywall') },
+                { icon: 'Crown', label: 'Dayylo Premium', value: isPremium ? 'Active' : 'Upgrade', color: '#f97316', onPress: () => router.push('/paywall') },
                 { icon: 'User', label: 'Profile Settings', color: '#3b82f6' },
                 { icon: 'Bell', label: 'Notifications', color: '#8b5cf6' },
             ]

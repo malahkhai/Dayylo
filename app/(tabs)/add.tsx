@@ -124,7 +124,7 @@ export default function AddHabitScreen() {
                                     </View>
                                     <View>
                                         <Text className="text-[15px] font-black text-white mb-1" numberOfLines={1}>{item.name}</Text>
-                                        <Text className="text-[11px] font-bold text-white/30 uppercase">{item.metric || 'Daily'}</Text>
+                                        <Text className="text-[11px] font-bold text-white/30 uppercase">{(item as any).metric || 'Daily'}</Text>
                                     </View>
                                 </Pressable>
                             );
