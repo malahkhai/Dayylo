@@ -9,11 +9,54 @@ import {
     Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as LucideIcons from 'lucide-react-native';
+import { useHabits } from '../../context/HabitContext';
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 
 const { width } = Dimensions.get('window');
 
+const getAICoachMessage = (streak: number) => {
+    if (streak === 0) {
+        return {
+            title: "Defaulting to average?",
+            message: "The streak is at absolute zero. How can you build a resistance army if you can't honor your pledge?",
+            type: 'roast'
+        };
+    }
+    if (streak < 3) {
+        return {
+            title: "Barely breathing",
+            message: "A tiny flame is better than none, but honestly, this streak is crying for help. Don't let it die.",
+            type: 'roast'
+        };
+    }
+    if (streak < 7) {
+        return {
+            title: "Warming up",
+            message: "You're starting to get the rhythm. But remember: consistency is the only way to the top.",
+            type: 'compliment'
+        };
+    }
+    if (streak < 14) {
+        return {
+            title: "The standards are rising",
+            message: "You're making this look easy. The resistance is proud, but the real test is just beginning.",
+            type: 'compliment'
+        };
+    }
+    return {
+        title: "Salute Maximus",
+        message: "A force of nature. You aren't just tracking habits; you're rewriting your destiny. Keep the fire burning.",
+        type: 'compliment'
+    };
+};
+
 export default function StatsScreen() {
+    const { habits } = useHabits();
+    // For demo purposes, we'll calculate a 'global' streak or just use the highest one
+    const highestStreak = habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0;
+    const aiInsight = getAICoachMessage(highestStreak);
+
     const [fadeAnim] = useState(new Animated.Value(0));
     const [slideAnim] = useState(new Animated.Value(30));
 
@@ -83,6 +126,25 @@ export default function StatsScreen() {
                         <View style={styles.streakRight}>
                             <Text style={styles.streakBest}>Best: 23 days</Text>
                         </View>
+                    </View>
+                </Animated.View>
+
+                {/* AI Coach Insight */}
+                <Animated.View
+                    style={[
+                        styles.aiCard,
+                        {
+                            opacity: fadeAnim,
+                            transform: [{ translateY: slideAnim }],
+                        },
+                    ]}
+                >
+                    <View style={styles.aiIconContainer}>
+                        <LucideIcons.Sparkles size={20} color={aiInsight.type === 'compliment' ? AppleColors.primary : AppleColors.systemRed} />
+                    </View>
+                    <View style={styles.aiTextContainer}>
+                        <Text style={[styles.aiTitle, { color: aiInsight.type === 'compliment' ? AppleColors.primary : AppleColors.systemRed }]}>{aiInsight.title}</Text>
+                        <Text style={styles.aiMessage}>{aiInsight.message}</Text>
                     </View>
                 </Animated.View>
 
@@ -418,5 +480,41 @@ const styles = StyleSheet.create({
         ...AppleTypography.footnote,
         color: AppleColors.systemIndigo,
         textAlign: 'right',
+    },
+    aiCard: {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderRadius: 24,
+        padding: 20,
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    aiIconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 12,
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 16,
+    },
+    aiTextContainer: {
+        flex: 1,
+    },
+    aiTitle: {
+        ...AppleTypography.headline,
+        fontWeight: '900',
+        marginBottom: 4,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        fontSize: 12,
+    },
+    aiMessage: {
+        ...AppleTypography.subheadline,
+        color: 'rgba(255, 255, 255, 0.7)',
+        fontWeight: '600',
+        lineHeight: 20,
     },
 });

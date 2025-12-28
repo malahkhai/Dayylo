@@ -35,6 +35,8 @@ export default function OnboardingScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
+    const [activeBuildHabitId, setActiveBuildHabitId] = useState<string | null>(null);
+    const [activeBreakHabitId, setActiveBreakHabitId] = useState<string | null>(null);
     const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
     const [isPrivate, setIsPrivate] = useState(false);
 
@@ -44,17 +46,31 @@ export default function OnboardingScreen() {
             return;
         }
 
+        const habit = STARTER_HABITS.find(h => h.id === id);
+        if (!habit) return;
+
         setSelectedHabits(prev => {
             const isRemoving = !!prev[id];
             const newState = { ...prev };
 
             if (isRemoving) {
                 delete newState[id];
+                // Handle active state clearing
+                if (habit.type === 'build' && activeBuildHabitId === id) {
+                    const remaining = Object.keys(newState).filter(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'build');
+                    setActiveBuildHabitId(remaining.length > 0 ? remaining[0] : null);
+                } else if (habit.type === 'break' && activeBreakHabitId === id) {
+                    const remaining = Object.keys(newState).filter(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break');
+                    setActiveBreakHabitId(remaining.length > 0 ? remaining[0] : null);
+                }
             } else {
-                const habit = STARTER_HABITS.find(h => h.id === id);
-                newState[id] = habit?.difficulty || 5;
+                newState[id] = habit.difficulty || 5;
 
-                if (habit?.type === 'break' && !Object.keys(prev).some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
+                // Set as active
+                if (habit.type === 'build') setActiveBuildHabitId(id);
+                else setActiveBreakHabitId(id);
+
+                if (habit.type === 'break' && !Object.keys(prev).some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
                     setShowPrivacyPrompt(true);
                 }
             }
@@ -90,6 +106,7 @@ export default function OnboardingScreen() {
 
     const renderHabitItem = (h: StarterHabit) => {
         const isSelected = !!selectedHabits[h.id];
+        const isActive = activeBuildHabitId === h.id || activeBreakHabitId === h.id;
         const difficulty = selectedHabits[h.id] || h.difficulty;
         const isCustom = h.id.includes('custom');
         const Icon = LucideIcons[h.icon] as any;
@@ -97,32 +114,42 @@ export default function OnboardingScreen() {
         const getDifficultyColor = (d: number) => {
             if (d < 4) return AppleColors.systemGreen;
             if (d > 7) return AppleColors.systemRed;
-            return AppleColors.systemOrange;
+            return AppleColors.systemBlue;
         };
 
         return (
             <View key={h.id} style={styles.habitContainer}>
                 <Pressable
-                    onPress={() => toggleHabit(h.id)}
+                    onPress={() => {
+                        if (isSelected && !isActive) {
+                            if (h.type === 'build') setActiveBuildHabitId(h.id);
+                            else setActiveBreakHabitId(h.id);
+                        } else {
+                            toggleHabit(h.id);
+                        }
+                    }}
                     style={[
                         styles.habitItem,
-                        { backgroundColor: h.color + '08', borderColor: h.color + '20' },
-                        isSelected && { backgroundColor: h.color + '20', borderColor: h.color, height: isCustom ? 'auto' : 180 }
+                        {
+                            backgroundColor: isSelected ? h.color + '15' : 'rgba(255,255,255,0.03)',
+                            borderColor: isActive ? h.color : (isSelected ? h.color + '40' : 'rgba(255,255,255,0.05)')
+                        },
+                        isSelected && { borderWidth: 2 }
                     ]}
                 >
-                    <View style={[styles.habitIconBg, { backgroundColor: h.color + '20' }]}>
-                        <Icon size={24} color={h.color} />
+                    <View style={[styles.habitIconBg, { backgroundColor: isSelected ? h.color + '20' : 'rgba(21, 21, 23, 1)' }]}>
+                        <Icon size={24} color={isSelected ? h.color : 'rgba(255,255,255,0.4)'} />
                     </View>
-                    <Text style={[styles.habitName, isSelected && { color: h.color }]} numberOfLines={1}>{h.name}</Text>
+                    <Text style={[styles.habitName, isSelected && { color: h.color, opacity: 1 }, !isSelected && { color: '#FFFFFF', opacity: 0.9 }]} numberOfLines={1}>{h.name}</Text>
 
                     {isSelected && !isCustom && (
-                        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(difficulty) + '20', borderColor: getDifficultyColor(difficulty) }]}>
-                            <Text style={[styles.difficultyText, { color: getDifficultyColor(difficulty) }]}>Lv.{difficulty}</Text>
+                        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(difficulty) + '15', borderColor: getDifficultyColor(difficulty) }]}>
+                            <Text style={[styles.difficultyText, { color: getDifficultyColor(difficulty) }]}>LV.{difficulty}</Text>
                         </View>
                     )}
 
                     {!isCustom && (
-                        <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }]}>
+                        <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }, !isSelected && { borderColor: 'rgba(255,255,255,0.15)' }]}>
                             {isSelected && <LucideIcons.Check size={14} color="white" />}
                         </View>
                     )}
@@ -132,26 +159,40 @@ export default function OnboardingScreen() {
                         </View>
                     )}
                 </Pressable>
+            </View>
+        );
+    };
 
-                {isSelected && !isCustom && (
-                    <View style={styles.difficultySelector}>
-                        <Text style={styles.selectorLabel}>Set Difficulty</Text>
-                        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.difficultyRange}>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(d => (
-                                <Pressable
-                                    key={d}
-                                    onPress={() => updateDifficulty(h.id, d)}
-                                    style={[
-                                        styles.difficultyNode,
-                                        difficulty === d && { backgroundColor: getDifficultyColor(d), borderColor: getDifficultyColor(d) }
-                                    ]}
-                                >
-                                    <Text style={[styles.difficultyNodeText, difficulty === d && { color: '#000000' }]}>{d}</Text>
-                                </Pressable>
-                            ))}
-                        </ScrollView>
-                    </View>
-                )}
+    const renderDifficultySelector = (type: 'build' | 'break') => {
+        const activeId = type === 'build' ? activeBuildHabitId : activeBreakHabitId;
+        if (!activeId) return null;
+
+        const activeHabit = STARTER_HABITS.find(h => h.id === activeId);
+        const difficulty = selectedHabits[activeId];
+
+        const getDifficultyColor = (d: number) => {
+            if (d < 4) return AppleColors.systemGreen;
+            if (d > 7) return AppleColors.systemRed;
+            return AppleColors.systemBlue;
+        };
+
+        return (
+            <View style={styles.difficultySelector}>
+                <Text style={styles.selectorLabel}>SET DIFFICULTY</Text>
+                <View style={styles.difficultyRange}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(d => (
+                        <Pressable
+                            key={d}
+                            onPress={() => updateDifficulty(activeId, d)}
+                            style={[
+                                styles.difficultyNode,
+                                difficulty === d && { backgroundColor: getDifficultyColor(d), borderColor: getDifficultyColor(d) }
+                            ]}
+                        >
+                            <Text style={[styles.difficultyNodeText, difficulty === d && { color: '#000000' }]}>{d}</Text>
+                        </Pressable>
+                    ))}
+                </View>
             </View>
         );
     };
@@ -165,14 +206,20 @@ export default function OnboardingScreen() {
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-                    <Text style={styles.sectionTitle}>Build Habits</Text>
-                    <View style={styles.grid}>
-                        {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
+                    <View style={styles.accordionGroup}>
+                        <Text style={styles.sectionTitle}>Build Habits</Text>
+                        {renderDifficultySelector('build')}
+                        <View style={styles.grid}>
+                            {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
+                        </View>
                     </View>
 
-                    <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Break Habits</Text>
-                    <View style={styles.grid}>
-                        {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
+                    <View style={[styles.accordionGroup, { marginTop: 32 }]}>
+                        <Text style={styles.sectionTitle}>Break Habits</Text>
+                        {renderDifficultySelector('break')}
+                        <View style={styles.grid}>
+                            {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
+                        </View>
                     </View>
                 </ScrollView>
 
@@ -300,52 +347,61 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 8,
     },
+    accordionGroup: {
+        // Expanded accordion style
+    },
     difficultyBadge: {
         paddingHorizontal: 12,
-        paddingVertical: 6,
+        paddingVertical: 2,
         borderRadius: 12,
-        borderWidth: 1,
+        borderWidth: 1.5,
         marginTop: 4,
+        backgroundColor: 'rgba(255,255,255,0.02)', // Subtle fill
     },
     difficultyText: {
         ...AppleTypography.caption2,
         fontWeight: '900',
         textTransform: 'uppercase',
+        fontSize: 10,
     },
     difficultySelector: {
-        marginTop: 12,
-        backgroundColor: AppleColors.background.tertiary,
-        borderRadius: 20,
-        padding: 12,
+        marginBottom: 16,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 24,
+        padding: 16,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
     },
     selectorLabel: {
         ...AppleTypography.caption2,
         fontWeight: '900',
-        color: AppleColors.label.tertiary,
+        color: 'rgba(255,255,255,0.6)',
         textTransform: 'uppercase',
-        marginBottom: 8,
+        marginBottom: 12,
         textAlign: 'center',
+        letterSpacing: 1,
     },
     difficultyRange: {
-        gap: 8,
-        paddingHorizontal: 4,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 0,
     },
     difficultyNode: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(255,255,255,0.05)',
+        width: (width - (AppleSpacing.base * 2) - 32 - (9 * 4)) / 10,
+        aspectRatio: 1,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255,255,255,0.08)',
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: 'rgba(255,255,255,0.1)',
     },
     difficultyNodeText: {
-        ...AppleTypography.caption1,
+        ...AppleTypography.caption2,
         fontWeight: '900',
-        color: AppleColors.label.primary,
+        color: '#FFFFFF',
+        fontSize: 10,
     },
     checkbox: {
         position: 'absolute',
