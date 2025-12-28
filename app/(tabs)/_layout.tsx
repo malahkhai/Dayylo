@@ -43,6 +43,7 @@ export default function TabLayout() {
                 name="add"
                 options={{
                     title: 'Add',
+                    tabBarLabel: () => null,
                     tabBarIcon: ({ color }) => (
                         <View style={styles.addButton}>
                             <LucideIcons.Plus size={28} color="#FFFFFF" />
