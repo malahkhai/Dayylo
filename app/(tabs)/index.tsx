@@ -9,7 +9,7 @@ import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated'
 
 const { width } = Dimensions.get('window');
 
-function Dashboard() {
+export default function Dashboard() {
     const router = useRouter();
     const [habits, setHabits] = useState<Habit[]>(INITIAL_HABITS);
     const [user, setUser] = useState<User>({
@@ -230,4 +230,3 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;

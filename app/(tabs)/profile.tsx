@@ -11,7 +11,6 @@ export default function Profile() {
     return (
         <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                {/* Profile Header */}
                 <View className="items-center pt-8 pb-8">
                     <Text className="text-[14px] font-black uppercase tracking-[0.2em] mb-8 text-slate-400">Profile</Text>
 
@@ -31,7 +30,6 @@ export default function Profile() {
                     <Text className="text-[12px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Member Since April 2024</Text>
                 </View>
 
-                {/* Tab Selection */}
                 <View className="px-6 mb-8">
                     <View className="bg-surface-dark p-1.5 rounded-[20px] flex-row border border-white/5">
                         {['Stats', 'Habits'].map((tab) => (
@@ -48,10 +46,8 @@ export default function Profile() {
                     </View>
                 </View>
 
-                {/* Stats View */}
                 {activeTab === 'Stats' && (
                     <View className="px-6 gap-8 mb-32">
-                        {/* Longest Streak Highlight */}
                         <View className="bg-[#ff5b22] rounded-[32px] p-7 shadow-lg relative overflow-hidden">
                             <View className="flex-row justify-between items-start">
                                 <View className="flex-row items-center">
@@ -68,7 +64,6 @@ export default function Profile() {
                             </View>
                         </View>
 
-                        {/* Weekly Activity */}
                         <View>
                             <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">Weekly Activity</Text>
                             <View className="bg-white dark:bg-surface-dark-alt rounded-[32px] p-6 shadow-sm border border-slate-100 dark:border-white/5">
@@ -85,7 +80,6 @@ export default function Profile() {
                             </View>
                         </View>
 
-                        {/* General Stats Grid */}
                         <View className="flex-row flex-wrap gap-4">
                             {[
                                 { label: 'Books Read', value: '12', icon: 'Book' },
