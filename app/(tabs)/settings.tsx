@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Image, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { AppleColors } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
 
 export default function SettingsScreen() {
@@ -16,6 +17,7 @@ export default function SettingsScreen() {
                 { icon: 'Crown', label: 'Dayylo Premium', value: isPremium ? 'Active' : 'Upgrade', color: '#f97316', onPress: () => router.push('/paywall') },
                 { icon: 'User', label: 'Profile Settings', color: '#3b82f6' },
                 { icon: 'Bell', label: 'Notifications', color: '#8b5cf6' },
+                { icon: 'History', label: 'Daily Wrap-up', color: AppleColors.systemBlue, onPress: () => router.push('/daily-wrapup') },
             ]
         },
         {

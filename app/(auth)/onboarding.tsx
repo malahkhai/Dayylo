@@ -40,6 +40,7 @@ export default function OnboardingScreen() {
     const [activeBuildHabitId, setActiveBuildHabitId] = useState<string | null>(null);
     const [activeBreakHabitId, setActiveBreakHabitId] = useState<string | null>(null);
     const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
+    const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [isPrivate, setIsPrivate] = useState(false);
 
     const toggleHabit = (id: string) => {
@@ -87,7 +88,15 @@ export default function OnboardingScreen() {
         }));
     };
 
-    const handleStartTracking = async () => {
+    const handleStartTracking = () => {
+        if (Object.keys(selectedHabits).length === 0) {
+            router.replace('/(tabs)');
+            return;
+        }
+        setShowNotificationModal(true);
+    };
+
+    const finalizeOnboarding = async () => {
         // Add selected habits to context
         for (const hid of Object.keys(selectedHabits)) {
             const h = STARTER_HABITS.find(sh => sh.id === hid);
@@ -103,6 +112,7 @@ export default function OnboardingScreen() {
                 });
             }
         }
+        setShowNotificationModal(false);
         router.replace('/(tabs)');
     };
 
@@ -266,6 +276,34 @@ export default function OnboardingScreen() {
                             >
                                 <Text style={styles.modalCancelText}>No, keep them visible</Text>
                             </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Notification & Tracking Awareness Modal */}
+            <Modal
+                visible={showNotificationModal}
+                transparent
+                animationType="fade"
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { paddingBottom: 40 }]}>
+                        <View style={[styles.modalIconBg, { backgroundColor: AppleColors.systemBlue + '20' }]}>
+                            <LucideIcons.BellRing size={32} color={AppleColors.systemBlue} />
+                        </View>
+                        <Text style={styles.modalTitle}>Stay Accountable</Text>
+                        <Text style={styles.modalText}>
+                            You'll get a daily notification to track your habits.
+                            {"\n\n"}
+                            Success requires manual input: click on <Text style={{ fontWeight: '900', color: AppleColors.label.primary }}>Gym</Text> if you went, and click on <Text style={{ fontWeight: '900', color: AppleColors.label.primary }}>Bad habits</Text> if you avoided them.
+                        </Text>
+                        <View style={styles.modalActions}>
+                            <AppleButton
+                                title="Start My Journey"
+                                onPress={finalizeOnboarding}
+                                fullWidth
+                            />
                         </View>
                     </View>
                 </View>
