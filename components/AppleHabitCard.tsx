@@ -24,6 +24,7 @@ interface HabitCardProps {
   description?: string;
   streak: number;
   isCompleted: boolean;
+  trackedToday: boolean;
   color?: string;
   icon?: string;
   onPress?: () => void;
@@ -36,6 +37,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   description,
   streak,
   isCompleted,
+  trackedToday,
   color = AppleColors.primary,
   icon,
   onPress,
@@ -45,15 +47,16 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   const translateX = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
+    .enabled(!trackedToday)
     .onUpdate((event) => {
       translateX.value = event.translationX;
     })
     .onEnd((event) => {
       if (translateX.value > SWIPE_THRESHOLD) {
-        translateX.value = withSpring(SCREEN_WIDTH);
+        translateX.value = withSpring(0);
         runOnJS(onComplete!)();
       } else if (translateX.value < -SWIPE_THRESHOLD) {
-        translateX.value = withSpring(-SCREEN_WIDTH);
+        translateX.value = withSpring(0);
         runOnJS(onFail!)();
       } else {
         translateX.value = withSpring(0);
@@ -62,21 +65,24 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
 
   const rStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
+    opacity: trackedToday ? 0.6 : 1,
   }));
 
   return (
     <View style={styles.container}>
-      {/* Background Actions */}
-      <View style={styles.backgroundContainer}>
-        <View style={[styles.actionSide, styles.doneSide]}>
-          <LucideIcons.CheckCircle2 size={24} color="white" />
-          <Text style={styles.actionText}>DONE</Text>
+      {/* Background Actions - Only show if not tracked */}
+      {!trackedToday && (
+        <View style={styles.backgroundContainer}>
+          <View style={[styles.actionSide, styles.doneSide]}>
+            <LucideIcons.CheckCircle2 size={24} color="white" />
+            <Text style={styles.actionText}>DONE</Text>
+          </View>
+          <View style={[styles.actionSide, styles.missedSide]}>
+            <Text style={styles.actionText}>MISSED</Text>
+            <LucideIcons.XCircle size={24} color="white" />
+          </View>
         </View>
-        <View style={[styles.actionSide, styles.missedSide]}>
-          <Text style={styles.actionText}>MISSED</Text>
-          <LucideIcons.XCircle size={24} color="white" />
-        </View>
-      </View>
+      )}
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.card, rStyle]}>
@@ -100,7 +106,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
               )}
             </View>
 
-            {streak > 0 && (
+            {streak > 0 && !trackedToday && (
               <View style={[styles.streakBadge, { backgroundColor: color }]}>
                 <Text style={styles.streakEmoji}>🔥</Text>
                 <Text style={styles.streakText}>{streak}</Text>
@@ -113,6 +119,18 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
               <View style={[styles.progressFill, { backgroundColor: color, width: isCompleted ? '100%' : '0%' }]} />
             </View>
           </View>
+
+          {/* Watermark Overlay */}
+          {trackedToday && (
+            <View style={styles.watermarkOverlay}>
+              <View style={[
+                styles.watermarkBadge,
+                { backgroundColor: isCompleted ? AppleColors.systemGreen : AppleColors.systemRed }
+              ]}>
+                <Text style={styles.watermarkText}>{isCompleted ? 'DONE' : 'MISSED'}</Text>
+              </View>
+            </View>
+          )}
         </Animated.View>
       </GestureDetector>
     </View>
@@ -223,5 +241,28 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 2,
+  },
+  watermarkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 24,
+    zIndex: 10,
+  },
+  watermarkBadge: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 16,
+    transform: [{ rotate: '-15deg' }],
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.4)',
+    ...AppleShadows.medium,
+  },
+  watermarkText: {
+    ...AppleTypography.title3,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 2,
   },
 });

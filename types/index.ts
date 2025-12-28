@@ -9,6 +9,7 @@ export interface Habit {
     streak: number;
     longestStreak: number;
     completedToday: boolean;
+    trackedToday: boolean;
     isPrivate: boolean;
     frequency: string[];
     difficulty: number;

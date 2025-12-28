@@ -131,6 +131,7 @@ export default function HomeScreen() {
                                 description={habit.description}
                                 streak={habit.streak}
                                 isCompleted={habit.completedToday}
+                                trackedToday={habit.trackedToday}
                                 color={habit.color}
                                 icon={habit.icon}
                                 onPress={() => console.log('Habit pressed:', habit.id)}

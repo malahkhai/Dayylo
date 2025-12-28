@@ -67,6 +67,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             streak: 0,
             longestStreak: 0,
             completedToday: false,
+            trackedToday: false,
         };
         await saveHabits([...habits, newHabit]);
         return true;
@@ -125,6 +126,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     return {
                         ...h,
                         completedToday: true,
+                        trackedToday: true,
                         streak: newStreak,
                         longestStreak: Math.max(h.longestStreak, newStreak)
                     };
@@ -132,6 +134,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     return {
                         ...h,
                         completedToday: false,
+                        trackedToday: true,
                         streak: 0
                     };
                 }
