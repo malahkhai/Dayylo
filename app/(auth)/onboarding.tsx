@@ -23,11 +23,13 @@ const STARTER_HABITS: StarterHabit[] = [
     { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan, difficulty: 2 },
     { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple, difficulty: 4 },
     { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemGreen, difficulty: 3 },
+    { id: 'h9', name: 'Plank', type: 'build', icon: 'Timer', color: AppleColors.systemOrange, difficulty: 6 },
     { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemMint, difficulty: 5 },
     { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemRed, difficulty: 9 },
     { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink, difficulty: 6 },
     { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo, difficulty: 8 },
     { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemOrange, difficulty: 5 },
+    { id: 'h10', name: 'Don\'t call Ex', type: 'break', icon: 'PhoneOff', color: AppleColors.systemRed, difficulty: 10 },
     { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemYellow, difficulty: 5 },
 ];
 
