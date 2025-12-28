@@ -7,8 +7,9 @@ export interface Habit {
     icon: string;
     color: string;
     streak: number;
+    longestStreak: number;
     completedToday: boolean;
-    private: boolean;
+    isPrivate: boolean;
     frequency: string[];
     reminderTime?: string;
     description?: string;

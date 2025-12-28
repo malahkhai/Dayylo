@@ -32,6 +32,11 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, i
         };
     });
 
+    const getActionLabel = () => {
+        if (habit.type === 'break') return isCompleted ? 'Avoided today' : 'Avoid today';
+        return isCompleted ? 'Marked done' : 'Mark done';
+    };
+
     return (
         <Link
             href={{ pathname: '/habit/[id]', params: { id: habit.id } }}
@@ -51,11 +56,9 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, i
                         {habit.name}
                     </Text>
                     <View className="flex-row items-center mt-1">
-                        {habit.targetValue && (
-                            <Text className="text-[13px] font-medium text-slate-400 mr-2.5">
-                                {habit.currentValue ?? 0} {habit.unit}
-                            </Text>
-                        )}
+                        <Text className="text-[13px] font-medium text-slate-400 mr-2.5">
+                            {habit.type === 'break' ? 'Avoidance' : 'Build'}
+                        </Text>
                         <View className="flex-row items-center">
                             <Text className="text-[14px] mr-1">🔥</Text>
                             <Text className="text-[13px] font-bold text-orange-500">{habit.streak} Days</Text>
@@ -67,26 +70,25 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, i
                 <View className="flex-row items-center ml-2">
                     {hasStepper ? (
                         <View className="flex-row items-center bg-slate-50 dark:bg-white/5 rounded-[16px] p-1 border border-slate-100 dark:border-white/10">
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => onUpdateValue?.(habit.id, -1)}
                                 className="w-8 h-8 items-center justify-center rounded-[8px]"
                             >
                                 <LucideIcons.Minus size={18} color="#94a3b8" />
-                            </TouchableOpacity>
+                            </Pressable>
                             <Text className="min-w-[24px] text-center text-[15px] font-bold text-slate-800 dark:text-slate-200 mx-1">
                                 {habit.currentValue}
                             </Text>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => onUpdateValue?.(habit.id, 1)}
                                 className="w-8 h-8 items-center justify-center rounded-[8px]"
                             >
                                 <LucideIcons.Plus size={18} color="#94a3b8" />
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     ) : (
-                        <TouchableOpacity
+                        <Pressable
                             onPress={() => onToggle(habit.id)}
-                            activeOpacity={0.8}
                         >
                             {/* @ts-ignore */}
                             <Animated.View
@@ -98,14 +100,15 @@ const HabitTile: React.FC<HabitTileProps> = ({ habit, onToggle, onUpdateValue, i
                                     <LucideIcons.Check size={20} color="#30e8ab" strokeWidth={3} />
                                 </Animated.View>
                             </Animated.View>
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </View>
 
                 {/* Locked Overlay */}
-                {isLocked && (
-                    <View className="absolute inset-0 bg-white/40 dark:bg-black/40 rounded-[24px] flex-row items-center justify-end pr-5">
-                        <LucideIcons.Lock size={20} color="#94a3b8" opacity={0.5} />
+                {isLocked && habit.isPrivate && (
+                    <View className="absolute inset-0 bg-white/95 dark:bg-black/95 rounded-[24px] flex-row items-center justify-center">
+                        <LucideIcons.Lock size={20} color="#94a3b8" />
+                        <Text className="ml-2 text-xs font-black text-slate-400 uppercase tracking-widest">Private</Text>
                     </View>
                 )}
             </Pressable>

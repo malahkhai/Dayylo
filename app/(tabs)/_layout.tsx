@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import * as LucideIcons from 'lucide-react-native';
@@ -6,22 +7,21 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#30e8ab',
+                tabBarActiveTintColor: '#000000',
                 tabBarInactiveTintColor: '#94a3b8',
                 tabBarStyle: {
                     backgroundColor: '#ffffff',
                     borderTopWidth: 0,
                     elevation: 0,
-                    height: 100,
-                    paddingBottom: 35,
+                    height: 90,
+                    paddingBottom: 30,
                     paddingTop: 10,
-                    position: 'absolute',
-                    borderTopLeftRadius: 32,
-                    borderTopRightRadius: 32,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: -2 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 10,
+                },
+                tabBarLabelStyle: {
+                    fontSize: 10,
+                    fontWeight: '900',
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
                 },
                 headerShown: false,
             }}>
@@ -33,16 +33,35 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="insights"
+                name="dashboard"
                 options={{
-                    title: 'Insights',
-                    tabBarIcon: ({ color }) => <LucideIcons.BarChart2 size={24} color={color} />,
+                    title: 'Stats',
+                    tabBarIcon: ({ color }) => <LucideIcons.LayoutDashboard size={24} color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="profile"
+                name="add"
                 options={{
-                    title: 'Profile',
+                    title: 'Add',
+                    tabBarIcon: ({ color }) => (
+                        <View className="bg-primary w-12 h-12 rounded-full items-center justify-center -mt-8 shadow-lg border-4 border-white">
+                            <LucideIcons.Plus size={28} color="black" />
+                        </View>
+                    ),
+                    tabBarLabel: () => null,
+                }}
+            />
+            <Tabs.Screen
+                name="analytics"
+                options={{
+                    title: 'Charts',
+                    tabBarIcon: ({ color }) => <LucideIcons.LineChart size={24} color={color} />,
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    title: 'Self',
                     tabBarIcon: ({ color }) => <LucideIcons.User size={24} color={color} />,
                 }}
             />
