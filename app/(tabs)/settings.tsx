@@ -1,126 +1,100 @@
 import React from 'react';
-import { View, Text, ScrollView, Image, Pressable, Linking } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useHabits } from '../../context/HabitContext';
 
 export default function SettingsScreen() {
     const router = useRouter();
+    const { isPremium } = useHabits();
 
-    const openLegal = (url: string) => {
-        // In a real app, use Linking or a WebView
-        // Spec says "Apple-approved external browser opening"
-        // Linking.openURL(url);
-        console.log('Opening legal:', url);
-    };
+    const sections = [
+        {
+            title: 'Account',
+            items: [
+                { icon: 'Crown', label: 'FocusStreak Premium', value: isPremium ? 'Active' : 'Upgrade', color: '#f97316', onPress: () => router.push('/paywall') },
+                { icon: 'User', label: 'Profile Settings', color: '#3b82f6' },
+                { icon: 'Bell', label: 'Notifications', color: '#8b5cf6' },
+            ]
+        },
+        {
+            title: 'Preferences',
+            items: [
+                { icon: 'Moon', label: 'Appearance', value: 'System', color: '#64748b' },
+                { icon: 'Lock', label: 'Privacy & Security', color: '#30e8ab' },
+                { icon: 'Globe', label: 'Language', value: 'English', color: '#3b82f6' },
+            ]
+        },
+        {
+            title: 'Support',
+            items: [
+                { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
+                { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8' },
+                { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8' },
+            ]
+        }
+    ];
 
     return (
-        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+        <SafeAreaView className="flex-1 bg-black">
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-                {/* Profile Header */}
-                <View className="pt-12 pb-8 items-center">
-                    <View className="relative">
-                        <View className="w-28 h-28 rounded-[40px] overflow-hidden border-4 border-white shadow-xl">
-                            <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
-                                className="w-full h-full"
-                            />
-                        </View>
-                        <View className="absolute -bottom-2 -right-2 bg-primary w-10 h-10 rounded-[14px] items-center justify-center border-4 border-white shadow-lg">
-                            <LucideIcons.Camera size={18} color="black" />
-                        </View>
+                <View className="pt-8 pb-10 items-center">
+                    <View className="w-24 h-24 rounded-[32px] overflow-hidden border-2 border-primary/20 p-1 mb-4">
+                        <Image
+                            source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
+                            className="w-full h-full rounded-[28px]"
+                        />
                     </View>
+                    <Text className="text-2xl font-black text-white">Alex Johnson</Text>
+                    <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">Achiever Level</Text>
 
-                    <Text className="text-3xl font-black text-slate-900 dark:text-white mt-6 tracking-tight">Emma Jackson</Text>
-                    <Text className="text-[12px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Member Since April 2024</Text>
-                </View>
-
-                {/* Account Section */}
-                <View className="mb-8">
-                    <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">Account & Plan</Text>
-                    <View className="bg-white dark:bg-surface-dark-alt rounded-[32px] overflow-hidden border border-slate-100 dark:border-white/5">
+                    {!isPremium && (
                         <Pressable
                             onPress={() => router.push('/paywall')}
-                            className="p-6 flex-row justify-between items-center border-b border-slate-50 dark:border-white/5"
+                            className="mt-6 bg-primary/10 border border-primary/20 px-6 py-3 rounded-2xl flex-row items-center"
                         >
-                            <View className="flex-row items-center">
-                                <View className="w-10 h-10 rounded-xl bg-primary/10 items-center justify-center">
-                                    <LucideIcons.Crown size={20} color="#f59e0b" />
-                                </View>
-                                <View className="ml-4">
-                                    <Text className="text-[15px] font-bold text-slate-900 dark:text-white">Daylo Premium</Text>
-                                    <Text className="text-xs font-medium text-slate-400">Manage Subscription</Text>
-                                </View>
-                            </View>
-                            <LucideIcons.ChevronRight size={18} color="#94a3b8" />
+                            <LucideIcons.Crown size={16} color="#30e8ab" />
+                            <Text className="text-primary font-black text-xs uppercase tracking-widest ml-2">Upgrade to Premium</Text>
                         </Pressable>
-                        <Pressable className="p-6 flex-row justify-between items-center">
-                            <View className="flex-row items-center">
-                                <View className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-white/5 items-center justify-center">
-                                    <LucideIcons.Settings size={20} color="#64748b" />
-                                </View>
-                                <View className="ml-4">
-                                    <Text className="text-[15px] font-bold text-slate-900 dark:text-white">Profile Settings</Text>
-                                    <Text className="text-xs font-medium text-slate-400">Edit Name, Email</Text>
-                                </View>
-                            </View>
-                            <LucideIcons.ChevronRight size={18} color="#94a3b8" />
-                        </Pressable>
-                    </View>
+                    )}
                 </View>
 
-                {/* Preferences */}
-                <View className="mb-8">
-                    <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">Preferences</Text>
-                    <View className="bg-white dark:bg-surface-dark-alt rounded-[32px] overflow-hidden border border-slate-100 dark:border-white/5">
-                        <Pressable className="p-6 flex-row justify-between items-center border-b border-slate-50 dark:border-white/5">
-                            <View className="flex-row items-center">
-                                <LucideIcons.Bell size={20} color="#64748b" />
-                                <Text className="ml-4 text-[15px] font-bold text-slate-900 dark:text-white">Reminders</Text>
-                            </View>
-                            <Text className="text-xs font-bold text-slate-400">Global On</Text>
-                        </Pressable>
-                        <Pressable className="p-6 flex-row justify-between items-center">
-                            <View className="flex-row items-center">
-                                <LucideIcons.Moon size={20} color="#64748b" />
-                                <Text className="ml-4 text-[15px] font-bold text-slate-900 dark:text-white">Appearance</Text>
-                            </View>
-                            <Text className="text-xs font-bold text-slate-400">Dynamic</Text>
-                        </Pressable>
+                {sections.map((section, idx) => (
+                    <View key={idx} className="mb-8">
+                        <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">
+                            {section.title}
+                        </Text>
+                        <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
+                            {section.items.map((item, i) => {
+                                const Icon = (LucideIcons as any)[item.icon];
+                                return (
+                                    <Pressable
+                                        key={i}
+                                        onPress={item.onPress}
+                                        className={`flex-row items-center p-5 active:bg-white/5 ${i !== section.items.length - 1 ? 'border-b border-white/5' : ''}`}
+                                    >
+                                        <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
+                                            <Icon size={20} color={item.color} />
+                                        </View>
+                                        <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">{item.label}</Text>
+                                        {item.value && (
+                                            <Text className="text-[13px] font-bold text-white/30 mr-2">{item.value}</Text>
+                                        )}
+                                        <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                                    </Pressable>
+                                );
+                            })}
+                        </View>
                     </View>
-                </View>
+                ))}
 
-                {/* Legal Section */}
-                <View className="mb-8">
-                    <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">Legal & Support</Text>
-                    <View className="bg-white dark:bg-surface-dark-alt rounded-[32px] overflow-hidden border border-slate-100 dark:border-white/5">
-                        <Pressable
-                            onPress={() => openLegal('https://daylo.app/terms')}
-                            className="p-6 flex-row justify-between items-center border-b border-slate-50 dark:border-white/5"
-                        >
-                            <Text className="text-[15px] font-bold text-slate-900 dark:text-white">Terms of Service</Text>
-                            <LucideIcons.ExternalLink size={16} color="#94a3b8" />
-                        </Pressable>
-                        <Pressable
-                            onPress={() => openLegal('https://daylo.app/privacy')}
-                            className="p-6 flex-row justify-between items-center border-b border-slate-50 dark:border-white/5"
-                        >
-                            <Text className="text-[15px] font-bold text-slate-900 dark:text-white">Privacy Policy</Text>
-                            <LucideIcons.ExternalLink size={16} color="#94a3b8" />
-                        </Pressable>
-                        <Pressable className="p-6 flex-row justify-between items-center">
-                            <Text className="text-[15px] font-bold text-slate-900 dark:text-white">Contact Support</Text>
-                            <LucideIcons.ChevronRight size={18} color="#94a3b8" />
-                        </Pressable>
-                    </View>
-                </View>
-
-                {/* Sign Out */}
-                <Pressable className="bg-slate-50 dark:bg-white/5 py-5 rounded-[24px] items-center mb-32 border border-slate-100 dark:border-white/10 active:opacity-70">
-                    <View className="flex-row items-center">
-                        <LucideIcons.LogOut size={18} color="#ef4444" />
-                        <Text className="text-red-500 font-black text-xs uppercase tracking-widest ml-2">Sign Out</Text>
-                    </View>
+                <Pressable
+                    onPress={() => router.replace('/(auth)/login')}
+                    className="flex-row items-center justify-center py-6 mb-20"
+                >
+                    <LucideIcons.LogOut size={20} color="#ef4444" />
+                    <Text className="text-[#ef4444] font-black text-[15px] ml-2">Sign Out</Text>
                 </Pressable>
             </ScrollView>
         </SafeAreaView>

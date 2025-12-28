@@ -1,121 +1,152 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useHabits } from '../../context/HabitContext';
 
+const { width } = Dimensions.get('window');
+const CARD_WIDTH = (width - 48 - 12) / 2;
+
+const SUGGESTED_BUILD = [
+    { name: 'Read Daily', icon: 'BookOpen', color: '#3b82f6', category: 'Mindfulness', metric: '30 mins' },
+    { name: 'Exercise', icon: 'Zap', color: '#f97316', category: 'Health', metric: '45 mins' },
+    { name: 'Meditate', icon: 'Waves', color: '#30e8ab', category: 'Mindfulness', metric: '15 mins' },
+    { name: 'Drink Water', icon: 'Droplet', color: '#3b82f6', category: 'Health', metric: '2 Liters' },
+    { name: 'Sleep Early', icon: 'Moon', color: '#8b5cf6', category: 'Health', metric: '8 hours' },
+    { name: 'Gratitude', icon: 'Heart', color: '#ef4444', category: 'Mindfulness', metric: '3 things' },
+];
+
+const SUGGESTED_BREAK = [
+    { name: 'No Sugar', icon: 'CandyOff', color: '#f97316', category: 'Health' },
+    { name: 'Limit Social', icon: 'Smartphone', color: '#3b82f6', category: 'Productivity' },
+    { name: 'Quit Smoking', icon: 'Ban', color: '#ef4444', category: 'Health' },
+    { name: 'No Alcohol', icon: 'Wine', color: '#f97316', category: 'Health' },
+    { name: 'Limit Coffee', icon: 'Coffee', color: '#8b5cf6', category: 'Health' },
+];
+
 export default function AddHabitScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
-
     const [habitType, setHabitType] = useState<'build' | 'break'>('build');
-    const [name, setName] = useState('');
-    const [isPrivate, setIsPrivate] = useState(false);
-    const [color, setColor] = useState('#3b82f6');
-    const [icon, setIcon] = useState('Activity');
+    const [category, setCategory] = useState('All');
+    const [search, setSearch] = useState('');
 
-    const handleCreate = async () => {
-        if (!name) return;
-
+    const handleSuggestedAdd = async (item: any) => {
         const success = await addHabit({
-            name,
+            name: item.name,
             type: habitType,
-            icon,
-            color,
-            isPrivate: habitType === 'break' ? isPrivate : false,
-            frequency: ['Daily'], // Simplified for now
+            icon: item.icon,
+            color: item.color,
+            isPrivate: false,
+            frequency: ['Daily'],
             reminderTime: '09:00',
         });
-
-        if (success) {
-            router.push('/(tabs)');
-        } else {
-            router.push('/paywall');
-        }
+        if (success) router.replace('/(tabs)');
+        else router.push('/paywall');
     };
 
+    const suggestions = habitType === 'build' ? SUGGESTED_BUILD : SUGGESTED_BREAK;
+    const filtered = suggestions.filter(s =>
+        (category === 'All' || s.category === category) &&
+        s.name.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
-        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
-            <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        <SafeAreaView className="flex-1 bg-black">
+            <View className="flex-1 px-6">
+                {/* Header */}
                 <View className="pt-8 pb-6 flex-row justify-between items-center">
-                    <Text className="text-4xl font-black text-slate-900 dark:text-white">New Habit</Text>
-                    <Pressable onPress={() => router.back()} className="p-2">
-                        <LucideIcons.X size={24} color="#94a3b8" />
+                    <Text className="text-3xl font-black text-white tracking-tight">
+                        {habitType === 'build' ? 'Build Habits' : 'Break Habits'}
+                    </Text>
+                    <Pressable onPress={() => router.back()}>
+                        <Text className="text-primary font-black text-sm uppercase">Done</Text>
                     </Pressable>
                 </View>
 
-                {/* Habit Type Selector */}
-                <View className="bg-slate-100 dark:bg-white/5 p-1.5 rounded-[20px] flex-row border border-white/5 mb-8">
+                {/* Habit Type Toggle (Custom addition to spec to handle both) */}
+                <View className="bg-white/5 p-1 rounded-2xl flex-row mb-6">
                     <Pressable
                         onPress={() => setHabitType('build')}
-                        className={`flex-1 py-3 items-center rounded-[16px] ${habitType === 'build' ? 'bg-white shadow-md' : ''}`}
+                        className={`flex-1 py-3 items-center rounded-xl ${habitType === 'build' ? 'bg-primary' : ''}`}
                     >
-                        <Text className={`text-[13px] font-black ${habitType === 'build' ? 'text-black' : 'text-slate-500'}`}>
-                            Build Habit
-                        </Text>
+                        <Text className={`text-xs font-black uppercase ${habitType === 'build' ? 'text-black' : 'text-white/40'}`}>Build</Text>
                     </Pressable>
                     <Pressable
                         onPress={() => setHabitType('break')}
-                        className={`flex-1 py-3 items-center rounded-[16px] ${habitType === 'break' ? 'bg-white shadow-md' : ''}`}
+                        className={`flex-1 py-3 items-center rounded-xl ${habitType === 'break' ? 'bg-accent-orange' : ''}`}
                     >
-                        <Text className={`text-[13px] font-black ${habitType === 'break' ? 'text-black' : 'text-slate-500'}`}>
-                            Break Habit
-                        </Text>
+                        <Text className={`text-xs font-black uppercase ${habitType === 'break' ? 'text-black' : 'text-white/40'}`}>Break</Text>
                     </Pressable>
                 </View>
 
-                <View className="mb-8">
-                    <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3 ml-1">Habit Name</Text>
+                {/* Search Bar */}
+                <View className="bg-white/5 rounded-2xl p-4 flex-row items-center mb-6 border border-white/5">
+                    <LucideIcons.Search size={18} color="rgba(255,255,255,0.2)" />
                     <TextInput
-                        className="bg-white dark:bg-surface-dark-alt p-5 rounded-[24px] text-lg font-bold text-slate-900 dark:text-white border border-slate-100 dark:border-white/5"
-                        placeholder="e.g. Read 20 pages"
-                        placeholderTextColor="#94a3b8"
-                        value={name}
-                        onChangeText={setName}
+                        placeholder="Find a habit..."
+                        placeholderTextColor="rgba(255,255,255,0.2)"
+                        className="ml-3 flex-1 text-white font-bold"
+                        value={search}
+                        onChangeText={setSearch}
                     />
                 </View>
 
-                {/* Privacy Toggle (Break only) */}
-                {habitType === 'break' && (
-                    <View className="bg-white dark:bg-surface-dark-alt p-6 rounded-[32px] border border-slate-100 dark:border-white/5 flex-row justify-between items-center mb-8">
-                        <View className="flex-1 mr-4">
-                            <Text className="text-lg font-black text-slate-900 dark:text-white">Private Habit</Text>
-                            <Text className="text-sm font-medium text-slate-400">Require Face ID / PIN to view</Text>
-                        </View>
+                {/* Categories */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-8 h-10 flex-none">
+                    {['All', 'Health', 'Mindfulness', 'Productivity'].map(c => (
                         <Pressable
-                            onPress={() => setIsPrivate(!isPrivate)}
-                            className={`w-14 h-8 rounded-full p-1 ${isPrivate ? 'bg-primary' : 'bg-slate-200'}`}
+                            key={c}
+                            onPress={() => setCategory(c)}
+                            className={`px-6 py-2 rounded-full mr-2 h-10 justify-center ${category === c ? 'bg-white' : 'bg-white/5 border border-white/5'}`}
                         >
-                            <View className={`w-6 h-6 rounded-full bg-white shadow-sm transition-transform ${isPrivate ? 'translate-x-6' : 'translate-x-0'}`} />
+                            <Text className={`text-[11px] font-black uppercase ${category === c ? 'text-black' : 'text-white/40'}`}>{c}</Text>
                         </Pressable>
-                    </View>
-                )}
+                    ))}
+                </ScrollView>
 
-                {/* Color Picker Placeholder */}
-                <View className="mb-8">
-                    <Text className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3 ml-1">Color</Text>
-                    <View className="flex-row gap-3">
-                        {['#3b82f6', '#f97316', '#8b5cf6', '#ef4444', '#30e8ab'].map(c => (
-                            <Pressable
-                                key={c}
-                                onPress={() => setColor(c)}
-                                className={`w-10 h-10 rounded-full items-center justify-center ${color === c ? 'border-2 border-slate-900 dark:border-white' : ''}`}
-                                style={{ backgroundColor: c }}
-                            >
-                                {color === c && <LucideIcons.Check size={16} color="white" />}
-                            </Pressable>
-                        ))}
-                    </View>
-                </View>
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    <Text className="text-white/20 font-black text-xs uppercase tracking-widest mb-6">Suggested Routines</Text>
 
-                <Pressable
-                    onPress={handleCreate}
-                    className="bg-primary py-5 rounded-[24px] items-center shadow-lg active:opacity-90 mb-20"
-                >
-                    <Text className="text-black text-lg font-black uppercase tracking-wider">Create Habit</Text>
-                </Pressable>
-            </ScrollView>
+                    <View className="flex-row flex-wrap justify-between">
+                        {filtered.map((item, i) => {
+                            const IconComp = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
+                            return (
+                                <Pressable
+                                    key={i}
+                                    onPress={() => handleSuggestedAdd(item)}
+                                    className="mb-3 bg-surface-dark border border-white/5 rounded-[28px] p-5 justify-between"
+                                    style={{ width: CARD_WIDTH, height: CARD_WIDTH + 10 }}
+                                >
+                                    <View className="w-10 h-10 bg-white/5 rounded-xl items-center justify-center">
+                                        <IconComp size={20} color={item.color} />
+                                    </View>
+                                    <View>
+                                        <Text className="text-[15px] font-black text-white mb-1" numberOfLines={1}>{item.name}</Text>
+                                        <Text className="text-[11px] font-bold text-white/30 uppercase">{item.metric || 'Daily'}</Text>
+                                    </View>
+                                </Pressable>
+                            );
+                        })}
+                    </View>
+
+                    <Pressable
+                        className="bg-white/5 border border-white/5 rounded-[28px] p-6 flex-row items-center justify-between mt-6 mb-32"
+                    >
+                        <View className="flex-row items-center">
+                            <View className="w-10 h-10 bg-white/5 rounded-xl items-center justify-center mr-4">
+                                <LucideIcons.Plus size={20} color="white" opacity={0.4} />
+                            </View>
+                            <View>
+                                <Text className="text-[15px] font-black text-white">Create Custom Habit</Text>
+                                <Text className="text-[11px] font-bold text-white/30 uppercase">Design your own routine</Text>
+                            </View>
+                        </View>
+                        <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.2)" />
+                    </Pressable>
+                </ScrollView>
+            </View>
         </SafeAreaView>
     );
 }

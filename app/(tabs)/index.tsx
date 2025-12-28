@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useHabits } from '../../context/HabitContext';
 import { usePrivacy } from '../../context/PrivacyContext';
-import HabitTile from '../../components/HabitTile';
 import * as LucideIcons from 'lucide-react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+
+const { width } = Dimensions.get('window');
+const TILE_WIDTH = (width - 48 - 16) / 2;
 
 export default function DailyActionsScreen() {
     const router = useRouter();
@@ -17,81 +20,106 @@ export default function DailyActionsScreen() {
     const completedCount = filteredHabits.filter(h => h.completedToday).length;
     const remainingCount = filteredHabits.length - completedCount;
 
-    const handleHabitPress = async (isPrivate: boolean) => {
+    const handleHabitPress = async (habitId: string, isPrivate: boolean) => {
         if (isPrivate && !isUnlocked) {
-            await authenticate();
+            const success = await authenticate();
+            if (success) toggleHabit(habitId);
+        } else {
+            toggleHabit(habitId);
         }
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+        <SafeAreaView className="flex-1 bg-black">
             <View className="flex-1 px-6">
                 {/* Header */}
-                <View className="pt-8 pb-6">
-                    <Text className="text-[11px] font-black uppercase tracking-[2px] text-slate-400">
-                        {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                    </Text>
-                    <View className="flex-row justify-between items-end">
-                        <Text className="text-4xl font-black text-slate-900 dark:text-white">Actions</Text>
-                        <Text className="text-sm font-black text-primary mb-1">{remainingCount} Left</Text>
+                <View className="pt-8 pb-6 flex-row justify-between items-start">
+                    <View>
+                        <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40 mb-1">
+                            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                        </Text>
+                        <Text className="text-3xl font-black text-white tracking-tight">Good Morning,{"\n"}Alex</Text>
                     </View>
+                    <Pressable
+                        onPress={() => router.push('/add')}
+                        className="w-12 h-12 bg-white/10 rounded-2xl items-center justify-center border border-white/5 active:opacity-70"
+                    >
+                        <LucideIcons.Plus size={24} color="#30e8ab" />
+                    </Pressable>
                 </View>
 
                 {/* Segmented Control */}
-                <View className="bg-slate-100 dark:bg-white/5 p-1.5 rounded-[24px] flex-row mb-8">
+                <View className="bg-white/5 p-1.5 rounded-[24px] flex-row mb-6">
                     <Pressable
                         onPress={() => setActiveType('build')}
-                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'build' ? 'bg-white shadow-md' : ''}`}
+                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'build' ? 'bg-white shadow-lg' : ''}`}
                     >
-                        <View className="flex-row items-center">
-                            <LucideIcons.TrendingUp size={16} color={activeType === 'build' ? '#000' : '#94a3b8'} />
-                            <Text className={`ml-2 text-[13px] font-black ${activeType === 'build' ? 'text-black' : 'text-slate-500'}`}>
-                                Build
-                            </Text>
-                        </View>
+                        <Text className={`text-[13px] font-black ${activeType === 'build' ? 'text-black' : 'text-white/40'}`}>Build</Text>
                     </Pressable>
                     <Pressable
                         onPress={() => setActiveType('break')}
-                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'break' ? 'bg-white shadow-md' : ''}`}
+                        className={`flex-1 py-4 items-center rounded-[20px] ${activeType === 'break' ? 'bg-white shadow-lg' : ''}`}
                     >
-                        <View className="flex-row items-center">
-                            <LucideIcons.Shield size={16} color={activeType === 'break' ? '#000' : '#94a3b8'} />
-                            <Text className={`ml-2 text-[13px] font-black ${activeType === 'break' ? 'text-black' : 'text-slate-500'}`}>
-                                Break
-                            </Text>
-                        </View>
+                        <Text className={`text-[13px] font-black ${activeType === 'break' ? 'text-black' : 'text-white/40'}`}>Break</Text>
                     </Pressable>
+                </View>
+
+                <View className="mb-6 flex-row items-center">
+                    <Text className="text-white/60 font-bold text-lg">You have </Text>
+                    <Text className="text-primary font-black text-lg">{remainingCount === 0 ? 'all' : remainingCount} </Text>
+                    <Text className="text-white/60 font-bold text-lg">habits {remainingCount === 0 ? 'completed' : 'left'} today</Text>
                 </View>
 
                 {/* Habit Grid */}
                 <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                    <View className="pb-32">
-                        {filteredHabits.length > 0 ? (
-                            filteredHabits.map((habit) => (
-                                <Pressable
+                    <View className="flex-row flex-wrap justify-between pb-32">
+                        {filteredHabits.map((habit, index) => {
+                            const IconComp = (LucideIcons as any)[habit.icon] || LucideIcons.Circle;
+                            const isDone = habit.completedToday;
+                            const isLocked = habit.isPrivate && !isUnlocked;
+
+                            return (
+                                <Animated.View
                                     key={habit.id}
-                                    onPress={() => handleHabitPress(habit.isPrivate)}
+                                    entering={FadeInDown.delay(index * 50)}
+                                    style={{ width: TILE_WIDTH, height: TILE_WIDTH + 20 }}
+                                    className="mb-4"
                                 >
-                                    <HabitTile
-                                        habit={habit}
-                                        onToggle={toggleHabit}
-                                        onUpdateValue={updateHabitValue}
-                                        isLocked={habit.isPrivate && !isUnlocked}
-                                    />
-                                </Pressable>
-                            ))
-                        ) : (
-                            <View className="items-center justify-center py-20">
-                                <View className="w-20 h-20 bg-slate-50 dark:bg-white/5 rounded-full items-center justify-center mb-4">
-                                    <LucideIcons.Plus size={32} color="#94a3b8" />
-                                </View>
-                                <Text className="text-slate-400 font-bold">No {activeType} habits yet</Text>
-                                <Pressable
-                                    onPress={() => router.push('/add')}
-                                    className="mt-4 px-6 py-3 bg-slate-900 dark:bg-white rounded-full"
-                                >
-                                    <Text className="text-white dark:text-black font-black text-xs uppercase tracking-widest">Add First</Text>
-                                </Pressable>
+                                    <Pressable
+                                        onPress={() => handleHabitPress(habit.id, habit.isPrivate)}
+                                        className={`flex-1 rounded-[32px] p-6 items-center justify-between border-2 ${isDone ? 'bg-primary/5 border-primary/20' : 'bg-surface-dark border-transparent'}`}
+                                    >
+                                        <View
+                                            className={`w-14 h-14 rounded-full items-center justify-center ${isDone ? 'bg-primary shadow-lg shadow-primary/30' : 'bg-white/5'}`}
+                                        >
+                                            <IconComp size={28} color={isDone ? 'black' : (habit.color || 'white')} />
+                                        </View>
+
+                                        <View className="items-center">
+                                            <Text className={`text-[15px] font-black text-center mb-1 ${isDone ? 'text-white' : 'text-white/80'}`} numberOfLines={1}>
+                                                {isLocked ? '••••••••' : habit.name}
+                                            </Text>
+                                            <View className="flex-row items-center">
+                                                <LucideIcons.Flame size={12} color={isDone ? '#30e8ab' : '#f97316'} fill={isDone ? '#30e8ab' : 'transparent'} />
+                                                <Text className={`text-[11px] font-black ml-1 ${isDone ? 'text-primary' : 'text-white/30'}`}>
+                                                    {isLocked ? '??' : habit.streak} Days
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        {isLocked && (
+                                            <View className="absolute inset-0 items-center justify-center bg-black/60 rounded-[32px]">
+                                                <LucideIcons.Lock size={20} color="white" opacity={0.6} />
+                                            </View>
+                                        )}
+                                    </Pressable>
+                                </Animated.View>
+                            );
+                        })}
+
+                        {filteredHabits.length === 0 && (
+                            <View className="w-full py-20 items-center">
+                                <Text className="text-white/20 font-black text-xl">No {activeType} habits yet</Text>
                             </View>
                         )}
                     </View>
