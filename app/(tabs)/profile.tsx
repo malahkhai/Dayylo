@@ -27,7 +27,7 @@ export default function Profile() {
                         </View>
                     </View>
 
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Emma Jackson</h1>
+                    <Text className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Emma Jackson</Text>
                     <Text className="text-[12px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Member Since April 2024</Text>
                 </View>
 
