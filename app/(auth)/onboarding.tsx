@@ -37,8 +37,7 @@ export default function OnboardingScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
-    const [activeBuildHabitId, setActiveBuildHabitId] = useState<string | null>(null);
-    const [activeBreakHabitId, setActiveBreakHabitId] = useState<string | null>(null);
+    const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
     const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [isPrivate, setIsPrivate] = useState(false);
@@ -58,20 +57,13 @@ export default function OnboardingScreen() {
 
             if (isRemoving) {
                 delete newState[id];
-                // Handle active state clearing
-                if (habit.type === 'build' && activeBuildHabitId === id) {
-                    const remaining = Object.keys(newState).filter(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'build');
-                    setActiveBuildHabitId(remaining.length > 0 ? remaining[0] : null);
-                } else if (habit.type === 'break' && activeBreakHabitId === id) {
-                    const remaining = Object.keys(newState).filter(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break');
-                    setActiveBreakHabitId(remaining.length > 0 ? remaining[0] : null);
+                if (activeHabitId === id) {
+                    const remaining = Object.keys(newState);
+                    setActiveHabitId(remaining.length > 0 ? remaining[0] : null);
                 }
             } else {
                 newState[id] = habit.difficulty || 5;
-
-                // Set as active
-                if (habit.type === 'build') setActiveBuildHabitId(id);
-                else setActiveBreakHabitId(id);
+                setActiveHabitId(id);
 
                 if (habit.type === 'break' && !Object.keys(prev).some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
                     setShowPrivacyPrompt(true);
@@ -118,7 +110,7 @@ export default function OnboardingScreen() {
 
     const renderHabitItem = (h: StarterHabit) => {
         const isSelected = !!selectedHabits[h.id];
-        const isActive = activeBuildHabitId === h.id || activeBreakHabitId === h.id;
+        const isActive = activeHabitId === h.id;
         const difficulty = selectedHabits[h.id] || h.difficulty;
         const isCustom = h.id.includes('custom');
         const Icon = LucideIcons[h.icon] as any;
@@ -134,8 +126,7 @@ export default function OnboardingScreen() {
                 <Pressable
                     onPress={() => {
                         if (isSelected && !isActive) {
-                            if (h.type === 'build') setActiveBuildHabitId(h.id);
-                            else setActiveBreakHabitId(h.id);
+                            setActiveHabitId(h.id);
                         } else {
                             toggleHabit(h.id);
                         }
@@ -175,12 +166,11 @@ export default function OnboardingScreen() {
         );
     };
 
-    const renderDifficultySelector = (type: 'build' | 'break') => {
-        const activeId = type === 'build' ? activeBuildHabitId : activeBreakHabitId;
-        if (!activeId) return null;
+    const renderDifficultySelector = () => {
+        if (!activeHabitId) return null;
 
-        const activeHabit = STARTER_HABITS.find(h => h.id === activeId);
-        const difficulty = selectedHabits[activeId];
+        const activeHabit = STARTER_HABITS.find(h => h.id === activeHabitId);
+        const difficulty = selectedHabits[activeHabitId];
 
         const getDifficultyColor = (d: number) => {
             if (d < 4) return AppleColors.systemGreen;
@@ -195,7 +185,7 @@ export default function OnboardingScreen() {
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(d => (
                         <Pressable
                             key={d}
-                            onPress={() => updateDifficulty(activeId, d)}
+                            onPress={() => updateDifficulty(activeHabitId, d)}
                             style={[
                                 styles.difficultyNode,
                                 difficulty === d && { backgroundColor: getDifficultyColor(d), borderColor: getDifficultyColor(d) }
@@ -217,10 +207,9 @@ export default function OnboardingScreen() {
                     <Text style={styles.subtitle}>Select the habits you want to track. You can always change this later.</Text>
                 </View>
 
-                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
+                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={{ paddingBottom: 160 }}>
                     <View style={styles.accordionGroup}>
                         <Text style={styles.sectionTitle}>Build Habits</Text>
-                        {renderDifficultySelector('build')}
                         <View style={styles.grid}>
                             {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
                         </View>
@@ -228,12 +217,18 @@ export default function OnboardingScreen() {
 
                     <View style={[styles.accordionGroup, { marginTop: 32 }]}>
                         <Text style={styles.sectionTitle}>Break Habits</Text>
-                        {renderDifficultySelector('break')}
                         <View style={styles.grid}>
                             {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
                         </View>
                     </View>
                 </ScrollView>
+
+                {/* Floating Difficulty Selector */}
+                {activeHabitId && (
+                    <View style={styles.floatingSelectorContainer}>
+                        {renderDifficultySelector()}
+                    </View>
+                )}
 
                 <View style={styles.footer}>
                     <AppleButton
@@ -296,7 +291,7 @@ export default function OnboardingScreen() {
                         <Text style={styles.modalText}>
                             You'll get a daily notification to track your habits.
                             {"\n\n"}
-                            Success requires manual input: click on <Text style={{ fontWeight: '900', color: AppleColors.label.primary }}>Gym</Text> if you went, and click on <Text style={{ fontWeight: '900', color: AppleColors.label.primary }}>Bad habits</Text> if you avoided them.
+                            Success requires manual input: <Text style={{ fontWeight: '900', color: AppleColors.systemGreen }}>Swipe Right</Text> if you completed the habit, and <Text style={{ fontWeight: '900', color: AppleColors.systemRed }}>Swipe Left</Text> if you missed it.
                         </Text>
                         <View style={styles.modalActions}>
                             <AppleButton
@@ -405,12 +400,19 @@ const styles = StyleSheet.create({
         fontSize: 10,
     },
     difficultySelector: {
-        marginBottom: 16,
-        backgroundColor: 'rgba(255,255,255,0.05)',
+        backgroundColor: AppleColors.background.tertiary,
         borderRadius: 24,
         padding: 16,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)',
+        borderColor: 'rgba(255,255,255,0.08)',
+        ...AppleShadows.medium,
+    },
+    floatingSelectorContainer: {
+        position: 'absolute',
+        bottom: 120, // Above the footer
+        left: AppleSpacing.base,
+        right: AppleSpacing.base,
+        zIndex: 50,
     },
     selectorLabel: {
         ...AppleTypography.caption2,
