@@ -27,5 +27,11 @@
     "@types/react": "~19.1.10",
     "@types/react-native": "^0.72.8",
     "typescript": "~5.9.2"
+  },
+  "name": "Dayylo",
+  "version": "1.0.0",
+  "scripts": {
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   }
 }
