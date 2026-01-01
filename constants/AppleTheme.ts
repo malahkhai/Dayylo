@@ -58,6 +58,14 @@ export const AppleColors = {
     opaque: '#27272A',
     nonOpaque: 'rgba(39, 39, 42, 0.6)',
   },
+
+  // Compatibility Fills (for older screens)
+  fill: {
+    primary: 'rgba(120, 120, 128, 0.35)',
+    secondary: 'rgba(120, 120, 128, 0.28)',
+    tertiary: 'rgba(118, 118, 128, 0.22)',
+    quaternary: 'rgba(116, 116, 128, 0.16)',
+  },
 };
 
 export const AppleTypography = {
@@ -202,6 +210,11 @@ export const AppleSpacing = {
   xl5: 80,
   xl6: 96,
   screenPadding: 32,
+
+  // Compatibility mappings
+  base: 16,
+  xxl: 32,
+  xxxl: 40,
 };
 
 export const AppleBorderRadius = {
@@ -212,6 +225,11 @@ export const AppleBorderRadius = {
   xl2: 24,
   xl3: 32,
   full: 9999,
+
+  // Compatibility mappings
+  pill: 9999,
+  card: 24,
+  button: 16,
 };
 
 export const AppleShadows = {
