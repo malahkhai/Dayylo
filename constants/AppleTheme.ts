@@ -85,60 +85,61 @@ export const AppleTypography = {
 
   // Headings
   h1: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: '700' as const,
-    lineHeight: 38,
-    letterSpacing: -0.3,
+    lineHeight: 41,
+    letterSpacing: -0.4,
   },
   h2: {
-    fontSize: 24,
-    fontWeight: '600' as const,
-    lineHeight: 31,
+    fontSize: 28,
+    fontWeight: '700' as const,
+    lineHeight: 34,
+    letterSpacing: -0.3,
   },
   h3: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '600' as const,
     lineHeight: 28,
   },
   h4: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600' as const,
     lineHeight: 25,
   },
 
   // Body
   bodyLarge: {
-    fontSize: 18,
-    fontWeight: '400' as const,
-    lineHeight: 29,
-  },
-  body: {
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: '400' as const,
     lineHeight: 24,
   },
-  bodySmall: {
-    fontSize: 14,
+  body: {
+    fontSize: 17,
     fontWeight: '400' as const,
-    lineHeight: 21,
+    lineHeight: 22,
+  },
+  bodySmall: {
+    fontSize: 15,
+    fontWeight: '400' as const,
+    lineHeight: 20,
   },
 
   // Labels
   labelLarge: {
     fontSize: 16,
     fontWeight: '600' as const,
-    lineHeight: 22,
+    lineHeight: 21,
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600' as const,
     lineHeight: 20,
   },
   labelSmall: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600' as const,
-    lineHeight: 16,
-    letterSpacing: 1,
+    lineHeight: 18,
+    letterSpacing: 0.5,
     textTransform: 'uppercase' as const,
   },
 
@@ -146,20 +147,20 @@ export const AppleTypography = {
   caption: {
     fontSize: 12,
     fontWeight: '400' as const,
-    lineHeight: 17,
+    lineHeight: 16,
   },
   captionSmall: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '400' as const,
     lineHeight: 13,
   },
 
   // Keep legacy mappings for compatibility during migration
   largeTitle: {
-    fontSize: 32,
-    lineHeight: 38,
+    fontSize: 34,
+    lineHeight: 41,
     fontWeight: '700' as const,
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
   title1: {
     fontSize: 28,
