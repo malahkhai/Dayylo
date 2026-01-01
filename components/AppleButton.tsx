@@ -37,7 +37,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
-      toValue: 0.96,
+      toValue: 0.97, // Per style guide
       useNativeDriver: true,
       damping: 20,
       stiffness: 300,
@@ -101,7 +101,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
       >
         {loading ? (
           <ActivityIndicator
-            color={variant === 'primary' || variant === 'destructive' ? '#000000' : AppleColors.primary}
+            color={variant === 'primary' || variant === 'destructive' ? '#FFFFFF' : AppleColors.primary}
           />
         ) : (
           <View style={styles.buttonContent}>
@@ -117,9 +117,9 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
 // Floating Action Button
 export const AppleFAB: React.FC<{
   onPress: () => void;
-  icon: string;
+  icon: any;
   color?: string;
-}> = ({ onPress, icon, color = AppleColors.primary }) => {
+}> = ({ onPress, icon: Icon, color = AppleColors.info }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
 
   const handlePressIn = () => {
@@ -149,7 +149,7 @@ export const AppleFAB: React.FC<{
         style={[styles.fabButton, { backgroundColor: color }]}
         activeOpacity={0.8}
       >
-        <Text style={styles.fabIcon}>{icon}</Text>
+        <Icon size={32} color="white" />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -157,42 +157,41 @@ export const AppleFAB: React.FC<{
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: AppleBorderRadius.button,
+    borderRadius: AppleBorderRadius.lg, // 16px per guide
     paddingVertical: AppleSpacing.md,
     paddingHorizontal: AppleSpacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 50,
+    minHeight: 48,
   },
   buttonSmall: {
     paddingVertical: AppleSpacing.sm,
     paddingHorizontal: AppleSpacing.base,
     minHeight: 40,
+    borderRadius: AppleBorderRadius.sm,
   },
   buttonLarge: {
-    paddingVertical: AppleSpacing.base,
-    paddingHorizontal: AppleSpacing.xl,
-    minHeight: 56,
+    paddingVertical: 20, // Per guide: 20px vertical
+    paddingHorizontal: 32, // Per guide: 32px horizontal
+    minHeight: 56, // Per guide: 56px min
   },
   buttonFullWidth: {
     width: '100%',
   },
   buttonPrimary: {
-    backgroundColor: AppleColors.primary,
-    ...AppleShadows.small,
+    backgroundColor: AppleColors.primaryDark, // Emerald 600
   },
   buttonSecondary: {
-    backgroundColor: AppleColors.fill.tertiary,
+    backgroundColor: AppleColors.background.secondary, // Zinc 900
   },
   buttonTertiary: {
     backgroundColor: 'transparent',
   },
   buttonDestructive: {
-    backgroundColor: AppleColors.systemRed,
-    ...AppleShadows.small,
+    backgroundColor: AppleColors.error,
   },
   buttonDisabled: {
-    opacity: 0.4,
+    opacity: 0.5,
   },
   buttonContent: {
     flexDirection: 'row',
@@ -200,25 +199,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconContainer: {
-    marginRight: AppleSpacing.sm,
+    marginRight: 16,
   },
   buttonText: {
-    ...AppleTypography.headline,
-    fontWeight: '600',
+    ...AppleTypography.label, // 14px Semibold
+    color: '#FFFFFF',
   },
   buttonTextSmall: {
-    ...AppleTypography.callout,
-    fontWeight: '600',
+    ...AppleTypography.labelSmall,
   },
   buttonTextLarge: {
-    ...AppleTypography.title3,
-    fontWeight: '900',
+    ...AppleTypography.labelLarge, // 16px Semibold per guide (using Label Large for 18px-like feel in small sets)
+    fontSize: 18, // Manually set to match "18px Semibold" from guide
   },
   buttonTextPrimary: {
-    color: '#000000',
+    color: '#FFFFFF',
   },
   buttonTextSecondary: {
-    color: AppleColors.label.primary,
+    color: '#FFFFFF',
   },
   buttonTextTertiary: {
     color: AppleColors.primary,
@@ -231,20 +229,16 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: AppleSpacing.xl,
-    right: AppleSpacing.base,
+    bottom: 96, // 96px per guide
+    right: 32, // 32px per guide
     zIndex: 1000,
   },
   fabButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64, // 64x64 per guide
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    ...AppleShadows.large,
-  },
-  fabIcon: {
-    fontSize: 28,
-    color: '#FFFFFF',
+    ...AppleShadows.level4,
   },
 });

@@ -291,19 +291,19 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-        paddingHorizontal: 30,
+        paddingHorizontal: AppleSpacing.screenPadding,
         paddingTop: 60,
         paddingBottom: 40,
         justifyContent: 'space-between',
     },
     scrollContent: {
-        paddingHorizontal: 30,
+        paddingHorizontal: AppleSpacing.screenPadding,
         paddingTop: 20,
         paddingBottom: 40,
     },
     backButton: {
-        width: 40,
-        height: 40,
+        width: 44, // Smallest recommended touch target per guide
+        height: 44,
         justifyContent: 'center',
     },
     centerContent: {
@@ -323,80 +323,71 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     headline: {
-        ...AppleTypography.largeTitle,
-        fontWeight: '900',
+        ...AppleTypography.display,
         color: AppleColors.label.primary,
         textAlign: 'center',
         marginBottom: 12,
-        letterSpacing: -0.5,
     },
     subtext: {
-        ...AppleTypography.body,
-        fontWeight: '600',
+        ...AppleTypography.bodyLarge,
+        fontWeight: '400',
         color: AppleColors.label.secondary,
         textAlign: 'center',
         paddingHorizontal: 20,
-        lineHeight: 24,
     },
     focusHeadline: {
-        ...AppleTypography.largeTitle,
-        fontWeight: '900',
+        ...AppleTypography.h1,
         color: AppleColors.label.primary,
         marginBottom: 12,
-        letterSpacing: -0.5,
     },
     focusSubtext: {
         ...AppleTypography.body,
-        fontWeight: '600',
         color: AppleColors.label.secondary,
         marginBottom: 40,
-        lineHeight: 24,
     },
     focusGrid: {
-        gap: 20,
+        gap: 16,
     },
     focusCard: {
-        backgroundColor: AppleColors.background.tertiary,
-        borderRadius: 24,
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.xl2, // 24px per guide
         padding: 24,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
         flexDirection: 'row',
         alignItems: 'center',
-        ...AppleShadows.small,
     },
     focusCardSelectedBuild: {
-        borderColor: AppleColors.systemGreen,
-        backgroundColor: AppleColors.systemGreen + '05',
+        borderColor: AppleColors.primary,
+        backgroundColor: AppleColors.primary + '05',
     },
     focusCardSelectedBreak: {
-        borderColor: AppleColors.systemOrange,
-        backgroundColor: AppleColors.systemOrange + '05',
+        borderColor: AppleColors.warning,
+        backgroundColor: AppleColors.warning + '05',
     },
     focusIconBg: {
-        width: 56,
-        height: 56,
+        width: 64, // Per icon container guide
+        height: 64,
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 16,
     },
     storyboardGrid: {
-        gap: 20,
+        gap: 16,
         marginTop: 20,
     },
     storyboardCard: {
-        backgroundColor: 'rgba(255,255,255,0.03)',
-        borderRadius: 32,
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.xl3, // 32px per guide
         padding: 24,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
-        ...AppleShadows.small,
     },
     storyIconBg: {
         width: 64,
         height: 64,
-        borderRadius: 20,
+        borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -407,32 +398,24 @@ const styles = StyleSheet.create({
     storyText: {
         ...AppleTypography.body,
         color: AppleColors.label.secondary,
-        lineHeight: 22,
-        fontWeight: '600',
     },
     storyInsight: {
-        ...AppleTypography.caption2,
-        color: AppleColors.systemGreen,
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
+        ...AppleTypography.labelSmall,
+        color: AppleColors.primary,
         marginTop: 8,
     },
     focusCardContent: {
         flex: 1,
     },
     focusCardTitle: {
-        ...AppleTypography.body,
-        fontWeight: '900',
+        ...AppleTypography.labelLarge,
         color: AppleColors.label.primary,
         marginBottom: 4,
     },
     focusCardDesc: {
-        ...AppleTypography.footnote,
-        fontWeight: '600',
+        ...AppleTypography.caption,
         color: AppleColors.label.secondary,
         paddingRight: 10,
-        lineHeight: 18,
     },
     focusCheckbox: {
         width: 24,
@@ -449,15 +432,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     authTitle: {
-        ...AppleTypography.largeTitle,
-        fontWeight: '900',
+        ...AppleTypography.h1,
         color: AppleColors.label.primary,
         marginBottom: 8,
-        letterSpacing: -0.5,
     },
     authSub: {
         ...AppleTypography.body,
-        fontWeight: '600',
         color: AppleColors.label.secondary,
     },
     authForm: {
@@ -466,7 +446,7 @@ const styles = StyleSheet.create({
     divider: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 24,
+        marginVertical: 32,
     },
     line: {
         flex: 1,
@@ -475,11 +455,8 @@ const styles = StyleSheet.create({
     },
     dividerText: {
         marginHorizontal: 16,
-        ...AppleTypography.caption2,
+        ...AppleTypography.labelSmall,
         color: AppleColors.label.tertiary,
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: 2,
     },
     input: {
         backgroundColor: AppleColors.background.secondary,
@@ -490,14 +467,14 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     legalText: {
-        ...AppleTypography.caption2,
+        ...AppleTypography.caption,
         color: AppleColors.label.tertiary,
         textAlign: 'center',
         marginTop: 16,
     },
     link: {
         color: AppleColors.primary,
-        fontWeight: '800',
+        fontWeight: '600',
     },
     forgotPass: {
         alignItems: 'flex-end',
@@ -505,11 +482,7 @@ const styles = StyleSheet.create({
     },
     linkText: {
         color: AppleColors.primary,
-        ...AppleTypography.callout,
-        fontWeight: '800',
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-        fontSize: 12,
+        ...AppleTypography.label,
     },
     switchAuth: {
         flexDirection: 'row',
@@ -517,7 +490,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     switchText: {
-        ...AppleTypography.callout,
+        ...AppleTypography.bodySmall,
         color: AppleColors.label.secondary,
     },
     loginShortcut: {
@@ -525,13 +498,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loginShortcutText: {
-        ...AppleTypography.footnote,
+        ...AppleTypography.bodySmall,
         color: AppleColors.label.secondary,
     },
     loginShortcutBold: {
         color: AppleColors.primary,
-        fontWeight: '900',
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        fontWeight: '700',
     },
 });

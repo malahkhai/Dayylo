@@ -1,8 +1,43 @@
 // constants/AppleTheme.ts
-// Complete Apple-style design system for iOS
+// iOS App Style Guide Implementation
 
 export const AppleColors = {
-  // iOS System Colors
+  // Primary Colors
+  background: {
+    primary: '#000000', // Pure Black
+    secondary: '#18181B', // Zinc 900
+    tertiary: '#27272A', // Zinc 800 (Surface Hover)
+  },
+
+  // Accent Colors (Emerald)
+  primary: '#10B981', // Emerald 500
+  primaryDark: '#059669', // Emerald 600
+  primaryHover: '#047857', // Emerald 700
+  primarySurface: '#064E3B', // Emerald 950
+
+  // Semantic Colors
+  success: '#10B981', // Emerald 500
+  warning: '#F59E0B', // Amber 500
+  error: '#EF4444', // Red 500
+  info: '#3B82F6', // Blue 500
+
+  // Surface Variants
+  variants: {
+    blue: '#172554', // Blue 950
+    teal: '#134E4A', // Teal 950
+    purple: '#3B0764', // Purple 950
+    amber: '#451A03', // Amber 950
+  },
+
+  // Text Colors
+  label: {
+    primary: '#FFFFFF', // White
+    secondary: '#9CA3AF', // Gray 400
+    tertiary: '#6B7280', // Gray 500
+    quaternary: '#4B5563', // Gray 600 (Disabled)
+  },
+
+  // Keeping legacy system colors for parts of the app not yet migrated
   systemBlue: '#007AFF',
   systemIndigo: '#5856D6',
   systemPurple: '#AF52DE',
@@ -14,130 +49,159 @@ export const AppleColors = {
   systemTeal: '#5AC8FA',
   systemMint: '#00C7BE',
   systemCyan: '#32ADE6',
-
-  // Grays
   systemGray: '#8E8E93',
   systemGray2: '#AEAEB2',
-  systemGray3: '#C7C7CC',
-  systemGray4: '#D1D1D6',
-  systemGray5: '#E5E5EA',
   systemGray6: '#F2F2F7',
-
-  // Dayylo Premium Palette
-  primary: '#30e8ab',
-  backgroundDark: '#0a0a0a',
-  surfaceDark: '#1c1c1e',
-  surfaceDarkAlt: '#2c2c2e',
-
-  // Backgrounds
-  background: {
-    primary: '#000000',
-    secondary: '#0a0a0a',
-    tertiary: '#1c1c1e',
-  },
-
-  // Labels
-  label: {
-    primary: '#FFFFFF',
-    secondary: 'rgba(255,255,255,0.7)',
-    tertiary: 'rgba(255,255,255,0.45)',
-    quaternary: 'rgba(255,255,255,0.25)',
-  },
-
-  // Fills
-  fill: {
-    primary: 'rgba(120, 120, 128, 0.35)',
-    secondary: 'rgba(120, 120, 128, 0.28)',
-    tertiary: 'rgba(118, 118, 128, 0.22)',
-    quaternary: 'rgba(116, 116, 128, 0.16)',
-  },
 
   // Separator
   separator: {
-    opaque: '#38383A',
-    nonOpaque: 'rgba(84, 84, 88, 0.6)',
+    opaque: '#27272A',
+    nonOpaque: 'rgba(39, 39, 42, 0.6)',
   },
 };
 
 export const AppleTypography = {
-  // iOS Dynamic Type Scale
+  // Display
+  displayLarge: {
+    fontSize: 48,
+    fontWeight: '700' as const,
+    lineHeight: 52,
+    letterSpacing: -0.5,
+  },
+  display: {
+    fontSize: 40,
+    fontWeight: '700' as const,
+    lineHeight: 44,
+    letterSpacing: -0.5,
+  },
+
+  // Headings
+  h1: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    lineHeight: 38,
+    letterSpacing: -0.3,
+  },
+  h2: {
+    fontSize: 24,
+    fontWeight: '600' as const,
+    lineHeight: 31,
+  },
+  h3: {
+    fontSize: 20,
+    fontWeight: '600' as const,
+    lineHeight: 28,
+  },
+  h4: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+    lineHeight: 25,
+  },
+
+  // Body
+  bodyLarge: {
+    fontSize: 18,
+    fontWeight: '400' as const,
+    lineHeight: 29,
+  },
+  body: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+    lineHeight: 24,
+  },
+  bodySmall: {
+    fontSize: 14,
+    fontWeight: '400' as const,
+    lineHeight: 21,
+  },
+
+  // Labels
+  labelLarge: {
+    fontSize: 16,
+    fontWeight: '600' as const,
+    lineHeight: 22,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600' as const,
+    lineHeight: 20,
+  },
+  labelSmall: {
+    fontSize: 12,
+    fontWeight: '600' as const,
+    lineHeight: 16,
+    letterSpacing: 1,
+    textTransform: 'uppercase' as const,
+  },
+
+  // Caption
+  caption: {
+    fontSize: 12,
+    fontWeight: '400' as const,
+    lineHeight: 17,
+  },
+  captionSmall: {
+    fontSize: 10,
+    fontWeight: '400' as const,
+    lineHeight: 13,
+  },
+
+  // Keep legacy mappings for compatibility during migration
   largeTitle: {
-    fontSize: 34,
-    lineHeight: 41,
-    fontWeight: '900' as const,
-    letterSpacing: 0.37,
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '700' as const,
+    letterSpacing: -0.3,
   },
   title1: {
     fontSize: 28,
     lineHeight: 34,
-    fontWeight: '900' as const,
-    letterSpacing: 0.36,
+    fontWeight: '700' as const,
   },
   title2: {
     fontSize: 22,
     lineHeight: 28,
-    fontWeight: '800' as const,
-    letterSpacing: 0.35,
-  },
-  title3: {
-    fontSize: 20,
-    lineHeight: 25,
-    fontWeight: '700' as const,
-    letterSpacing: 0.38,
+    fontWeight: '600' as const,
   },
   headline: {
     fontSize: 17,
     lineHeight: 22,
-    fontWeight: '900' as const,
-    letterSpacing: -0.41,
-  },
-  body: {
-    fontSize: 17,
-    lineHeight: 22,
     fontWeight: '600' as const,
-    letterSpacing: -0.41,
   },
   callout: {
     fontSize: 16,
     lineHeight: 21,
-    fontWeight: '700' as const,
-    letterSpacing: -0.32,
-  },
-  subheadline: {
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '500' as const,
-    letterSpacing: -0.24,
+    fontWeight: '600' as const,
   },
   footnote: {
     fontSize: 13,
     lineHeight: 18,
-    fontWeight: '500' as const,
-    letterSpacing: -0.08,
+    fontWeight: '400' as const,
   },
   caption1: {
     fontSize: 12,
     lineHeight: 16,
     fontWeight: '400' as const,
-    letterSpacing: 0,
   },
   caption2: {
     fontSize: 11,
     lineHeight: 13,
     fontWeight: '400' as const,
-    letterSpacing: 0.06,
   },
 };
 
 export const AppleSpacing = {
   xs: 4,
   sm: 8,
-  md: 12,
-  base: 16,
-  lg: 20,
-  xl: 24,
-  xxl: 32,
-  xxxl: 40,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xl2: 40,
+  xl3: 48,
+  xl4: 64,
+  xl5: 80,
+  xl6: 96,
+  screenPadding: 32,
 };
 
 export const AppleBorderRadius = {
@@ -145,57 +209,53 @@ export const AppleBorderRadius = {
   md: 12,
   lg: 16,
   xl: 20,
-  xxl: 28,
-  card: 12,
-  button: 10,
-  pill: 999,
+  xl2: 24,
+  xl3: 32,
+  full: 9999,
 };
 
 export const AppleShadows = {
+  level1: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  level2: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  level3: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  level4: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.6,
+    shadowRadius: 25,
+    elevation: 12,
+  },
+  // Compatibility mappings
   small: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 2,
   },
   medium: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  large: {
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-  card: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 2,
-  },
-};
-
-export const AppleAnimations = {
-  spring: {
-    damping: 20,
-    stiffness: 300,
-    mass: 0.8,
-  },
-  timing: {
-    duration: 300,
-    easing: 'ease-in-out',
-  },
-  quick: {
-    duration: 150,
-  },
-  slow: {
-    duration: 500,
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
   },
 };
