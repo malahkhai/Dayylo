@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Image } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
@@ -14,6 +15,24 @@ export default function AuthScreen() {
     const router = useRouter();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
+
+    // Bouncing Animation
+    const bounceValue = useSharedValue(0);
+
+    React.useEffect(() => {
+        bounceValue.value = withRepeat(
+            withSequence(
+                withTiming(-15, { duration: 2000 }),
+                withTiming(0, { duration: 2000 })
+            ),
+            -1,
+            true
+        );
+    }, []);
+
+    const animatedLogoStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: bounceValue.value }],
+    }));
 
     const handleContinue = () => setMode('storyboard');
     const handleNextStoryboard = () => setMode('focus');
@@ -39,9 +58,13 @@ export default function AuthScreen() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.content}>
                     <View style={styles.centerContent}>
-                        <View style={styles.logoContainer}>
-                            <LucideIcons.Flame size={48} color={AppleColors.systemOrange} fill={AppleColors.systemOrange} />
-                        </View>
+                        <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
+                            <Image
+                                source={require('../../assets/icon.png')}
+                                style={styles.appIcon}
+                                resizeMode="cover"
+                            />
+                        </Animated.View>
                         <Text style={styles.headline}>Welcome to Dayylo</Text>
                         <Text style={styles.subtext}>Build what matters. Break what holds you back.</Text>
                     </View>
@@ -296,7 +319,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 32,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
         ...AppleShadows.medium,
+    },
+    appIcon: {
+        width: '100%',
+        height: '100%',
     },
     headline: {
         ...AppleTypography.largeTitle,
