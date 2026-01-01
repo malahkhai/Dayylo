@@ -196,6 +196,11 @@ export const AppleTypography = {
     lineHeight: 13,
     fontWeight: '400' as const,
   },
+  subheadline: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '500' as const,
+  },
 };
 
 export const AppleSpacing = {
@@ -275,5 +280,12 @@ export const AppleShadows = {
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 4,
+  },
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
 };

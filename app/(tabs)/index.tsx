@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import * as LucideIcons from 'lucide-react-native';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton, AppleFAB } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
@@ -155,8 +156,8 @@ export default function HomeScreen() {
             {/* Floating Action Button */}
             <AppleFAB
                 onPress={() => router.push('/add-habit')}
-                icon="+"
-                color={AppleColors.systemBlue}
+                icon={LucideIcons.Plus}
+                color={AppleColors.info}
             />
         </SafeAreaView>
     );
