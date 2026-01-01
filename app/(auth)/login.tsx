@@ -90,37 +90,39 @@ export default function AuthScreen() {
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
 
-                    <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
-                        <Text style={[styles.focusHeadline, { marginTop: 20 }]}>Building a better you starts today.</Text>
+                    <View style={{ flex: 1 }}>
+                        <Text style={[styles.focusHeadline, { marginTop: 16 }]}>Building a better you{"\n"}starts today.</Text>
 
                         <View style={styles.storyboardGrid}>
                             <View style={styles.storyboardCard}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
-                                    <LucideIcons.Sparkles size={32} color={AppleColors.systemGreen} />
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.primary + '15', marginBottom: 12 }]}>
+                                    <LucideIcons.Sparkles size={28} color={AppleColors.primary} />
                                 </View>
                                 <View style={styles.storyContent}>
                                     <Text style={styles.storyText}>
-                                        <Text style={{ fontWeight: '900', color: AppleColors.systemGreen }}>Build Momentum.</Text>
-                                        {"\n"}Nurture your strengths. Every positive action compounds into a lifetime of success. Your future self will thank you for today's effort.
+                                        <Text style={{ fontWeight: '700', color: AppleColors.primary }}>Build Momentum.</Text>
+                                        {"\n"}Every positive action compounds into a lifetime of success.
                                     </Text>
-                                    <Text style={styles.storyInsight}>Consistency is the bridge between goals and accomplishment.</Text>
+                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 8 }} />
+                                    <Text style={styles.storyInsight}>Consistency is the bridge to accomplishment.</Text>
                                 </View>
                             </View>
 
                             <View style={styles.storyboardCard}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
-                                    <LucideIcons.Unplug size={32} color={AppleColors.systemOrange} />
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.warning + '15', marginBottom: 12 }]}>
+                                    <LucideIcons.Unplug size={28} color={AppleColors.warning} />
                                 </View>
                                 <View style={styles.storyContent}>
                                     <Text style={styles.storyText}>
-                                        <Text style={{ fontWeight: '900', color: AppleColors.systemOrange }}>Break Chains.</Text>
-                                        {"\n"}Unburden your potential. Breaking old habits isn't about loss—it's about gaining your freedom back and reclaiming your power.
+                                        <Text style={{ fontWeight: '700', color: AppleColors.warning }}>Break Chains.</Text>
+                                        {"\n"}Breaking old habits is about gaining your freedom back.
                                     </Text>
-                                    <Text style={styles.storyInsight}>Progress isn't just what you add, but what you leave behind.</Text>
+                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 8 }} />
+                                    <Text style={styles.storyInsight}>Progress is what you leave behind.</Text>
                                 </View>
                             </View>
                         </View>
-                    </ScrollView>
+                    </View>
 
                     <AppleButton
                         title="Continue"
@@ -292,7 +294,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         paddingHorizontal: AppleSpacing.screenPadding,
-        paddingTop: 60,
+        paddingTop: 20,
         paddingBottom: 40,
         justifyContent: 'space-between',
     },
