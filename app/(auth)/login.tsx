@@ -8,18 +8,20 @@ import { AppleButton } from '../../components/AppleButton';
 
 const { width } = Dimensions.get('window');
 
-type AuthMode = 'welcome' | 'focus' | 'signup' | 'signin';
+type AuthMode = 'welcome' | 'storyboard' | 'focus' | 'signup' | 'signin';
 
 export default function AuthScreen() {
     const router = useRouter();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
 
-    const handleContinue = () => setMode('focus');
+    const handleContinue = () => setMode('storyboard');
+    const handleNextStoryboard = () => setMode('focus');
     const handleNext = () => setMode('signup');
     const handleLoginLink = () => setMode('signin');
     const handleBack = () => {
-        if (mode === 'focus') setMode('welcome');
+        if (mode === 'storyboard') setMode('welcome');
+        else if (mode === 'focus') setMode('storyboard');
         else if (mode === 'signup' || mode === 'signin') setMode('focus');
     };
 
@@ -52,6 +54,57 @@ export default function AuthScreen() {
                     <Pressable onPress={() => router.replace('/(tabs)')} style={styles.loginShortcut}>
                         <Text style={styles.loginShortcutText}>Already have an account? <Text style={styles.loginShortcutBold}>Log in</Text></Text>
                     </Pressable>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    if (mode === 'storyboard') {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.content}>
+                    <Pressable onPress={handleBack} style={styles.backButton}>
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
+                    </Pressable>
+
+                    <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+                        <Text style={[styles.focusHeadline, { marginTop: 20 }]}>Building a better you starts today.</Text>
+
+                        <View style={styles.storyboardGrid}>
+                            <View style={styles.storyboardCard}>
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
+                                    <LucideIcons.Sparkles size={32} color={AppleColors.systemGreen} />
+                                </View>
+                                <View style={styles.storyContent}>
+                                    <Text style={styles.storyText}>
+                                        <Text style={{ fontWeight: '900', color: AppleColors.systemGreen }}>Build Momentum.</Text>
+                                        {"\n"}Nurture your strengths. Every positive action compounds into a lifetime of success. Your future self will thank you for today's effort.
+                                    </Text>
+                                    <Text style={styles.storyInsight}>Consistency is the bridge between goals and accomplishment.</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.storyboardCard}>
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
+                                    <LucideIcons.Unplug size={32} color={AppleColors.systemOrange} />
+                                </View>
+                                <View style={styles.storyContent}>
+                                    <Text style={styles.storyText}>
+                                        <Text style={{ fontWeight: '900', color: AppleColors.systemOrange }}>Break Chains.</Text>
+                                        {"\n"}Unburden your potential. Breaking old habits isn't about loss—it's about gaining your freedom back and reclaiming your power.
+                                    </Text>
+                                    <Text style={styles.storyInsight}>Progress isn't just what you add, but what you leave behind.</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </ScrollView>
+
+                    <AppleButton
+                        title="Continue"
+                        onPress={handleNextStoryboard}
+                        size="large"
+                        fullWidth
+                    />
                 </View>
             </SafeAreaView>
         );
@@ -303,6 +356,43 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 16,
+    },
+    storyboardGrid: {
+        gap: 20,
+        marginTop: 20,
+    },
+    storyboardCard: {
+        backgroundColor: 'rgba(255,255,255,0.03)',
+        borderRadius: 32,
+        padding: 24,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+        ...AppleShadows.small,
+    },
+    storyIconBg: {
+        width: 64,
+        height: 64,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    storyContent: {
+        gap: 12,
+    },
+    storyText: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+        lineHeight: 22,
+        fontWeight: '600',
+    },
+    storyInsight: {
+        ...AppleTypography.caption2,
+        color: AppleColors.systemGreen,
+        fontWeight: '900',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginTop: 8,
     },
     focusCardContent: {
         flex: 1,
