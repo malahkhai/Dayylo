@@ -13,6 +13,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import * as LucideIcons from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 import { AppleColors, AppleTypography, AppleShadows, AppleSpacing } from '../constants/AppleTheme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -49,15 +50,34 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   const panGesture = Gesture.Pan()
     .enabled(!trackedToday)
     .onUpdate((event) => {
+      // Small vibration when starting to move
+      if (Math.abs(translateX.value) === 0 && Math.abs(event.translationX) > 1) {
+        runOnJS(Haptics.selectionAsync)();
+      }
+
+      // Feedback when crossing threshold
+      const wasBelow = Math.abs(translateX.value) < SWIPE_THRESHOLD;
+      const isAbove = Math.abs(event.translationX) >= SWIPE_THRESHOLD;
+
+      if (wasBelow && isAbove) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+      }
+
       translateX.value = event.translationX;
     })
     .onEnd((event) => {
       if (translateX.value > SWIPE_THRESHOLD) {
         translateX.value = withSpring(0);
-        runOnJS(onComplete!)();
+        runOnJS(() => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          onComplete?.();
+        })();
       } else if (translateX.value < -SWIPE_THRESHOLD) {
         translateX.value = withSpring(0);
-        runOnJS(onFail!)();
+        runOnJS(() => {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+          onFail?.();
+        })();
       } else {
         translateX.value = withSpring(0);
       }

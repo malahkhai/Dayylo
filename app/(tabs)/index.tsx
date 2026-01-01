@@ -11,6 +11,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import ReAnimated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withRepeat,
+    withTiming,
+    Easing,
+    interpolate,
+    Extrapolate
+} from 'react-native-reanimated';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
@@ -42,7 +51,37 @@ export default function HomeScreen() {
         setTimeout(() => setRefreshing(false), 1000);
     };
 
-    // Animated header opacity
+    // Dynamic greeting based on time
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 17) return "Good Afternoon";
+        if (hour < 21) return "Good Evening";
+        return "Good Night";
+    };
+
+    const getGreetingIcon = () => {
+        const hour = new Date().getHours();
+        if (hour < 18) return "☀️";
+        return "🌙";
+    };
+
+    // Sun/Moon rotation animation
+    const rotation = useSharedValue(0);
+    React.useEffect(() => {
+        rotation.value = withRepeat(
+            withTiming(1, { duration: 15000, easing: Easing.linear }),
+            -1,
+            false
+        );
+    }, []);
+
+    const animatedIconStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ rotate: `${rotation.value * 360}deg` }],
+        };
+    });
+
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 60],
         outputRange: [1, 0.9],
@@ -71,7 +110,12 @@ export default function HomeScreen() {
             >
                 <View style={styles.headerContent}>
                     <View>
-                        <Text style={styles.greeting}>Good Morning ☀️</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={styles.greeting}>{getGreeting()} </Text>
+                            <ReAnimated.Text style={[styles.greeting, animatedIconStyle]}>
+                                {getGreetingIcon()}
+                            </ReAnimated.Text>
+                        </View>
                         <Text style={styles.headerTitle}>Today's Habits</Text>
                     </View>
                     <View style={styles.streakContainer}>

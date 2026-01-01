@@ -106,6 +106,22 @@ export const AppleTypography = {
     fontWeight: '600' as const,
     lineHeight: 25,
   },
+  title1: {
+    fontSize: 28,
+    fontWeight: '700' as const,
+    lineHeight: 34,
+    letterSpacing: -0.3,
+  },
+  title2: {
+    fontSize: 22,
+    fontWeight: '600' as const,
+    lineHeight: 28,
+  },
+  title3: {
+    fontSize: 20,
+    fontWeight: '600' as const,
+    lineHeight: 25,
+  },
 
   // Body
   bodyLarge: {
@@ -161,16 +177,6 @@ export const AppleTypography = {
     lineHeight: 41,
     fontWeight: '700' as const,
     letterSpacing: -0.4,
-  },
-  title1: {
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: '700' as const,
-  },
-  title2: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '600' as const,
   },
   headline: {
     fontSize: 17,

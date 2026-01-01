@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   View,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { AppleColors, AppleTypography, AppleShadows, AppleBorderRadius, AppleSpacing } from '../constants/AppleTheme';
 
 interface AppleButtonProps {
@@ -34,6 +35,11 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
   style,
 }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  };
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -92,7 +98,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
   return (
     <Animated.View style={[{ transform: [{ scale: scaleAnim }] }, style]}>
       <TouchableOpacity
-        onPress={onPress}
+        onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
@@ -122,6 +128,11 @@ export const AppleFAB: React.FC<{
 }> = ({ onPress, icon: Icon, color = AppleColors.info }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
 
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  };
+
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.9,
@@ -143,7 +154,7 @@ export const AppleFAB: React.FC<{
   return (
     <Animated.View style={[styles.fab, { transform: [{ scale: scaleAnim }] }]}>
       <TouchableOpacity
-        onPress={onPress}
+        onPress={handlePress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         style={[styles.fabButton, { backgroundColor: color }]}
