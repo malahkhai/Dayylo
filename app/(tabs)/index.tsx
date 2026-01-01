@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
-import { AppleButton, AppleFAB } from '../../components/AppleButton';
+import { AppleButton } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
 import { usePrivacy } from '../../context/PrivacyContext';
@@ -153,12 +153,6 @@ export default function HomeScreen() {
                 <View style={{ height: 100 }} />
             </Animated.ScrollView>
 
-            {/* Floating Action Button */}
-            <AppleFAB
-                onPress={() => router.push('/add-habit')}
-                icon={LucideIcons.Plus}
-                color={AppleColors.info}
-            />
         </SafeAreaView>
     );
 }
