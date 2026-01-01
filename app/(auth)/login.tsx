@@ -91,34 +91,34 @@ export default function AuthScreen() {
                     </Pressable>
 
                     <View style={{ flex: 1 }}>
-                        <Text style={[styles.focusHeadline, { marginTop: 16 }]}>Building a better you{"\n"}starts today.</Text>
+                        <Text style={[styles.focusHeadline, { marginTop: 12, fontSize: 32 }]}>Building a better you{"\n"}starts today.</Text>
 
-                        <View style={styles.storyboardGrid}>
-                            <View style={styles.storyboardCard}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.primary + '15', marginBottom: 12 }]}>
-                                    <LucideIcons.Sparkles size={28} color={AppleColors.primary} />
+                        <View style={[styles.storyboardGrid, { gap: 12 }]}>
+                            <View style={[styles.storyboardCard, { padding: 16 }]}>
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.primary + '15', marginBottom: 8, width: 48, height: 48 }]}>
+                                    <LucideIcons.Sparkles size={24} color={AppleColors.primary} />
                                 </View>
                                 <View style={styles.storyContent}>
                                     <Text style={styles.storyText}>
                                         <Text style={{ fontWeight: '700', color: AppleColors.primary }}>Build Momentum.</Text>
                                         {"\n"}Every positive action compounds into a lifetime of success.
                                     </Text>
-                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 8 }} />
-                                    <Text style={styles.storyInsight}>Consistency is the bridge to accomplishment.</Text>
+                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 6 }} />
+                                    <Text style={[styles.storyInsight, { marginTop: 0 }]}>Consistency is the bridge to accomplishment.</Text>
                                 </View>
                             </View>
 
-                            <View style={styles.storyboardCard}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.warning + '15', marginBottom: 12 }]}>
-                                    <LucideIcons.Unplug size={28} color={AppleColors.warning} />
+                            <View style={[styles.storyboardCard, { padding: 16 }]}>
+                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.warning + '15', marginBottom: 8, width: 48, height: 48 }]}>
+                                    <LucideIcons.Unplug size={24} color={AppleColors.warning} />
                                 </View>
                                 <View style={styles.storyContent}>
                                     <Text style={styles.storyText}>
                                         <Text style={{ fontWeight: '700', color: AppleColors.warning }}>Break Chains.</Text>
                                         {"\n"}Breaking old habits is about gaining your freedom back.
                                     </Text>
-                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 8 }} />
-                                    <Text style={styles.storyInsight}>Progress is what you leave behind.</Text>
+                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 6 }} />
+                                    <Text style={[styles.storyInsight, { color: AppleColors.warning, marginTop: 0 }]}>Progress is what you leave behind.</Text>
                                 </View>
                             </View>
                         </View>
