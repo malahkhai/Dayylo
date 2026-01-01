@@ -60,9 +60,9 @@ export default function AuthScreen() {
                     <View style={styles.centerContent}>
                         <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
                             <Image
-                                source={require('../../assets/icon.png')}
+                                source={require('../../assets/welcome-logo.png')}
                                 style={styles.appIcon}
-                                resizeMode="cover"
+                                resizeMode="contain"
                             />
                         </Animated.View>
                         <Text style={styles.headline}>Welcome to Dayylo</Text>
@@ -312,17 +312,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     logoContainer: {
-        width: 100,
-        height: 100,
-        borderRadius: 24,
-        backgroundColor: AppleColors.systemGray6,
+        width: 140,
+        height: 140,
+        marginBottom: 32,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 32,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-        ...AppleShadows.medium,
     },
     appIcon: {
         width: '100%',
