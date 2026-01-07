@@ -10,7 +10,10 @@
     "scheme": "dayylo",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.malahkhai.dayylo"
+      "bundleIdentifier": "com.malahkhai.dayylo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
