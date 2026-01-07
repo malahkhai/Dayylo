@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 const { width } = Dimensions.get('window');
 
 export default function DashboardScreen() {
-    const { habits } = useHabits();
+    const { habits, xp, level } = useHabits();
     const { isUnlocked, authenticate } = usePrivacy();
     const router = useRouter();
 
@@ -18,6 +18,24 @@ export default function DashboardScreen() {
 
     const totalDone = habits.filter(h => h.completedToday).length;
     const progressPercent = habits.length > 0 ? Math.round((totalDone / habits.length) * 100) : 0;
+
+    // Gamification Logic
+    const xpProgress = xp % 100;
+    const itemsToNextLevel = 100 - xpProgress;
+
+    const getPlantIcon = () => {
+        if (level >= 10) return <LucideIcons.CloudRain size={32} color="#30e8ab" />; // Forest/Ecosystem?
+        if (level >= 5) return <LucideIcons.Trees size={32} color="#30e8ab" />;
+        if (level >= 2) return <LucideIcons.Flower2 size={32} color="#30e8ab" />;
+        return <LucideIcons.Sprout size={32} color="#30e8ab" />;
+    };
+
+    const getLevelTitle = () => {
+        if (level >= 10) return "Master Gardener";
+        if (level >= 5) return "Sapling Guardian";
+        if (level >= 2) return "Sprout Tender";
+        return "Seed Planter";
+    };
 
     const handlePrivacyPress = async () => {
         if (!isUnlocked) await authenticate();
@@ -42,30 +60,37 @@ export default function DashboardScreen() {
                     </Pressable>
                 </View>
 
-                {/* Daily Progress Card */}
-                <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl">
+                {/* Gamification Card (Growth Journey) */}
+                <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl relative overflow-hidden">
+                    {/* Background Gradient/Effect - Simplified as absolute view for now */}
+                    <View className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
+
                     <View className="flex-row justify-between items-start mb-6">
                         <View>
-                            <Text className="text-[15px] font-black text-white">Daily Progress</Text>
-                            <Text className="text-[13px] font-bold text-white/40">Keep up the momentum!</Text>
+                            <Text className="text-[15px] font-black text-white mb-1">Growth Journey</Text>
+                            <Text className="text-[13px] font-bold text-white/40">{getLevelTitle()}</Text>
                         </View>
-                        <Text className="text-3xl font-black text-primary">{progressPercent}%</Text>
-                    </View>
-
-                    <View className="w-full h-3 bg-white/5 rounded-full overflow-hidden mb-6">
-                        <View
-                            className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(48,232,171,0.5)]"
-                            style={{ width: `${progressPercent}%` }}
-                        />
-                    </View>
-
-                    <View className="flex-row justify-between items-center bg-white/5 p-5 rounded-3xl">
-                        <Text className="text-white/40 font-black text-[10px] uppercase tracking-widest">{totalDone} of {habits.length} COMPLETED</Text>
-                        <View className="bg-primary/10 px-3 py-1.5 rounded-full flex-row items-center border border-primary/20">
-                            <View className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
-                            <Text className="text-[10px] font-black text-primary uppercase">On Track</Text>
+                        <View className="items-end">
+                            <Text className="text-3xl font-black text-primary">Lvl {level}</Text>
+                            <Text className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{xpProgress}/100 XP</Text>
                         </View>
                     </View>
+
+                    <View className="flex-row items-center justify-between mb-2">
+                        <View className="w-14 h-14 bg-primary/10 rounded-2xl items-center justify-center border border-primary/20">
+                            {getPlantIcon()}
+                        </View>
+                        <View className="flex-1 ml-4 h-3 bg-white/5 rounded-full overflow-hidden">
+                            <View
+                                className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(48,232,171,0.5)]"
+                                style={{ width: `${xpProgress}%` }}
+                            />
+                        </View>
+                    </View>
+
+                    <Text className="text-white/30 text-[10px] text-center mt-4 font-bold uppercase tracking-widest">
+                        {itemsToNextLevel} XP to next level
+                    </Text>
                 </View>
 
                 {/* Stats Grid */}
@@ -152,7 +177,7 @@ export default function DashboardScreen() {
                     <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">Quick Actions</Text>
                     <View className="flex-row justify-between px-1">
                         {[
-                            { icon: 'Plus', label: 'Add', onPress: () => router.push('/add'), color: '#30e8ab' },
+                            { icon: 'Plus', label: 'Add', onPress: () => router.push('/(tabs)/add'), color: '#30e8ab' },
                             { icon: 'Bell', label: 'Alerts', color: '#8b5cf6' },
                             { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress, color: '#f97316' }
                         ].map((action, i) => {

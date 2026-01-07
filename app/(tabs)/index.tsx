@@ -25,16 +25,19 @@ import { AppleButton } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
 import { usePrivacy } from '../../context/PrivacyContext';
+import { WeekCalendar } from '../../components/WeekCalendar';
+import { Habit } from '../../types';
 
 export default function HomeScreen() {
     const router = useRouter();
     const { habits, recordHabitResult } = useHabits();
-    const { isUnlocked } = usePrivacy();
+    const { isUnlocked, authenticate } = usePrivacy();
     const [refreshing, setRefreshing] = useState(false);
     const [scrollY] = useState(new Animated.Value(0));
 
-    // Filter habits based on privacy
-    const visibleHabits = habits.filter(h => !h.isPrivate || isUnlocked);
+    // Show all habits, but lock interaction for break habits if not authenticated
+    // User requested "Break habits... should still appear... but require auth for details"
+    const visibleHabits = habits;
 
     // Stats calculations
     const activeHabits = visibleHabits.length;
@@ -94,6 +97,18 @@ export default function HomeScreen() {
         extrapolate: 'clamp',
     });
 
+    const handleHabitPress = async (habit: Habit) => {
+        // Intercept "Break" habits or Private habits
+        if (habit.type === 'break' && !isUnlocked) {
+            const success = await authenticate();
+            if (success) {
+                router.push(`/habit/${habit.id}`);
+            }
+        } else {
+            router.push(`/habit/${habit.id}`);
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" />
@@ -125,6 +140,8 @@ export default function HomeScreen() {
                 </View>
             </Animated.View>
 
+            <WeekCalendar />
+
             {/* Stats Card */}
             <View style={styles.statsCard}>
                 <View style={styles.statItem}>
@@ -145,9 +162,10 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            {!isUnlocked && habits.some(h => h.isPrivate) && (
+            {/* Privacy Banner - Only show if locked and break habits exist */}
+            {!isUnlocked && breakHabits.length > 0 && (
                 <View style={styles.privacyBanner}>
-                    <Text style={styles.privacyText}>Some habits are hidden. Unlock to view.</Text>
+                    <Text style={styles.privacyText}>Break habits require unlock to view details.</Text>
                 </View>
             )}
 
@@ -179,7 +197,7 @@ export default function HomeScreen() {
                                 trackedToday={habit.trackedToday}
                                 color={habit.color}
                                 icon={habit.icon}
-                                onPress={() => console.log('Habit pressed:', habit.id)}
+                                onPress={() => handleHabitPress(habit)}
                                 onComplete={() => recordHabitResult(habit.id, true)}
                                 onFail={() => recordHabitResult(habit.id, false)}
                             />

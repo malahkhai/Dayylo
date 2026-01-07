@@ -18,6 +18,7 @@ export interface Habit {
     currentValue?: number;
     targetValue?: number;
     unit?: string;
+    history: Record<string, boolean>;
 }
 
 export interface User {

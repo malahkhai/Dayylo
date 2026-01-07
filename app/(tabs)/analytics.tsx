@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useHabits } from '../../context/HabitContext';
+import { CalendarHeatmap } from '../../components/CalendarHeatmap';
+import { HabitGrid } from '../../components/HabitGrid';
 
 const { width } = Dimensions.get('window');
 
@@ -11,16 +13,16 @@ export default function AnalyticsScreen() {
     const { habits, isPremium } = useHabits();
     const router = useRouter();
 
-    // Mock data for heatmap
-    const days = Array.from({ length: 35 }, (_, i) => ({
-        id: i,
-        intensity: Math.floor(Math.random() * 4), // 0 to 3
-    }));
-
-    const getHeatmapColor = (intensity: number) => {
-        const colors = ['rgba(255,255,255,0.05)', '#064e3b', '#059669', '#30e8ab'];
-        return colors[intensity];
-    };
+    const overallHistory: Record<string, boolean> = {};
+    if (habits.length > 0) {
+        habits.forEach(h => {
+            if (h.history) {
+                Object.keys(h.history).forEach(date => {
+                    if (h.history[date]) overallHistory[date] = true;
+                });
+            }
+        });
+    }
 
     return (
         <SafeAreaView className="flex-1 bg-black">
@@ -38,50 +40,16 @@ export default function AnalyticsScreen() {
                             <Text className="text-5xl font-black text-white">84</Text>
                             <Text className="text-primary font-black text-xs uppercase mt-1">+12% vs LW</Text>
                         </View>
-                        {/* Simple SVG ring could go here for better visual */}
-                    </View>
-                    <View className="flex-row gap-8 mt-10">
-                        <View className="items-center">
-                            <Text className="text-white text-lg font-black">28</Text>
-                            <Text className="text-white/30 text-[10px] font-black uppercase">Days</Text>
-                        </View>
-                        <View className="w-[1px] h-8 bg-white/10" />
-                        <View className="items-center">
-                            <Text className="text-white text-lg font-black">92%</Text>
-                            <Text className="text-white/30 text-[10px] font-black uppercase">Goal</Text>
-                        </View>
                     </View>
                 </View>
 
-                {/* Heatmap Section */}
+                {/* Weekly Grid */}
+                <HabitGrid habits={habits} />
+
+                {/* Monthly Calendar (Overall Activity) */}
                 <View className="mb-8">
-                    <View className="flex-row justify-between items-end mb-6 px-1">
-                        <View>
-                            <Text className="text-lg font-black text-white">Activity Heatmap</Text>
-                            <Text className="text-xs font-bold text-white/40">Your consistency over 35 days</Text>
-                        </View>
-                        <Text className="text-primary font-black text-[11px] uppercase">Details</Text>
-                    </View>
-                    <View className="bg-surface-dark rounded-[32px] p-6 border border-white/5">
-                        <View className="flex-row flex-wrap gap-2 justify-center">
-                            {days.map(day => (
-                                <View
-                                    key={day.id}
-                                    className="w-6 h-6 rounded-md"
-                                    style={{ backgroundColor: getHeatmapColor(day.intensity) }}
-                                />
-                            ))}
-                        </View>
-                        <View className="flex-row justify-between mt-6 px-2">
-                            <Text className="text-[10px] font-black text-white/20 uppercase">Less</Text>
-                            <View className="flex-row gap-1">
-                                {[0, 1, 2, 3].map(i => (
-                                    <View key={i} className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: getHeatmapColor(i) }} />
-                                ))}
-                            </View>
-                            <Text className="text-[10px] font-black text-white/20 uppercase">More</Text>
-                        </View>
-                    </View>
+                    <Text className="text-[13px] font-black text-white mb-4 px-1">Activity Calendar</Text>
+                    <CalendarHeatmap history={overallHistory} color="#30e8ab" />
                 </View>
 
                 {/* Premium Trend Lock */}

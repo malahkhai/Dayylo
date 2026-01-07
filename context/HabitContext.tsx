@@ -5,7 +5,7 @@ import { INITIAL_HABITS } from '../constants';
 
 interface HabitContextType {
     habits: Habit[];
-    addHabit: (habit: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday'>) => Promise<boolean>;
+    addHabit: (habit: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>) => Promise<boolean>;
     toggleHabit: (id: string) => Promise<void>;
     updateHabitValue: (id: string, delta: number) => Promise<void>;
     deleteHabit: (id: string) => Promise<void>;
@@ -13,6 +13,8 @@ interface HabitContextType {
     isPremium: boolean;
     setPremium: (val: boolean) => void;
     loading: boolean;
+    xp: number;
+    level: number;
 }
 
 const HabitContext = createContext<HabitContextType | undefined>(undefined);
@@ -20,27 +22,38 @@ const HabitContext = createContext<HabitContextType | undefined>(undefined);
 export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [habits, setHabits] = useState<Habit[]>([]);
     const [isPremium, setIsPremium] = useState(false);
+    const [xp, setXp] = useState(0);
+    const [level, setLevel] = useState(1);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        loadHabits();
-        AsyncStorage.getItem('daylo_premium').then(val => setIsPremium(val === 'true'));
+        loadData();
     }, []);
 
-    const loadHabits = async () => {
+    const loadData = async () => {
         try {
-            const stored = await AsyncStorage.getItem('daylo_habits');
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                // Basic reset logic for "completedToday" based on last open date could go here
-                setHabits(parsed);
-            } else {
-                // First time load
+            const [storedHabits, storedPremium, storedXp] = await Promise.all([
+                AsyncStorage.getItem('daylo_habits'),
+                AsyncStorage.getItem('daylo_premium'),
+                AsyncStorage.getItem('daylo_xp')
+            ]);
+
+            if (storedHabits) setHabits(JSON.parse(storedHabits));
+            else {
                 setHabits(INITIAL_HABITS);
                 await AsyncStorage.setItem('daylo_habits', JSON.stringify(INITIAL_HABITS));
             }
+
+            if (storedPremium) setIsPremium(storedPremium === 'true');
+
+            if (storedXp) {
+                const parsedXp = parseInt(storedXp, 10);
+                setXp(parsedXp);
+                setLevel(Math.floor(parsedXp / 100) + 1);
+            }
+
         } catch (e) {
-            console.error('Failed to load habits', e);
+            console.error('Failed to load data', e);
         } finally {
             setLoading(false);
         }
@@ -51,12 +64,19 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await AsyncStorage.setItem('daylo_habits', JSON.stringify(newHabits));
     };
 
+    const addXp = async (amount: number) => {
+        const newXp = xp + amount;
+        setXp(newXp);
+        setLevel(Math.floor(newXp / 100) + 1);
+        await AsyncStorage.setItem('daylo_xp', newXp.toString());
+    };
+
     const setPremium = async (val: boolean) => {
         await AsyncStorage.setItem('daylo_premium', val.toString());
         setIsPremium(val);
     };
 
-    const addHabit = async (h: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday'>) => {
+    const addHabit = async (h: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>) => {
         if (!isPremium && habits.length >= 3) {
             return false;
         }
@@ -68,26 +88,47 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             longestStreak: 0,
             completedToday: false,
             trackedToday: false,
+            history: {},
         };
         await saveHabits([...habits, newHabit]);
         return true;
     };
 
+    const getTodayDate = () => {
+        const d = new Date();
+        return d.toISOString().split('T')[0];
+    };
+
     const toggleHabit = async (id: string) => {
+        let xpGained = 0;
         const newHabits = habits.map(h => {
             if (h.id === id) {
                 const isNowCompleted = !h.completedToday;
                 const newStreak = isNowCompleted ? h.streak + 1 : Math.max(0, h.streak - 1);
+                const today = getTodayDate();
+
+                if (isNowCompleted) {
+                    xpGained = h.type === 'break' ? 15 : 10;
+                }
+
                 return {
                     ...h,
                     completedToday: isNowCompleted,
                     streak: newStreak,
-                    longestStreak: Math.max(h.longestStreak, newStreak)
+                    longestStreak: Math.max(h.longestStreak, newStreak),
+                    history: {
+                        ...(h.history || {}),
+                        [today]: isNowCompleted
+                    }
                 };
             }
             return h;
         });
+
         await saveHabits(newHabits);
+        if (xpGained > 0) {
+            await addXp(xpGained);
+        }
     };
 
     const updateHabitValue = async (id: string, delta: number) => {
@@ -145,7 +186,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     return (
-        <HabitContext.Provider value={{ habits, addHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult, isPremium, setPremium, loading }}>
+        <HabitContext.Provider value={{ habits, addHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult, isPremium, setPremium, loading, xp, level }}>
             {children}
         </HabitContext.Provider>
     );

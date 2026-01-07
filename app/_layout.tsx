@@ -17,7 +17,7 @@ export default function RootLayout() {
                             <Stack.Screen name="(auth)/onboarding" options={{ animation: 'slide_from_right' }} />
                             <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
                             <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-                            <Stack.Screen name="add" options={{ presentation: 'formSheet' }} />
+                            <Stack.Screen name="add-habit" options={{ presentation: 'formSheet' }} />
                             <Stack.Screen name="habit/[id]" options={{ presentation: 'card' }} />
                         </Stack>
                     </HabitProvider>

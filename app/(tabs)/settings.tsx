@@ -8,7 +8,14 @@ import { useHabits } from '../../context/HabitContext';
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const { isPremium } = useHabits();
+    const { isPremium, level } = useHabits();
+
+    const getLevelTitle = (l: number) => {
+        if (l >= 10) return "Master Gardener";
+        if (l >= 5) return "Sapling Guardian";
+        if (l >= 2) return "Sprout Tender";
+        return "Seed Planter";
+    };
 
     const sections = [
         {
@@ -49,7 +56,9 @@ export default function SettingsScreen() {
                         />
                     </View>
                     <Text className="text-2xl font-black text-white">Alex Johnson</Text>
-                    <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">Achiever Level</Text>
+                    <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">
+                        Level {level} • {getLevelTitle(level)}
+                    </Text>
 
                     {!isPremium && (
                         <Pressable

@@ -41,6 +41,7 @@ export default function AddHabitScreen() {
             isPrivate: false,
             frequency: ['Daily'],
             reminderTime: '09:00',
+            difficulty: 5,
         });
         if (success) router.replace('/(tabs)');
         else router.push('/paywall');
@@ -132,6 +133,7 @@ export default function AddHabitScreen() {
                     </View>
 
                     <Pressable
+                        onPress={() => router.push('/add-habit')}
                         className="bg-white/5 border border-white/5 rounded-[32px] p-6 flex-row items-center justify-between mt-6 mb-32"
                     >
                         <View className="flex-row items-center">
