@@ -352,8 +352,8 @@ const styles = StyleSheet.create({
     },
     focusCard: {
         backgroundColor: AppleColors.background.secondary,
-        borderRadius: AppleBorderRadius.xl2, // 24px per guide
-        padding: 24,
+        borderRadius: 12, // 12pt per Skill
+        padding: 16, // 16pt per Skill (Standard container padding)
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
         flexDirection: 'row',
@@ -368,9 +368,9 @@ const styles = StyleSheet.create({
         backgroundColor: AppleColors.warning + '05',
     },
     focusIconBg: {
-        width: 64, // Per icon container guide
-        height: 64,
-        borderRadius: 16,
+        width: 48,
+        height: 48,
+        borderRadius: 12, // 12pt per Skill
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 16,
@@ -381,15 +381,15 @@ const styles = StyleSheet.create({
     },
     storyboardCard: {
         backgroundColor: AppleColors.background.secondary,
-        borderRadius: AppleBorderRadius.xl3, // 32px per guide
+        borderRadius: 12, // 12pt per Skill
         padding: 24,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
     },
     storyIconBg: {
-        width: 64,
-        height: 64,
-        borderRadius: 16,
+        width: 48,
+        height: 48,
+        borderRadius: 12, // 12pt per Skill
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
@@ -462,8 +462,9 @@ const styles = StyleSheet.create({
     },
     input: {
         backgroundColor: AppleColors.background.secondary,
-        padding: 18,
-        borderRadius: 16,
+        paddingHorizontal: 12, // 12pt horizontal
+        paddingVertical: 12, // 8-12pt vertical (Skill says 8, but 12 feels better for touch)
+        borderRadius: 12, // 12pt per Skill
         ...AppleTypography.body,
         color: AppleColors.label.primary,
         marginBottom: 4,

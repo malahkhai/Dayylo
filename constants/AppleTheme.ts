@@ -9,17 +9,17 @@ export const AppleColors = {
     tertiary: '#27272A', // Zinc 800 (Surface Hover)
   },
 
-  // Accent Colors (Emerald)
-  primary: '#10B981', // Emerald 500
-  primaryDark: '#059669', // Emerald 600
-  primaryHover: '#047857', // Emerald 700
-  primarySurface: '#064E3B', // Emerald 950
+  // Primary Colors (System Blue)
+  primary: '#007AFF', // System Blue
+  primaryDark: '#0051A8',
+  primaryHover: '#0062C9',
+  primarySurface: '#E5F1FF',
 
   // Semantic Colors
-  success: '#10B981', // Emerald 500
-  warning: '#F59E0B', // Amber 500
-  error: '#EF4444', // Red 500
-  info: '#3B82F6', // Blue 500
+  success: '#34C759', // System Green
+  warning: '#FF9500', // System Orange
+  error: '#FF3B30', // System Red
+  info: '#007AFF', // System Blue
 
   // Surface Variants
   variants: {
@@ -125,19 +125,19 @@ export const AppleTypography = {
 
   // Body
   bodyLarge: {
-    fontSize: 19,
+    fontSize: 18, // Slightly adjusted
     fontWeight: '400' as const,
-    lineHeight: 24,
+    lineHeight: 25,
   },
   body: {
-    fontSize: 17,
+    fontSize: 16, // Body1: 16pt as per Skill
     fontWeight: '400' as const,
-    lineHeight: 22,
+    lineHeight: 22.4, // 1.4x
   },
   bodySmall: {
-    fontSize: 15,
+    fontSize: 14, // Body2: 14pt as per Skill
     fontWeight: '400' as const,
-    lineHeight: 20,
+    lineHeight: 19.6, // 1.4x
   },
 
   // Labels
@@ -231,7 +231,7 @@ export const AppleSpacing = {
 
 export const AppleBorderRadius = {
   sm: 8,
-  md: 12,
+  md: 12, // Standard as per Skill
   lg: 16,
   xl: 20,
   xl2: 24,
@@ -240,8 +240,8 @@ export const AppleBorderRadius = {
 
   // Compatibility mappings
   pill: 9999,
-  card: 24,
-  button: 16,
+  card: 12, // Updated to 12pt as per Skill
+  button: 12, // Updated to 12pt as per Skill
 };
 
 export const AppleShadows = {

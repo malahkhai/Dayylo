@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 32,
+    borderRadius: 12, // Match card radius
     overflow: 'hidden',
   },
   actionSide: {
@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: AppleColors.background.tertiary,
-    borderRadius: 32,
-    padding: 24,
+    borderRadius: 12, // 12pt per Skill
+    padding: 16, // 16pt per Skill
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
     ...AppleShadows.card,
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: 12, // 12pt per Skill
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,

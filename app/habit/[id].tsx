@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     heroIconBg: {
         width: 100,
         height: 100,
-        borderRadius: 36,
+        borderRadius: 24, // Slightly larger than standard 12 for large hero element, but cleaner than 36
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 24,
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 32,
         paddingVertical: 16,
-        borderRadius: 28,
+        borderRadius: 12, // 12pt per Skill
         gap: 12,
         ...AppleShadows.medium,
     },
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     statCard: {
         flex: 1,
         backgroundColor: AppleColors.background.tertiary,
-        borderRadius: 28,
+        borderRadius: 12, // 12pt per Skill
         padding: 20,
         alignItems: 'center',
         borderWidth: 1,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     },
     infoCard: {
         backgroundColor: AppleColors.background.tertiary,
-        borderRadius: 28,
+        borderRadius: 12, // 12pt per Skill
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.05)',
         marginBottom: 40,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 16,
-        borderRadius: 20,
+        borderRadius: 12, // 12pt per Skill
         backgroundColor: 'rgba(255, 69, 58, 0.1)',
         gap: 8,
     },

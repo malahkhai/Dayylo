@@ -33,7 +33,7 @@ export default function AnalyticsScreen() {
                 </View>
 
                 {/* Daily Balance Score */}
-                <View className="bg-surface-dark rounded-[32px] p-8 mb-8 border border-white/5 items-center">
+                <View className="bg-surface-dark rounded-[12px] p-6 mb-8 border border-white/5 items-center">
                     <Text className="text-white/40 font-black text-[10px] uppercase tracking-widest mb-6">Daily Balance Score</Text>
                     <View className="w-40 h-40 rounded-full border-[12px] border-white/5 items-center justify-center">
                         <View className="items-center">
@@ -49,15 +49,15 @@ export default function AnalyticsScreen() {
                 {/* Monthly Calendar (Overall Activity) */}
                 <View className="mb-8">
                     <Text className="text-[13px] font-black text-white mb-4 px-1">Activity Calendar</Text>
-                    <CalendarHeatmap history={overallHistory} color="#30e8ab" />
+                    <CalendarHeatmap history={overallHistory} color="#007AFF" />
                 </View>
 
                 {/* Premium Trend Lock */}
                 <View className="mb-32">
                     <Text className="text-[13px] font-black text-white mb-4 px-1">Trend Analysis</Text>
-                    <View className="bg-surface-dark rounded-[32px] p-8 border border-white/5 items-center">
-                        <View className="w-16 h-16 bg-white/5 rounded-2xl items-center justify-center mb-6">
-                            <LucideIcons.BarChart size={32} color={isPremium ? "#30e8ab" : "rgba(255,255,255,0.2)"} />
+                    <View className="bg-surface-dark rounded-[12px] p-6 border border-white/5 items-center">
+                        <View className="w-16 h-16 bg-white/5 rounded-[12px] items-center justify-center mb-6">
+                            <LucideIcons.BarChart size={32} color={isPremium ? "#007AFF" : "rgba(255,255,255,0.2)"} />
                         </View>
                         <Text className="text-white font-black text-lg mb-2 text-center">
                             {isPremium ? 'Consistency Trends' : 'Unlock Premium Insights'}
@@ -68,10 +68,10 @@ export default function AnalyticsScreen() {
 
                         {!isPremium && (
                             <Pressable
-                                className="bg-primary py-4 px-8 rounded-2xl"
+                                className="bg-primary py-4 px-8 rounded-[12px]"
                                 onPress={() => router.push('/paywall')}
                             >
-                                <Text className="text-black font-black uppercase text-xs tracking-widest">Upgrade to View</Text>
+                                <Text className="text-white font-black uppercase text-xs tracking-widest">Upgrade to View</Text>
                             </Pressable>
                         )}
                     </View>

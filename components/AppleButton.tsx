@@ -168,9 +168,9 @@ export const AppleFAB: React.FC<{
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: AppleBorderRadius.lg, // 16px per guide
-    paddingVertical: AppleSpacing.md,
-    paddingHorizontal: AppleSpacing.lg,
+    borderRadius: AppleBorderRadius.md, // 12px per Skill guide
+    paddingVertical: 12, // 12pt vertical per Skill guide
+    paddingHorizontal: 20, // 20pt horizontal per Skill guide
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonPrimary: {
-    backgroundColor: AppleColors.primaryDark, // Emerald 600
+    backgroundColor: AppleColors.primary, // System Blue
   },
   buttonSecondary: {
     backgroundColor: AppleColors.background.secondary, // Zinc 900
