@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
@@ -8,6 +8,8 @@ import { AppleButton } from '../../components/AppleButton';
 import { useHabits } from '../../context/HabitContext';
 
 const { width } = Dimensions.get('window');
+
+type OnboardingStep = 'WELCOME' | 'FEATURES' | 'HABITS';
 
 interface StarterHabit {
     id: string;
@@ -36,11 +38,29 @@ const STARTER_HABITS: StarterHabit[] = [
 export default function OnboardingScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
+    const [currentStep, setCurrentStep] = useState<OnboardingStep>('WELCOME');
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
     const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
     const [isPrivate, setIsPrivate] = useState(false);
+    const fadeAnim = React.useRef(new Animated.Value(1)).current;
+
+    const transitionTo = (step: OnboardingStep) => {
+        Animated.sequence([
+            Animated.timing(fadeAnim, {
+                toValue: 0,
+                duration: 200,
+                useNativeDriver: true,
+            }),
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 400,
+                useNativeDriver: true,
+            })
+        ]).start();
+        setTimeout(() => setCurrentStep(step), 200);
+    };
 
     const toggleHabit = (id: string) => {
         if (id.includes('custom')) {
@@ -89,7 +109,6 @@ export default function OnboardingScreen() {
     };
 
     const finalizeOnboarding = async () => {
-        // Add selected habits to context
         for (const hid of Object.keys(selectedHabits)) {
             const h = STARTER_HABITS.find(sh => sh.id === hid);
             if (h) {
@@ -101,12 +120,69 @@ export default function OnboardingScreen() {
                     isPrivate: h.type === 'break' ? isPrivate : false,
                     frequency: ['daily'],
                     difficulty: selectedHabits[hid],
+                    history: {},
                 });
             }
         }
         setShowNotificationModal(false);
         router.replace('/(tabs)');
     };
+
+    const renderWelcome = () => (
+        <View style={styles.stepContainer}>
+            <View style={styles.heroContent}>
+                <View style={styles.logoContainer}>
+                    <View style={styles.logoBackground}>
+                        <LucideIcons.Zap size={60} color={AppleColors.primary} />
+                    </View>
+                </View>
+                <Text style={styles.heroTitle}>Welcome to Dayylo</Text>
+                <Text style={styles.heroSubtitle}>Your daily companion for building a better you, one habit at a time.</Text>
+            </View>
+            <View style={styles.footerContainer}>
+                <AppleButton
+                    title="Get Started"
+                    onPress={() => transitionTo('FEATURES')}
+                    size="large"
+                    fullWidth
+                />
+            </View>
+        </View>
+    );
+
+    const renderFeatures = () => (
+        <View style={styles.stepContainer}>
+            <View style={styles.heroContent}>
+                <View style={styles.featureIconContainer}>
+                    <LucideIcons.LayoutGrid size={80} color={AppleColors.systemIndigo} />
+                </View>
+                <Text style={styles.heroTitle}>Track Your Habits</Text>
+                <Text style={styles.heroSubtitle}>See your progress evolve with our beautiful heatmap and stay consistent every day.</Text>
+
+                <View style={[styles.miniHeatmap, AppleShadows.medium]}>
+                    <View style={styles.heatmapGrid}>
+                        {[...Array(35)].map((_, i) => (
+                            <View
+                                key={i}
+                                style={[
+                                    styles.heatmapCell,
+                                    { backgroundColor: Math.random() > 0.4 ? AppleColors.primary + (Math.random() * 80 + 20).toString(16).split('.')[0].padStart(2, '0') : 'rgba(255,255,255,0.05)' }
+                                ]}
+                            />
+                        ))}
+                    </View>
+                </View>
+            </View>
+            <View style={styles.footerContainer}>
+                <AppleButton
+                    title="Next"
+                    onPress={() => transitionTo('HABITS')}
+                    size="large"
+                    fullWidth
+                />
+            </View>
+        </View>
+    );
 
     const renderHabitItem = (h: StarterHabit) => {
         const isSelected = !!selectedHabits[h.id];
@@ -199,56 +275,58 @@ export default function OnboardingScreen() {
         );
     };
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Define your path</Text>
-                    <Text style={styles.subtitle}>Select the habits you want to track. You can always change this later.</Text>
-                </View>
-
-                <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={{ paddingBottom: 160 }}>
-                    <View style={styles.accordionGroup}>
-                        <Text style={styles.sectionTitle}>Build Habits</Text>
-                        <View style={styles.grid}>
-                            {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
-                        </View>
-                    </View>
-
-                    <View style={[styles.accordionGroup, { marginTop: 32 }]}>
-                        <Text style={styles.sectionTitle}>Break Habits</Text>
-                        <View style={styles.grid}>
-                            {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
-                        </View>
-                    </View>
-                </ScrollView>
-
-                {/* Floating Difficulty Selector */}
-                {activeHabitId && (
-                    <View style={styles.floatingSelectorContainer}>
-                        {renderDifficultySelector()}
-                    </View>
-                )}
-
-                <View style={styles.footer}>
-                    <AppleButton
-                        title="Start Tracking"
-                        onPress={handleStartTracking}
-                        size="large"
-                        fullWidth
-                    />
-                    <Pressable onPress={() => router.replace('/(tabs)')} style={styles.skipButton}>
-                        <Text style={styles.skipText}>Skip for now</Text>
-                    </Pressable>
-                </View>
+    const renderHabitSelection = () => (
+        <View style={styles.content}>
+            <View style={styles.header}>
+                <Text style={styles.title}>Define your path</Text>
+                <Text style={styles.subtitle}>Select the habits you want to track. You can always change this later.</Text>
             </View>
 
-            {/* Privacy Prompt Modal */}
-            <Modal
-                visible={showPrivacyPrompt}
-                transparent
-                animationType="fade"
-            >
+            <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={{ paddingBottom: 160 }}>
+                <View style={styles.accordionGroup}>
+                    <Text style={styles.sectionTitle}>Build Habits</Text>
+                    <View style={styles.grid}>
+                        {STARTER_HABITS.filter(h => h.type === 'build').map(renderHabitItem)}
+                    </View>
+                </View>
+
+                <View style={[styles.accordionGroup, { marginTop: 32 }]}>
+                    <Text style={styles.sectionTitle}>Break Habits</Text>
+                    <View style={styles.grid}>
+                        {STARTER_HABITS.filter(h => h.type === 'break').map(renderHabitItem)}
+                    </View>
+                </View>
+            </ScrollView>
+
+            {activeHabitId && (
+                <View style={styles.floatingSelectorContainer}>
+                    {renderDifficultySelector()}
+                </View>
+            )}
+
+            <View style={styles.footer}>
+                <AppleButton
+                    title="Start My Journey"
+                    onPress={handleStartTracking}
+                    size="large"
+                    fullWidth
+                />
+                <Pressable onPress={() => router.replace('/(tabs)')} style={styles.skipButton}>
+                    <Text style={styles.skipText}>Skip for now</Text>
+                </Pressable>
+            </View>
+        </View>
+    );
+
+    return (
+        <SafeAreaView style={styles.container}>
+            <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+                {currentStep === 'WELCOME' && renderWelcome()}
+                {currentStep === 'FEATURES' && renderFeatures()}
+                {currentStep === 'HABITS' && renderHabitSelection()}
+            </Animated.View>
+
+            <Modal visible={showPrivacyPrompt} transparent animationType="fade">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalIconBg}>
@@ -265,10 +343,7 @@ export default function OnboardingScreen() {
                                 fullWidth
                                 style={{ marginBottom: 12 }}
                             />
-                            <Pressable
-                                onPress={() => { setIsPrivate(false); setShowPrivacyPrompt(false); }}
-                                style={styles.modalCancel}
-                            >
+                            <Pressable onPress={() => { setIsPrivate(false); setShowPrivacyPrompt(false); }} style={styles.modalCancel}>
                                 <Text style={styles.modalCancelText}>No, keep them visible</Text>
                             </Pressable>
                         </View>
@@ -276,12 +351,7 @@ export default function OnboardingScreen() {
                 </View>
             </Modal>
 
-            {/* Notification & Tracking Awareness Modal */}
-            <Modal
-                visible={showNotificationModal}
-                transparent
-                animationType="fade"
-            >
+            <Modal visible={showNotificationModal} transparent animationType="fade">
                 <View style={styles.modalOverlay}>
                     <View style={[styles.modalContent, { paddingBottom: 40 }]}>
                         <View style={[styles.modalIconBg, { backgroundColor: AppleColors.systemBlue + '20' }]}>
@@ -294,11 +364,7 @@ export default function OnboardingScreen() {
                             Success requires manual input: <Text style={{ fontWeight: '900', color: AppleColors.systemGreen }}>Swipe Right</Text> if you completed the habit, and <Text style={{ fontWeight: '900', color: AppleColors.systemRed }}>Swipe Left</Text> if you missed it.
                         </Text>
                         <View style={styles.modalActions}>
-                            <AppleButton
-                                title="Start My Journey"
-                                onPress={finalizeOnboarding}
-                                fullWidth
-                            />
+                            <AppleButton title="Start My Journey" onPress={finalizeOnboarding} fullWidth />
                         </View>
                     </View>
                 </View>
@@ -311,6 +377,70 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: AppleColors.background.primary,
+    },
+    stepContainer: {
+        flex: 1,
+        paddingHorizontal: AppleSpacing.screenPadding,
+        justifyContent: 'space-between',
+        paddingVertical: 40,
+    },
+    heroContent: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    logoContainer: {
+        marginBottom: 40,
+    },
+    logoBackground: {
+        width: 120,
+        height: 120,
+        borderRadius: 30,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
+    },
+    heroTitle: {
+        ...AppleTypography.display,
+        color: AppleColors.label.primary,
+        textAlign: 'center',
+        marginBottom: 16,
+    },
+    heroSubtitle: {
+        ...AppleTypography.bodyLarge,
+        color: AppleColors.label.secondary,
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        lineHeight: 28,
+    },
+    featureIconContainer: {
+        marginBottom: 32,
+    },
+    miniHeatmap: {
+        marginTop: 48,
+        padding: 16,
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.08)',
+    },
+    heatmapGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 6,
+        width: 240,
+        justifyContent: 'center',
+    },
+    heatmapCell: {
+        width: 26,
+        height: 26,
+        borderRadius: 6,
+    },
+    footerContainer: {
+        width: '100%',
+        paddingBottom: 20,
     },
     content: {
         flex: 1,

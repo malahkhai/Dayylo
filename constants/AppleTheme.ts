@@ -7,6 +7,13 @@ export const AppleColors = {
     primary: '#000000', // Pure Black
     secondary: '#18181B', // Zinc 900
     tertiary: '#27272A', // Zinc 800 (Surface Hover)
+    elevated: '#3F3F46', // Zinc 700
+  },
+
+  surface: {
+    glass: 'rgba(255, 255, 255, 0.05)',
+    glassHigh: 'rgba(255, 255, 255, 0.1)',
+    glassLow: 'rgba(255, 255, 255, 0.03)',
   },
 
   // Primary Colors (System Blue)
@@ -247,17 +254,17 @@ export const AppleBorderRadius = {
 export const AppleShadows = {
   level1: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowRadius: 12,
+    elevation: 5,
   },
   level2: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowRadius: 24,
+    elevation: 10,
   },
   level3: {
     shadowColor: '#000',

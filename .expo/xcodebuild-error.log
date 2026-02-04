@@ -1,0 +1,7 @@
+** BUILD FAILED **
+
+
+The following build commands failed:
+	Ld /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Products/Debug-iphonesimulator/Dayylo.app/Dayylo.debug.dylib normal (in target 'Dayylo' from project 'Dayylo')
+	Building workspace Dayylo with scheme Dayylo and configuration Debug
+(2 failures)

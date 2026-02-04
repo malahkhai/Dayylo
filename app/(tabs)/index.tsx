@@ -8,6 +8,7 @@ import {
     Animated,
     RefreshControl,
 } from 'react-native';
+import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
@@ -125,42 +126,19 @@ export default function HomeScreen() {
             >
                 <View style={styles.headerContent}>
                     <View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.greeting}>{getGreeting()} </Text>
-                            <ReAnimated.Text style={[styles.greeting, animatedIconStyle]}>
-                                {getGreetingIcon()}
-                            </ReAnimated.Text>
-                        </View>
-                        <Text style={styles.headerTitle}>Today's Habits</Text>
+                        <Text style={styles.greeting}>{getGreeting()}</Text>
+                        <Text style={styles.headerTitle}>{format(new Date(), 'MMMM d')}</Text>
                     </View>
                     <View style={styles.streakContainer}>
                         <Text style={styles.streakNumber}>{habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0}</Text>
-                        <Text style={styles.streakLabel}>Max Streak 🔥</Text>
+                        <Text style={styles.streakEmoji}>🔥</Text>
                     </View>
                 </View>
             </Animated.View>
 
             <WeekCalendar />
 
-            {/* Stats Card */}
-            <View style={styles.statsCard}>
-                <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{activeHabits}</Text>
-                    <Text style={styles.statLabel}>Active</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                    <Text style={[styles.statNumber, { color: AppleColors.systemGreen }]}>{completedHabits}</Text>
-                    <Text style={styles.statLabel}>Done</Text>
-                </View>
-                <View style={styles.statDivider} />
-                <View style={styles.statItem}>
-                    <Text style={[styles.statNumber, { color: AppleColors.systemOrange }]}>
-                        {breakTotal > 0 ? `${breakCompleted}/${breakTotal}` : remainingHabits}
-                    </Text>
-                    <Text style={styles.statLabel}>{breakTotal > 0 ? 'Bad Habits' : 'Remaining'}</Text>
-                </View>
-            </View>
+
 
             {/* Privacy Banner - Only show if locked and break habits exist */}
             {!isUnlocked && breakHabits.length > 0 && (
@@ -247,56 +225,23 @@ const styles = StyleSheet.create({
         letterSpacing: -0.5,
     },
     streakContainer: {
-        alignItems: 'flex-end',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: AppleColors.surface.glassLow,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        gap: 6,
     },
     streakNumber: {
-        fontSize: 32,
-        fontWeight: '900',
-        color: AppleColors.primary,
-    },
-    streakLabel: {
-        ...AppleTypography.caption2,
-        fontWeight: '900',
-        color: AppleColors.label.tertiary,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
-        marginTop: -2,
-    },
-    statsCard: {
-        flexDirection: 'row',
-        backgroundColor: AppleColors.background.tertiary,
-        marginHorizontal: AppleSpacing.base,
-        marginBottom: AppleSpacing.xl,
-        paddingVertical: 24,
-        paddingHorizontal: AppleSpacing.base,
-        borderRadius: 32,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.05)',
-        ...AppleShadows.card,
-    },
-    statItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    statNumber: {
-        fontSize: 28,
+        fontSize: 20,
         fontWeight: '900',
         color: AppleColors.label.primary,
-        marginBottom: 4,
     },
-    statLabel: {
-        ...AppleTypography.caption2,
-        fontWeight: '900',
-        color: AppleColors.label.tertiary,
-        textTransform: 'uppercase',
-        letterSpacing: 1,
+    streakEmoji: {
+        fontSize: 18,
     },
-    statDivider: {
-        width: 1,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        marginVertical: 4,
-    },
+
     scrollView: {
         flex: 1,
     },
