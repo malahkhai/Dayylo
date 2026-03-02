@@ -4,12 +4,17 @@ import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, wit
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import { FontAwesome, AntDesign } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
+
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
 
+
+
 const { width } = Dimensions.get('window');
 
-type AuthMode = 'welcome' | 'storyboard' | 'focus' | 'signup' | 'signin';
+type AuthMode = 'welcome' | 'features' | 'storyboard' | 'focus' | 'signup' | 'signin';
 
 export default function AuthScreen() {
     const router = useRouter();
@@ -35,12 +40,14 @@ export default function AuthScreen() {
     }));
 
     const handleContinue = () => setMode('storyboard');
-    const handleNextStoryboard = () => setMode('focus');
+    const handleNextStoryboard = () => setMode('features');
+    const handleNextFeatures = () => setMode('focus');
     const handleNext = () => setMode('signup');
     const handleLoginLink = () => setMode('signin');
     const handleBack = () => {
         if (mode === 'storyboard') setMode('welcome');
-        else if (mode === 'focus') setMode('storyboard');
+        else if (mode === 'features') setMode('storyboard');
+        else if (mode === 'focus') setMode('features');
         else if (mode === 'signup' || mode === 'signin') setMode('focus');
     };
 
@@ -82,51 +89,57 @@ export default function AuthScreen() {
         );
     }
 
-    if (mode === 'storyboard') {
+    if (mode === 'features') {
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.content}>
+                {/* Fixed header */}
+                <View style={[styles.sbHeader, { paddingHorizontal: AppleSpacing.screenPadding }]}>
                     <Pressable onPress={handleBack} style={styles.backButton}>
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
+                    <View style={{ flexDirection: 'row', gap: 6 }}>
+                        {['welcome', 'storyboard', 'features', 'focus'].map((s, i) => (
+                            <View key={i} style={[{
+                                width: s === 'features' ? 20 : 6, height: 6, borderRadius: 3,
+                                backgroundColor: s === 'features' ? AppleColors.primary : 'rgba(255,255,255,0.2)'
+                            }]} />
+                        ))}
+                    </View>
+                    <View style={{ width: 44 }} />
+                </View>
 
-                    <View style={{ flex: 1 }}>
-                        <Text style={[styles.focusHeadline, { marginTop: 12, fontSize: 32 }]}>Building a better you{"\n"}starts today.</Text>
+                {/* Content */}
+                <View style={{ flex: 1, paddingHorizontal: AppleSpacing.screenPadding, justifyContent: 'center', alignItems: 'center' }}>
+                    <View style={{ alignItems: 'center', marginBottom: 40 }}>
+                        <LucideIcons.LayoutGrid size={80} color={AppleColors.systemIndigo} style={{ marginBottom: 20 }} />
+                        <Text style={[styles.sbHeadline, { textAlign: 'center', fontSize: 26 }]}>Track Your Habits</Text>
+                        <Text style={[styles.sbSubheadline, { textAlign: 'center', marginTop: 10, paddingHorizontal: 20, lineHeight: 22 }]}>
+                            See your progress evolve with our beautiful heatmap and stay consistent every day.
+                        </Text>
 
-                        <View style={[styles.storyboardGrid, { gap: 12 }]}>
-                            <View style={[styles.storyboardCard, { padding: 16 }]}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.primary + '15', marginBottom: 8, width: 48, height: 48 }]}>
-                                    <LucideIcons.Sparkles size={24} color={AppleColors.primary} />
-                                </View>
-                                <View style={styles.storyContent}>
-                                    <Text style={styles.storyText}>
-                                        <Text style={{ fontWeight: '700', color: AppleColors.primary }}>Build Momentum.</Text>
-                                        {"\n"}Every positive action compounds into a lifetime of success.
-                                    </Text>
-                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 6 }} />
-                                    <Text style={[styles.storyInsight, { marginTop: 0 }]}>Consistency is the bridge to accomplishment.</Text>
-                                </View>
-                            </View>
-
-                            <View style={[styles.storyboardCard, { padding: 16 }]}>
-                                <View style={[styles.storyIconBg, { backgroundColor: AppleColors.warning + '15', marginBottom: 8, width: 48, height: 48 }]}>
-                                    <LucideIcons.Unplug size={24} color={AppleColors.warning} />
-                                </View>
-                                <View style={styles.storyContent}>
-                                    <Text style={styles.storyText}>
-                                        <Text style={{ fontWeight: '700', color: AppleColors.warning }}>Break Chains.</Text>
-                                        {"\n"}Breaking old habits is about gaining your freedom back.
-                                    </Text>
-                                    <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginVertical: 6 }} />
-                                    <Text style={[styles.storyInsight, { color: AppleColors.warning, marginTop: 0 }]}>Progress is what you leave behind.</Text>
-                                </View>
+                        <View style={[{
+                            width: 240, height: 100, backgroundColor: '#1E1E20', borderRadius: AppleBorderRadius.lg, padding: 12, marginTop: 40,
+                            ...AppleShadows.medium
+                        }]}>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                                {[...Array(35)].map((_, i) => (
+                                    <View key={i} style={{
+                                        width: 14, height: 14, borderRadius: 3,
+                                        backgroundColor: Math.random() > 0.4
+                                            ? AppleColors.primary + (Math.random() * 80 + 20).toString(16).split('.')[0].padStart(2, '0')
+                                            : 'rgba(255,255,255,0.05)'
+                                    }} />
+                                ))}
                             </View>
                         </View>
                     </View>
+                </View>
 
+                {/* CTA */}
+                <View style={{ paddingHorizontal: AppleSpacing.screenPadding, paddingBottom: 20 }}>
                     <AppleButton
-                        title="Continue"
-                        onPress={handleNextStoryboard}
+                        title="Next"
+                        onPress={handleNextFeatures}
                         size="large"
                         fullWidth
                     />
@@ -134,6 +147,96 @@ export default function AuthScreen() {
             </SafeAreaView>
         );
     }
+
+    if (mode === 'storyboard') {
+        const STATS = [
+            { icon: 'Flame', color: '#FF6B35', value: '21', unit: 'day streak', label: 'Average user streak built' },
+            { icon: 'TrendingUp', color: '#30D158', value: '78%', unit: 'success rate', label: 'Habit completion rate' },
+            { icon: 'ShieldOff', color: '#FF453A', value: '66', unit: 'days to break', label: 'Days to drop a bad habit' },
+        ];
+
+        return (
+            <SafeAreaView style={styles.container}>
+                {/* Fixed header */}
+                <View style={[styles.sbHeader, { paddingHorizontal: AppleSpacing.screenPadding }]}>
+                    <Pressable onPress={handleBack} style={styles.backButton}>
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
+                    </Pressable>
+                    <View style={{ flexDirection: 'row', gap: 6 }}>
+                        {['welcome', 'storyboard', 'features', 'focus'].map((s, i) => (
+                            <View key={i} style={[{
+                                width: s === 'storyboard' ? 20 : 6, height: 6, borderRadius: 3,
+                                backgroundColor: s === 'storyboard' ? AppleColors.primary : 'rgba(255,255,255,0.2)'
+                            }]} />
+                        ))}
+                    </View>
+                    <View style={{ width: 44 }} />
+                </View>
+
+                {/* Content — no scroll, everything fits */}
+                <View style={{ flex: 1, paddingHorizontal: AppleSpacing.screenPadding, justifyContent: 'space-between', paddingVertical: 12 }}>
+
+                    {/* Headline */}
+                    <View>
+                        <View style={styles.sbBadge}>
+                            <LucideIcons.Sparkles size={10} color={AppleColors.primary} />
+                            <Text style={styles.sbBadgeText}>WHY IT WORKS</Text>
+                        </View>
+                        <Text style={[styles.sbHeadline, { fontSize: 26, lineHeight: 34 }]}>
+                            Building a{' '}
+                            <Text style={{ color: AppleColors.primary }}>better you</Text>
+                            {"\n"}starts today.
+                        </Text>
+                        <Text style={[styles.sbSubheadline, { fontSize: 13, lineHeight: 19 }]}>
+                            Dayylo turns intention into identity — one tracked day at a time.
+                        </Text>
+                    </View>
+
+                    {/* Stat cards */}
+                    <View style={{ gap: 8 }}>
+                        {STATS.map((stat, i) => {
+                            const Icon = (LucideIcons as any)[stat.icon];
+                            return (
+                                <View key={i} style={[styles.sbStatCard, { borderLeftColor: stat.color, borderLeftWidth: 3, padding: 12 }]}>
+                                    <View style={[styles.sbStatIcon, { backgroundColor: stat.color + '20', width: 40, height: 40, borderRadius: 12 }]}>
+                                        <Icon size={18} color={stat.color} />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={[styles.sbStatLabel, { fontSize: 12 }]}>{stat.label}</Text>
+                                        <Text style={[styles.sbStatSub, { fontSize: 11 }]}>{stat.value} {stat.unit}</Text>
+                                    </View>
+                                    <View style={[styles.sbStatPill, { backgroundColor: stat.color + '20', paddingHorizontal: 10, paddingVertical: 4 }]}>
+                                        <Text style={[styles.sbStatPillText, { color: stat.color, fontSize: 14 }]}>{stat.value}</Text>
+                                    </View>
+                                </View>
+                            );
+                        })}
+                    </View>
+
+                    {/* Quote */}
+                    <View style={[styles.sbQuote, { padding: 12, gap: 4 }]}>
+                        <LucideIcons.Quote size={12} color={AppleColors.primary} />
+                        <Text style={[styles.sbQuoteText, { fontSize: 12, lineHeight: 18 }]}>
+                            "We are what we repeatedly do. Excellence, then, is not an act but a habit."
+                        </Text>
+                        <Text style={[styles.sbQuoteAuthor, { fontSize: 11 }]}>— Aristotle</Text>
+                    </View>
+
+                    {/* CTA */}
+                    <View>
+                        <AppleButton
+                            title="That's me — Let's go"
+                            onPress={handleNextStoryboard}
+                            size="large"
+                            fullWidth
+                        />
+                    </View>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+
 
     if (mode === 'focus') {
         return (
@@ -142,19 +245,24 @@ export default function AuthScreen() {
                     <Pressable onPress={handleBack} style={styles.backButton}>
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
+                    <View style={{ alignItems: 'center', paddingTop: 10, paddingBottom: 20 }}>
+                        <View style={{ flexDirection: 'row', gap: 6 }}>
+                            {['welcome', 'storyboard', 'features', 'focus'].map((s, i) => (
+                                <View key={i} style={[{
+                                    width: s === 'focus' ? 20 : 6, height: 6, borderRadius: 3,
+                                    backgroundColor: s === 'focus' ? AppleColors.primary : 'rgba(255,255,255,0.2)'
+                                }]} />
+                            ))}
+                        </View>
+                    </View>
 
-                    <View style={{ flex: 1, paddingTop: 20 }}>
+                    <View style={{ flex: 1, justifyContent: 'center', marginVertical: 20 }}>
                         <Text style={styles.focusHeadline}>This is where the magic happens.</Text>
-                        <Text style={styles.focusSubtext}>Choose your focus areas. You can select both.</Text>
+                        <Text style={styles.focusSubtext}>Here's what Dayylo helps you do.</Text>
 
-                        <View style={styles.focusGrid}>
-                            <Pressable
-                                onPress={() => toggleFocus('build')}
-                                style={[
-                                    styles.focusCard,
-                                    selectedFocus.build && styles.focusCardSelectedBuild
-                                ]}
-                            >
+                        <View style={[styles.focusGrid, { marginTop: 20 }]}>
+                            {/* Build Habits card — static, not tappable */}
+                            <View style={[styles.focusCard, styles.focusCardSelectedBuild]}>
                                 <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
                                     <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
                                 </View>
@@ -162,18 +270,10 @@ export default function AuthScreen() {
                                     <Text style={styles.focusCardTitle}>Build Habits</Text>
                                     <Text style={styles.focusCardDesc}>Start positive routines like Gym, Meditation, and Reading.</Text>
                                 </View>
-                                <View style={[styles.focusCheckbox, selectedFocus.build && { backgroundColor: AppleColors.systemGreen, borderColor: AppleColors.systemGreen }]}>
-                                    {selectedFocus.build && <LucideIcons.Check size={14} color="white" />}
-                                </View>
-                            </Pressable>
+                            </View>
 
-                            <Pressable
-                                onPress={() => toggleFocus('break')}
-                                style={[
-                                    styles.focusCard,
-                                    selectedFocus.break && styles.focusCardSelectedBreak
-                                ]}
-                            >
+                            {/* Break Habits card — static, not tappable */}
+                            <View style={[styles.focusCard, styles.focusCardSelectedBreak]}>
                                 <View style={[styles.focusIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
                                     <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
                                 </View>
@@ -181,29 +281,26 @@ export default function AuthScreen() {
                                     <Text style={styles.focusCardTitle}>Break Habits</Text>
                                     <Text style={styles.focusCardDesc}>Reduce behaviors you want to stop like Smoking or Sugar.</Text>
                                 </View>
-                                <View style={[styles.focusCheckbox, selectedFocus.break && { backgroundColor: AppleColors.systemOrange, borderColor: AppleColors.systemOrange }]}>
-                                    {selectedFocus.break && <LucideIcons.Check size={14} color="white" />}
-                                </View>
-                            </Pressable>
+                            </View>
                         </View>
                     </View>
 
                     <AppleButton
-                        title="Next"
+                        title="Let's get started"
                         onPress={handleNext}
                         size="large"
                         fullWidth
-                        disabled={!selectedFocus.build && !selectedFocus.break}
                     />
                 </View>
             </SafeAreaView>
         );
     }
 
+
     if (mode === 'signup') {
         return (
             <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContent}>
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
                     <Pressable onPress={handleBack} style={styles.backButton}>
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
@@ -214,29 +311,72 @@ export default function AuthScreen() {
                     </View>
 
                     <View style={styles.authForm}>
-                        <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color={AppleColors.label.primary} />} fullWidth style={{ marginBottom: 12 }} />
-                        <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color={AppleColors.label.primary} />} fullWidth />
+                        {/* Email fields first */}
+                        <TextInput
+                            placeholder="Email address"
+                            style={styles.input}
+                            placeholderTextColor={AppleColors.label.tertiary}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                        />
+                        <TextInput
+                            placeholder="Password"
+                            style={styles.input}
+                            secureTextEntry
+                            placeholderTextColor={AppleColors.label.tertiary}
+                        />
+                        <TextInput
+                            placeholder="Confirm Password"
+                            style={styles.input}
+                            secureTextEntry
+                            placeholderTextColor={AppleColors.label.tertiary}
+                        />
 
-                        <View style={styles.divider}>
-                            <View style={styles.line} />
-                            <Text style={styles.dividerText}>OR SIGN UP WITH EMAIL</Text>
-                            <View style={styles.line} />
-                        </View>
-
-                        <TextInput placeholder="Email address" style={styles.input} placeholderTextColor={AppleColors.label.tertiary} />
-                        <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor={AppleColors.label.tertiary} />
-                        <TextInput placeholder="Confirm Password" style={styles.input} secureTextEntry placeholderTextColor={AppleColors.label.tertiary} />
-
-                        <AppleButton title="Sign Up" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 12 }} />
+                        <AppleButton title="Sign Up" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 8 }} />
 
                         <Text style={styles.legalText}>
                             By signing up, you agree to our <Text style={styles.link}>Terms</Text> and <Text style={styles.link}>Privacy Policy</Text>.
                         </Text>
+
+                        {/* Divider */}
+                        <View style={styles.divider}>
+                            <View style={styles.line} />
+                            <Text style={styles.dividerText}>OR SIGN UP WITH</Text>
+                            <View style={styles.line} />
+                        </View>
+
+                        {/* Apple Sign In — logo + text centred together as a unit, per Apple spec */}
+                        <Pressable onPress={handleAuthAction} style={styles.ssoButtonApple}>
+                            <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
+                            <Text style={styles.ssoAppleText}>Sign up with Apple</Text>
+                        </Pressable>
+
+                        {/* Google Sign In — authentic four-color Google G SVG */}
+                        <Pressable onPress={handleAuthAction} style={styles.ssoButtonGoogle}>
+                            <View style={styles.ssoGoogleIconBg}>
+                                <Svg width={18} height={18} viewBox="0 0 48 48">
+                                    <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                    <Path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                    <Path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                    <Path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                                </Svg>
+                            </View>
+                            <Text style={styles.ssoGoogleText}>Sign up with Google</Text>
+                        </Pressable>
+
+                        <View style={styles.switchAuth}>
+                            <Text style={styles.switchText}>Already have an account? </Text>
+                            <Pressable onPress={() => setMode('signin')}>
+                                <Text style={styles.linkText}>Sign in</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>
         );
     }
+
 
     // Sign In Mode
     return (
@@ -252,8 +392,22 @@ export default function AuthScreen() {
                 </View>
 
                 <View style={styles.authForm}>
-                    <AppleButton title="Continue with Apple" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Apple size={20} color="black" />} fullWidth style={{ marginBottom: 12 }} />
-                    <AppleButton title="Continue with Google" onPress={handleAuthAction} variant="secondary" icon={<LucideIcons.Chrome size={20} color="black" />} fullWidth />
+                    <Pressable onPress={handleAuthAction} style={styles.ssoButtonApple}>
+                        <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
+                        <Text style={styles.ssoAppleText}>Continue with Apple</Text>
+                    </Pressable>
+
+                    <Pressable onPress={handleAuthAction} style={styles.ssoButtonGoogle}>
+                        <View style={styles.ssoGoogleIconBg}>
+                            <Svg width={18} height={18} viewBox="0 0 48 48">
+                                <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <Path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                <Path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <Path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </Svg>
+                        </View>
+                        <Text style={styles.ssoGoogleText}>Continue with Google</Text>
+                    </Pressable>
 
                     <View style={styles.divider}>
                         <View style={styles.line} />
@@ -487,11 +641,45 @@ const styles = StyleSheet.create({
         color: AppleColors.primary,
         ...AppleTypography.label,
     },
+    ssoButtonApple: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.lg,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+        paddingVertical: 15, paddingHorizontal: 20,
+        gap: 10, marginBottom: 12,
+    },
+    ssoAppleText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: AppleColors.label.primary,
+        letterSpacing: -0.2,
+    },
+    ssoButtonGoogle: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.lg,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+        paddingVertical: 15, paddingHorizontal: 20,
+        gap: 10, marginBottom: 12,
+    },
+    ssoGoogleIconBg: {
+        width: 28, height: 28, borderRadius: 14,
+        backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+    },
+    ssoGoogleText: {
+        fontSize: 16, fontWeight: '600',
+        color: AppleColors.label.primary,
+        letterSpacing: -0.2,
+    },
+
     switchAuth: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 20,
     },
+
     switchText: {
         ...AppleTypography.bodySmall,
         color: AppleColors.label.secondary,
@@ -507,5 +695,67 @@ const styles = StyleSheet.create({
     loginShortcutBold: {
         color: AppleColors.primary,
         fontWeight: '700',
+    },
+
+    // ─── Storyboard redesign ──────────────────────────────────────────────────
+    sbBadge: {
+        flexDirection: 'row', alignItems: 'center', gap: 6,
+        backgroundColor: AppleColors.primary + '18',
+        paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20,
+        alignSelf: 'flex-start', marginBottom: 16,
+        borderWidth: 1, borderColor: AppleColors.primary + '30',
+    },
+    sbBadgeText: {
+        fontSize: 10, fontWeight: '800', color: AppleColors.primary,
+        letterSpacing: 1.5, textTransform: 'uppercase',
+    },
+    sbHeadline: {
+        fontSize: 36, fontWeight: '900', color: AppleColors.label.primary,
+        lineHeight: 44, letterSpacing: -0.5, marginBottom: 12,
+    },
+    sbSubheadline: {
+        ...AppleTypography.body, color: AppleColors.label.secondary, lineHeight: 22,
+    },
+    sbStatCard: {
+        flexDirection: 'row', alignItems: 'center', gap: 14,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 18, padding: 16,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+    },
+    sbStatIcon: {
+        width: 48, height: 48, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    },
+    sbStatLabel: {
+        fontSize: 13, fontWeight: '700', color: AppleColors.label.primary, marginBottom: 2,
+    },
+    sbStatSub: {
+        fontSize: 12, color: AppleColors.label.tertiary, fontWeight: '500',
+    },
+    sbStatPill: {
+        paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20,
+    },
+    sbStatPillText: {
+        fontSize: 16, fontWeight: '900',
+    },
+    sbQuote: {
+        backgroundColor: 'rgba(255,255,255,0.03)',
+        borderRadius: 16, padding: 16, gap: 8,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+    },
+    sbQuoteText: {
+        ...AppleTypography.callout, color: AppleColors.label.secondary,
+        fontStyle: 'italic', lineHeight: 22,
+    },
+    sbQuoteAuthor: {
+        ...AppleTypography.caption2, color: AppleColors.primary,
+        fontWeight: '700', letterSpacing: 0.5,
+    },
+    sbHeader: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        paddingVertical: 8,
+    },
+    sbFooter: {
+        paddingTop: 12, paddingBottom: 20,
+        borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.05)',
     },
 });

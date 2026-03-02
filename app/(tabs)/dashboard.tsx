@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 const { width } = Dimensions.get('window');
 
 export default function DashboardScreen() {
-    const { habits, xp, level } = useHabits();
+    const { habits, xp, level, userName } = useHabits();
     const { isUnlocked, authenticate } = usePrivacy();
     const router = useRouter();
 
@@ -19,12 +19,12 @@ export default function DashboardScreen() {
     const totalDone = habits.filter(h => h.completedToday).length;
     const progressPercent = habits.length > 0 ? Math.round((totalDone / habits.length) * 100) : 0;
 
-    // Gamification Logic
+    // Gamification
     const xpProgress = xp % 100;
     const itemsToNextLevel = 100 - xpProgress;
 
     const getPlantIcon = () => {
-        if (level >= 10) return <LucideIcons.CloudRain size={32} color="#30e8ab" />; // Forest/Ecosystem?
+        if (level >= 10) return <LucideIcons.CloudRain size={32} color="#30e8ab" />;
         if (level >= 5) return <LucideIcons.Trees size={32} color="#30e8ab" />;
         if (level >= 2) return <LucideIcons.Flower2 size={32} color="#30e8ab" />;
         return <LucideIcons.Sprout size={32} color="#30e8ab" />;
@@ -41,6 +41,22 @@ export default function DashboardScreen() {
         if (!isUnlocked) await authenticate();
     };
 
+    const handleBuildPress = () => {
+        router.push('/(tabs)');
+    };
+
+    const handleBreakPress = async () => {
+        if (!isUnlocked) {
+            const unlocked = await authenticate();
+            if (unlocked) router.push('/(tabs)');
+        } else {
+            router.push('/(tabs)');
+        }
+    };
+
+    // Get first name only
+    const firstName = userName.split(' ')[0] || userName;
+
     return (
         <SafeAreaView className="flex-1 bg-black">
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
@@ -50,9 +66,14 @@ export default function DashboardScreen() {
                         <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40 mb-1">
                             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                         </Text>
-                        <Text className="text-3xl font-black text-white tracking-tight">Dashboard</Text>
+                        <Text className="text-3xl font-black text-white tracking-tight">
+                            Hey, {firstName} 👋
+                        </Text>
                     </View>
-                    <Pressable className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/10 p-1">
+                    <Pressable
+                        className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/10 p-1"
+                        onPress={() => router.push('/(tabs)/settings')}
+                    >
                         <Image
                             source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
                             className="w-full h-full rounded-xl"
@@ -60,9 +81,37 @@ export default function DashboardScreen() {
                     </Pressable>
                 </View>
 
-                {/* Gamification Card (Growth Journey) */}
+                {/* Today's Progress Card */}
+                {habits.length > 0 && (
+                    <View className="bg-surface-dark rounded-[32px] p-6 mb-6 border border-white/5">
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40">
+                                Today's Progress
+                            </Text>
+                            <Text className="text-2xl font-black text-white">
+                                {totalDone}/{habits.length}
+                            </Text>
+                        </View>
+                        <View className="h-2 bg-white/5 rounded-full overflow-hidden">
+                            <View
+                                className="h-full rounded-full"
+                                style={{
+                                    width: `${progressPercent}%`,
+                                    backgroundColor: progressPercent === 100 ? '#30e8ab' : '#3b82f6',
+                                }}
+                            />
+                        </View>
+                        <Text className="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-3">
+                            {progressPercent === 100
+                                ? '🎉 All done for today!'
+                                : `${habits.length - totalDone} habit${habits.length - totalDone !== 1 ? 's' : ''} remaining`
+                            }
+                        </Text>
+                    </View>
+                )}
+
+                {/* Gamification Card */}
                 <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl relative overflow-hidden">
-                    {/* Background Gradient/Effect - Simplified as absolute view for now */}
                     <View className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
 
                     <View className="flex-row justify-between items-start mb-6">
@@ -72,7 +121,9 @@ export default function DashboardScreen() {
                         </View>
                         <View className="items-end">
                             <Text className="text-3xl font-black text-primary">Lvl {level}</Text>
-                            <Text className="text-[10px] font-bold text-white/40 uppercase tracking-wider">{xpProgress}/100 XP</Text>
+                            <Text className="text-[10px] font-bold text-white/40 uppercase tracking-wider">
+                                {xpProgress}/100 XP
+                            </Text>
                         </View>
                     </View>
 
@@ -82,7 +133,7 @@ export default function DashboardScreen() {
                         </View>
                         <View className="flex-1 ml-4 h-3 bg-white/5 rounded-full overflow-hidden">
                             <View
-                                className="h-full bg-primary rounded-full shadow-[0_0_15px_rgba(48,232,171,0.5)]"
+                                className="h-full bg-primary rounded-full"
                                 style={{ width: `${xpProgress}%` }}
                             />
                         </View>
@@ -100,14 +151,17 @@ export default function DashboardScreen() {
                             <View className="p-2 bg-orange-500/10 rounded-lg">
                                 <LucideIcons.Flame size={14} color="#f97316" fill="#f97316" />
                             </View>
-                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">Build</Text>
+                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">
+                                Build
+                            </Text>
                         </View>
                         <View className="flex-row items-baseline">
                             <Text className="text-3xl font-black text-white">
-                                {Math.max(...buildHabits.map(h => h.streak), 0)}
+                                {buildHabits.length > 0 ? Math.max(...buildHabits.map(h => h.streak), 0) : 0}
                             </Text>
                             <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
+                        <Text className="text-[10px] font-bold text-white/20 mt-1 uppercase">Best streak</Text>
                     </View>
 
                     <View className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg">
@@ -115,37 +169,50 @@ export default function DashboardScreen() {
                             <View className="p-2 bg-primary/10 rounded-lg">
                                 <LucideIcons.Shield size={14} color="#30e8ab" />
                             </View>
-                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">Break</Text>
+                            <Text className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-2">
+                                Break
+                            </Text>
                         </View>
                         <View className="flex-row items-baseline">
                             <Text className="text-3xl font-black text-white">
-                                {isUnlocked ? Math.max(...breakHabits.map(h => h.streak), 0) : '--'}
+                                {isUnlocked && breakHabits.length > 0
+                                    ? Math.max(...breakHabits.map(h => h.streak), 0)
+                                    : '--'}
                             </Text>
                             <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
+                        <Text className="text-[10px] font-bold text-white/20 mt-1 uppercase">Best streak</Text>
                     </View>
                 </View>
 
-                {/* Your Habits Section */}
+                {/* Your Categories */}
                 <View className="mb-12">
-                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">Your Categories</Text>
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">
+                        Your Categories
+                    </Text>
 
                     {/* Build Habits Block */}
-                    <Pressable className="bg-surface-dark rounded-[32px] p-6 mb-4 border border-white/5 flex-row items-center active:bg-white/5">
-                        <View className="w-14 h-14 bg-white/5 rounded-2xl items-center justify-center">
+                    <Pressable
+                        onPress={handleBuildPress}
+                        className="bg-surface-dark rounded-[32px] p-6 mb-4 border border-white/5 flex-row items-center active:bg-white/5"
+                    >
+                        <View className="w-14 h-14 bg-blue-500/10 rounded-2xl items-center justify-center">
                             <LucideIcons.TrendingUp size={24} color="#3b82f6" />
                         </View>
                         <View className="ml-5 flex-1">
                             <Text className="text-lg font-black text-white">Build Habits</Text>
                             <Text className="text-[13px] font-bold text-white/40">
-                                {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Done
+                                {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Done Today
                             </Text>
                         </View>
                         <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
                     </Pressable>
 
                     {/* Break Habits Block */}
-                    <Pressable className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5">
+                    <Pressable
+                        onPress={handleBreakPress}
+                        className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5"
+                    >
                         <View className={`w-14 h-14 rounded-2xl items-center justify-center ${isUnlocked ? 'bg-white/5' : 'bg-primary/20'}`}>
                             {isUnlocked ? (
                                 <LucideIcons.ShieldCheck size={24} color="#f97316" />
@@ -156,14 +223,14 @@ export default function DashboardScreen() {
                         <View className="ml-5 flex-1">
                             <Text className="text-lg font-black text-white">Break Habits</Text>
                             <Text className="text-[13px] font-bold text-white/40">
-                                {isUnlocked ? `${breakHabits.length} Active` : 'Protected View'}
+                                {isUnlocked
+                                    ? `${breakHabits.length} Active • ${breakHabits.filter(h => h.completedToday).length} Done Today`
+                                    : 'Protected View'
+                                }
                             </Text>
                         </View>
                         {!isUnlocked ? (
-                            <Pressable
-                                onPress={handlePrivacyPress}
-                                className="bg-primary py-2 px-4 rounded-xl"
-                            >
+                            <Pressable onPress={handlePrivacyPress} className="bg-primary py-2 px-4 rounded-xl">
                                 <Text className="text-[10px] font-black text-black uppercase">Unlock</Text>
                             </Pressable>
                         ) : (
@@ -174,12 +241,14 @@ export default function DashboardScreen() {
 
                 {/* Quick Actions */}
                 <View className="pb-32">
-                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">Quick Actions</Text>
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-6 ml-1">
+                        Quick Actions
+                    </Text>
                     <View className="flex-row justify-between px-1">
                         {[
                             { icon: 'Plus', label: 'Add', onPress: () => router.push('/(tabs)/add'), color: '#30e8ab' },
-                            { icon: 'Bell', label: 'Alerts', color: '#8b5cf6' },
-                            { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress, color: '#f97316' }
+                            { icon: 'Bell', label: 'Settings', onPress: () => router.push('/(tabs)/settings'), color: '#8b5cf6' },
+                            { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress, color: '#f97316' },
                         ].map((action, i) => {
                             const Icon = (LucideIcons as any)[action.icon];
                             return (

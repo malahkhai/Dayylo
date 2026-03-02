@@ -9,7 +9,7 @@ import { useHabits } from '../../context/HabitContext';
 
 const { width } = Dimensions.get('window');
 
-type OnboardingStep = 'WELCOME' | 'FEATURES' | 'HABITS';
+type OnboardingStep = 'HABITS';
 
 interface StarterHabit {
     id: string;
@@ -38,12 +38,11 @@ const STARTER_HABITS: StarterHabit[] = [
 export default function OnboardingScreen() {
     const router = useRouter();
     const { addHabit } = useHabits();
-    const [currentStep, setCurrentStep] = useState<OnboardingStep>('WELCOME');
+    const [currentStep, setCurrentStep] = useState<OnboardingStep>('HABITS');
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
-    const [showPrivacyPrompt, setShowPrivacyPrompt] = useState(false);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
-    const [isPrivate, setIsPrivate] = useState(false);
+    const [showAllowNotificationsModal, setShowAllowNotificationsModal] = useState(false);
     const fadeAnim = React.useRef(new Animated.Value(1)).current;
 
     const transitionTo = (step: OnboardingStep) => {
@@ -84,10 +83,6 @@ export default function OnboardingScreen() {
             } else {
                 newState[id] = habit.difficulty || 5;
                 setActiveHabitId(id);
-
-                if (habit.type === 'break' && !Object.keys(prev).some(hid => STARTER_HABITS.find(h => h.id === hid)?.type === 'break')) {
-                    setShowPrivacyPrompt(true);
-                }
             }
             return newState;
         });
@@ -112,14 +107,16 @@ export default function OnboardingScreen() {
         for (const hid of Object.keys(selectedHabits)) {
             const h = STARTER_HABITS.find(sh => sh.id === hid);
             if (h) {
+                const difVal = selectedHabits[hid] || 5;
+                const difStr = difVal < 4 ? 'easy' : difVal > 7 ? 'hard' : 'medium';
                 await addHabit({
                     name: h.name,
                     type: h.type,
                     icon: h.icon,
                     color: h.color,
-                    isPrivate: h.type === 'break' ? isPrivate : false,
+                    isPrivate: false,
                     frequency: ['daily'],
-                    difficulty: selectedHabits[hid],
+                    difficulty: difStr,
                     history: {},
                 });
             }
@@ -128,61 +125,7 @@ export default function OnboardingScreen() {
         router.replace('/(tabs)');
     };
 
-    const renderWelcome = () => (
-        <View style={styles.stepContainer}>
-            <View style={styles.heroContent}>
-                <View style={styles.logoContainer}>
-                    <View style={styles.logoBackground}>
-                        <LucideIcons.Zap size={60} color={AppleColors.primary} />
-                    </View>
-                </View>
-                <Text style={styles.heroTitle}>Welcome to Dayylo</Text>
-                <Text style={styles.heroSubtitle}>Your daily companion for building a better you, one habit at a time.</Text>
-            </View>
-            <View style={styles.footerContainer}>
-                <AppleButton
-                    title="Get Started"
-                    onPress={() => transitionTo('FEATURES')}
-                    size="large"
-                    fullWidth
-                />
-            </View>
-        </View>
-    );
 
-    const renderFeatures = () => (
-        <View style={styles.stepContainer}>
-            <View style={styles.heroContent}>
-                <View style={styles.featureIconContainer}>
-                    <LucideIcons.LayoutGrid size={80} color={AppleColors.systemIndigo} />
-                </View>
-                <Text style={styles.heroTitle}>Track Your Habits</Text>
-                <Text style={styles.heroSubtitle}>See your progress evolve with our beautiful heatmap and stay consistent every day.</Text>
-
-                <View style={[styles.miniHeatmap, AppleShadows.medium]}>
-                    <View style={styles.heatmapGrid}>
-                        {[...Array(35)].map((_, i) => (
-                            <View
-                                key={i}
-                                style={[
-                                    styles.heatmapCell,
-                                    { backgroundColor: Math.random() > 0.4 ? AppleColors.primary + (Math.random() * 80 + 20).toString(16).split('.')[0].padStart(2, '0') : 'rgba(255,255,255,0.05)' }
-                                ]}
-                            />
-                        ))}
-                    </View>
-                </View>
-            </View>
-            <View style={styles.footerContainer}>
-                <AppleButton
-                    title="Next"
-                    onPress={() => transitionTo('HABITS')}
-                    size="large"
-                    fullWidth
-                />
-            </View>
-        </View>
-    );
 
     const renderHabitItem = (h: StarterHabit) => {
         const isSelected = !!selectedHabits[h.id];
@@ -321,35 +264,8 @@ export default function OnboardingScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
-                {currentStep === 'WELCOME' && renderWelcome()}
-                {currentStep === 'FEATURES' && renderFeatures()}
                 {currentStep === 'HABITS' && renderHabitSelection()}
             </Animated.View>
-
-            <Modal visible={showPrivacyPrompt} transparent animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalIconBg}>
-                            <LucideIcons.Lock size={32} color={AppleColors.systemBlue} />
-                        </View>
-                        <Text style={styles.modalTitle}>Keep them private?</Text>
-                        <Text style={styles.modalText}>
-                            Would you like to protect your "Break Habits" with a PIN? They will be hidden from the main view unless unlocked.
-                        </Text>
-                        <View style={styles.modalActions}>
-                            <AppleButton
-                                title="Protect Habits"
-                                onPress={() => { setIsPrivate(true); setShowPrivacyPrompt(false); }}
-                                fullWidth
-                                style={{ marginBottom: 12 }}
-                            />
-                            <Pressable onPress={() => { setIsPrivate(false); setShowPrivacyPrompt(false); }} style={styles.modalCancel}>
-                                <Text style={styles.modalCancelText}>No, keep them visible</Text>
-                            </Pressable>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
 
             <Modal visible={showNotificationModal} transparent animationType="fade">
                 <View style={styles.modalOverlay}>
@@ -364,7 +280,39 @@ export default function OnboardingScreen() {
                             Success requires manual input: <Text style={{ fontWeight: '900', color: AppleColors.systemGreen }}>Swipe Right</Text> if you completed the habit, and <Text style={{ fontWeight: '900', color: AppleColors.systemRed }}>Swipe Left</Text> if you missed it.
                         </Text>
                         <View style={styles.modalActions}>
-                            <AppleButton title="Start My Journey" onPress={finalizeOnboarding} fullWidth />
+                            <AppleButton
+                                title="Start My Journey"
+                                onPress={() => {
+                                    setShowNotificationModal(false);
+                                    setTimeout(() => setShowAllowNotificationsModal(true), 300);
+                                }}
+                                fullWidth
+                            />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal visible={showAllowNotificationsModal} transparent animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={[styles.modalContent, { paddingBottom: 40 }]}>
+                        <View style={[styles.modalIconBg, { backgroundColor: AppleColors.systemIndigo + '20' }]}>
+                            <LucideIcons.Bell size={32} color={AppleColors.systemIndigo} />
+                        </View>
+                        <Text style={styles.modalTitle}>Enable Notifications</Text>
+                        <Text style={styles.modalText}>
+                            We'd like to send you notifications for daily reminders — one in the morning to keep you inspired, and one at night to log your daily progress.
+                        </Text>
+                        <View style={styles.modalActions}>
+                            <AppleButton
+                                title="Allow Notifications"
+                                onPress={() => { setShowAllowNotificationsModal(false); finalizeOnboarding(); }}
+                                fullWidth
+                                style={{ marginBottom: 12 }}
+                            />
+                            <Pressable onPress={() => { setShowAllowNotificationsModal(false); finalizeOnboarding(); }} style={styles.modalCancel}>
+                                <Text style={styles.modalCancelText}>Not right now</Text>
+                            </Pressable>
                         </View>
                     </View>
                 </View>

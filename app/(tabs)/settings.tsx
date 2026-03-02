@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, Pressable, Image, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Pressable, Image, Switch, Alert, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -8,7 +8,10 @@ import { useHabits } from '../../context/HabitContext';
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const { isPremium, level } = useHabits();
+    const { isPremium, level, userName, updateUserName, notificationsEnabled, setNotificationsEnabled } = useHabits();
+
+    const [profileModalVisible, setProfileModalVisible] = useState(false);
+    const [nameInput, setNameInput] = useState(userName);
 
     const getLevelTitle = (l: number) => {
         if (l >= 10) return "Master Gardener";
@@ -17,48 +20,35 @@ export default function SettingsScreen() {
         return "Seed Planter";
     };
 
-    const sections = [
-        {
-            title: 'Account',
-            items: [
-                { icon: 'Crown', label: 'Dayylo Premium', value: isPremium ? 'Active' : 'Upgrade', color: '#f97316', onPress: () => router.push('/paywall') },
-                { icon: 'User', label: 'Profile Settings', color: '#3b82f6' },
-                { icon: 'Bell', label: 'Notifications', color: '#8b5cf6' },
-                { icon: 'History', label: 'Daily Wrap-up', color: AppleColors.systemBlue, onPress: () => router.push('/daily-wrapup') },
-            ]
-        },
-        {
-            title: 'Preferences',
-            items: [
-                { icon: 'Moon', label: 'Appearance', value: 'System', color: '#64748b' },
-                { icon: 'Lock', label: 'Privacy & Security', color: '#30e8ab' },
-                { icon: 'Globe', label: 'Language', value: 'English', color: '#3b82f6' },
-            ]
-        },
-        {
-            title: 'Support',
-            items: [
-                { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
-                { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8' },
-                { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8' },
-            ]
+    const handleSaveName = async () => {
+        if (nameInput.trim().length > 0) {
+            await updateUserName(nameInput.trim());
         }
-    ];
+        setProfileModalVisible(false);
+    };
 
     return (
         <SafeAreaView className="flex-1 bg-black">
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-                <View className="pt-8 pb-10 items-center">
+                {/* Profile Header */}
+                <Pressable
+                    className="pt-8 pb-10 items-center"
+                    onPress={() => { setNameInput(userName); setProfileModalVisible(true); }}
+                >
                     <View className="w-24 h-24 rounded-[32px] overflow-hidden border-2 border-primary/20 p-1 mb-4">
                         <Image
                             source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
                             className="w-full h-full rounded-[28px]"
                         />
                     </View>
-                    <Text className="text-2xl font-black text-white">Alex Johnson</Text>
+                    <Text className="text-2xl font-black text-white">{userName}</Text>
                     <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">
                         Level {level} • {getLevelTitle(level)}
                     </Text>
+                    <View className="mt-2 flex-row items-center gap-1">
+                        <LucideIcons.Pencil size={12} color="rgba(255,255,255,0.3)" />
+                        <Text className="text-white/30 text-xs font-bold">Tap to edit profile</Text>
+                    </View>
 
                     {!isPremium && (
                         <Pressable
@@ -69,45 +59,178 @@ export default function SettingsScreen() {
                             <Text className="text-primary font-black text-xs uppercase tracking-widest ml-2">Upgrade to Premium</Text>
                         </Pressable>
                     )}
+                </Pressable>
+
+                {/* Account */}
+                <View className="mb-8">
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">Account</Text>
+                    <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
+                        <Pressable
+                            onPress={() => router.push('/paywall')}
+                            className="flex-row items-center p-5 active:bg-white/5 border-b border-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#f9731615' }}>
+                                <LucideIcons.Crown size={20} color="#f97316" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Dayylo Premium</Text>
+                            <Text className="text-[13px] font-bold text-white/30 mr-2">{isPremium ? 'Active ✓' : 'Upgrade'}</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+
+                        <Pressable
+                            onPress={() => { setNameInput(userName); setProfileModalVisible(true); }}
+                            className="flex-row items-center p-5 active:bg-white/5 border-b border-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#3b82f615' }}>
+                                <LucideIcons.User size={20} color="#3b82f6" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Profile Settings</Text>
+                            <Text className="text-[13px] font-bold text-white/30 mr-2 max-w-[100px]" numberOfLines={1}>{userName}</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+
+                        {/* Notifications toggle */}
+                        <View className="flex-row items-center p-5 border-b border-white/5">
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#8b5cf615' }}>
+                                <LucideIcons.Bell size={20} color="#8b5cf6" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Notifications</Text>
+                            <Switch
+                                value={notificationsEnabled}
+                                onValueChange={setNotificationsEnabled}
+                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#30e8ab' }}
+                                thumbColor="#fff"
+                            />
+                        </View>
+
+                        <Pressable
+                            onPress={() => router.push('/daily-wrapup')}
+                            className="flex-row items-center p-5 active:bg-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#007AFF15' }}>
+                                <LucideIcons.History size={20} color="#007AFF" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Daily Wrap-up</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+                    </View>
                 </View>
 
-                {sections.map((section, idx) => (
-                    <View key={idx} className="mb-8">
-                        <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">
-                            {section.title}
-                        </Text>
-                        <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
-                            {section.items.map((item, i) => {
-                                const Icon = (LucideIcons as any)[item.icon];
-                                return (
-                                    <Pressable
-                                        key={i}
-                                        onPress={item.onPress}
-                                        className={`flex-row items-center p-5 active:bg-white/5 ${i !== section.items.length - 1 ? 'border-b border-white/5' : ''}`}
-                                    >
-                                        <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
-                                            <Icon size={20} color={item.color} />
-                                        </View>
-                                        <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">{item.label}</Text>
-                                        {item.value && (
-                                            <Text className="text-[13px] font-bold text-white/30 mr-2">{item.value}</Text>
-                                        )}
-                                        <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
-                                    </Pressable>
-                                );
-                            })}
+                {/* Preferences */}
+                <View className="mb-8">
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">Preferences</Text>
+                    <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
+                        <Pressable
+                            onPress={() => Alert.alert("Appearance", "Dayylo is currently optimized for Dark Mode. Light Mode will be available in a future update.")}
+                            className="flex-row items-center p-5 border-b border-white/5 active:bg-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#64748b15' }}>
+                                <LucideIcons.Moon size={20} color="#64748b" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Appearance</Text>
+                            <Text className="text-[13px] font-bold text-white/30 mr-2">Dark</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+                        <View className="flex-row items-center p-5 border-b border-white/5">
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#30e8ab15' }}>
+                                <LucideIcons.Lock size={20} color="#30e8ab" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Privacy & Security</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </View>
+                        <View className="flex-row items-center p-5">
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#3b82f615' }}>
+                                <LucideIcons.Globe size={20} color="#3b82f6" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Language</Text>
+                            <Text className="text-[13px] font-bold text-white/30 mr-2">English</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
                         </View>
                     </View>
-                ))}
+                </View>
 
+                {/* Support */}
+                <View className="mb-8">
+                    <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">Support</Text>
+                    <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
+                        {[
+                            { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
+                            { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8' },
+                            { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8' },
+                        ].map((item, i, arr) => {
+                            const Icon = (LucideIcons as any)[item.icon];
+                            return (
+                                <Pressable
+                                    key={i}
+                                    className={`flex-row items-center p-5 active:bg-white/5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''}`}
+                                >
+                                    <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
+                                        <Icon size={20} color={item.color} />
+                                    </View>
+                                    <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">{item.label}</Text>
+                                    <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                                </Pressable>
+                            );
+                        })}
+                    </View>
+                </View>
+
+                {/* Sign Out */}
                 <Pressable
-                    onPress={() => router.replace('/(auth)/login')}
+                    onPress={() => {
+                        Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+                            { text: "Cancel", style: "cancel" },
+                            { text: "Sign Out", style: "destructive", onPress: () => router.replace('/(auth)/login') }
+                        ]);
+                    }}
                     className="flex-row items-center justify-center py-6 mb-20"
                 >
                     <LucideIcons.LogOut size={20} color="#ef4444" />
                     <Text className="text-[#ef4444] font-black text-[15px] ml-2">Sign Out</Text>
                 </Pressable>
             </ScrollView>
+
+            {/* Edit Name Modal */}
+            <Modal visible={profileModalVisible} transparent animationType="slide" onRequestClose={() => setProfileModalVisible(false)}>
+                <Pressable
+                    style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' }}
+                    onPress={() => setProfileModalVisible(false)}
+                >
+                    <View style={{
+                        backgroundColor: '#1C1C1E', borderTopLeftRadius: 24, borderTopRightRadius: 24,
+                        padding: 24, paddingBottom: 40,
+                    }}>
+                        <View style={{ width: 36, height: 4, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 2, alignSelf: 'center', marginBottom: 20 }} />
+                        <Text style={{ fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 20, textAlign: 'center' }}>Edit Profile</Text>
+
+                        <Text style={{ fontSize: 12, fontWeight: '700', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+                            Display Name
+                        </Text>
+                        <TextInput
+                            value={nameInput}
+                            onChangeText={setNameInput}
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.05)',
+                                borderRadius: 12, padding: 16, color: '#fff',
+                                fontSize: 16, fontWeight: '600', marginBottom: 20,
+                                borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)'
+                            }}
+                            placeholderTextColor="rgba(255,255,255,0.3)"
+                            placeholder="Your name"
+                            returnKeyType="done"
+                            onSubmitEditing={handleSaveName}
+                        />
+                        <Pressable
+                            onPress={handleSaveName}
+                            style={{ backgroundColor: '#30e8ab', borderRadius: 16, padding: 16, alignItems: 'center' }}
+                        >
+                            <Text style={{ color: '#000', fontWeight: '900', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                Save Changes
+                            </Text>
+                        </Pressable>
+                    </View>
+                </Pressable>
+            </Modal>
         </SafeAreaView>
     );
 }

@@ -1,5 +1,17 @@
 import { Habit } from './types';
 
+// helper: build last N days of simulated history
+const buildHistory = (daysBack: number, pctSuccess: number): Record<string, boolean> => {
+    const history: Record<string, boolean> = {};
+    for (let i = daysBack; i >= 1; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        history[key] = Math.random() < pctSuccess;
+    }
+    return history;
+};
+
 export const INITIAL_HABITS: Habit[] = [
     {
         id: '1',
@@ -10,13 +22,15 @@ export const INITIAL_HABITS: Habit[] = [
         streak: 5,
         longestStreak: 10,
         completedToday: false,
+        trackedToday: false,
         isPrivate: false,
         frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-        difficulty: 5,
+        difficulty: 'easy',
         reminderTime: '08:00',
         currentValue: 2,
         targetValue: 8,
-        unit: 'Times'
+        unit: 'glasses',
+        history: buildHistory(30, 0.8),
     },
     {
         id: '2',
@@ -26,10 +40,12 @@ export const INITIAL_HABITS: Habit[] = [
         color: '#f97316',
         streak: 12,
         longestStreak: 15,
-        completedToday: true,
+        completedToday: false,
+        trackedToday: false,
         isPrivate: true,
-        difficulty: 5,
+        difficulty: 'hard',
         frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+        history: buildHistory(30, 0.6),
     },
     {
         id: '3',
@@ -39,29 +55,33 @@ export const INITIAL_HABITS: Habit[] = [
         color: '#30e8ab',
         streak: 24,
         longestStreak: 30,
-        completedToday: true,
+        completedToday: false,
+        trackedToday: false,
         isPrivate: false,
-        difficulty: 5,
+        difficulty: 'medium',
         frequency: ['M', 'W', 'F'],
         unit: 'min',
         targetValue: 15,
-        currentValue: 15
+        currentValue: 0,
+        history: buildHistory(30, 0.9),
     },
     {
         id: '4',
-        name: 'Read a book',
+        name: 'Read a Book',
         type: 'build',
         icon: 'BookOpen',
         color: '#a855f7',
-        streak: 24,
+        streak: 8,
         longestStreak: 25,
         completedToday: false,
+        trackedToday: false,
         isPrivate: false,
-        difficulty: 5,
+        difficulty: 'easy',
         frequency: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-        currentValue: 5,
+        currentValue: 0,
         targetValue: 20,
-        unit: 'Pages'
+        unit: 'pages',
+        history: buildHistory(30, 0.7),
     },
     {
         id: '5',
@@ -69,14 +89,16 @@ export const INITIAL_HABITS: Habit[] = [
         type: 'build',
         icon: 'Dumbbell',
         color: '#22c55e',
-        streak: 24,
+        streak: 14,
         longestStreak: 28,
-        completedToday: true,
+        completedToday: false,
+        trackedToday: false,
         isPrivate: false,
-        difficulty: 5,
+        difficulty: 'hard',
         frequency: ['M', 'W', 'F'],
         unit: 'min',
         targetValue: 30,
-        currentValue: 30
+        currentValue: 0,
+        history: buildHistory(30, 0.75),
     }
 ];

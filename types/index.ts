@@ -11,8 +11,8 @@ export interface Habit {
     completedToday: boolean;
     trackedToday: boolean;
     isPrivate: boolean;
-    frequency: string[];
-    difficulty: number;
+    frequency?: string[];
+    difficulty?: 'easy' | 'medium' | 'hard';
     reminderTime?: string;
     description?: string;
     currentValue?: number;

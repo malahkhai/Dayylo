@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
@@ -12,13 +12,33 @@ export default function DailyWrapupScreen() {
     const router = useRouter();
     const { habits } = useHabits();
 
-    // In a real app, this would fetch historical data for 'yesterday'
-    // For this demonstration, we'll use current habit states to simulate a wrap-up
+    // Get yesterday's date string
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const yesterdayLabel = yesterday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
     const builds = habits.filter(h => h.type === 'build');
     const breaks = habits.filter(h => h.type === 'break');
 
-    const completedBuilds = builds.filter(h => h.completedToday);
-    const avoidedBreaks = breaks.filter(h => h.completedToday);
+    // Use yesterday's history if available, fall back to completedToday
+    const completedBuilds = builds.filter(h => h.history?.[yesterdayStr] === true || (!h.history?.[yesterdayStr] && h.completedToday));
+    const avoidedBreaks = breaks.filter(h => h.history?.[yesterdayStr] === true || (!h.history?.[yesterdayStr] && h.completedToday));
+
+    const totalHabits = habits.length;
+    const totalCompleted = completedBuilds.length + avoidedBreaks.length;
+    const score = totalHabits > 0 ? Math.round((totalCompleted / totalHabits) * 100) : 0;
+    const scoreEmoji = score >= 80 ? '🏆' : score >= 50 ? '✌️' : '💪';
+
+    const handleShare = async () => {
+        try {
+            await Share.share({
+                message: `I scored ${score}% on Dayylo yesterday! ${scoreEmoji}\nCompleted ${completedBuilds.length} habit(s) and avoided ${avoidedBreaks.length} bad habit(s). Join me in building better habits!`,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -34,7 +54,12 @@ export default function DailyWrapupScreen() {
                 <View style={styles.summaryCard}>
                     <View style={styles.dateLabel}>
                         <Text style={styles.dateText}>PERFORMANCE SUMMARY</Text>
-                        <Text style={styles.actualDate}>Yesterday</Text>
+                        <Text style={styles.actualDate}>{yesterdayLabel}</Text>
+                    </View>
+                    <View style={{ alignItems: 'center', marginVertical: 16 }}>
+                        <Text style={{ fontSize: 48 }}>{scoreEmoji}</Text>
+                        <Text style={{ fontSize: 36, fontWeight: '900', color: score >= 80 ? AppleColors.systemGreen : score >= 50 ? AppleColors.systemOrange : AppleColors.systemRed }}>{score}%</Text>
+                        <Text style={{ ...AppleTypography.footnote, color: AppleColors.label.secondary, marginTop: 4 }}>Daily Score</Text>
                     </View>
 
                     <View style={styles.statsRow}>
@@ -88,12 +113,22 @@ export default function DailyWrapupScreen() {
 
                 <View style={styles.footer}>
                     <Text style={styles.footerQuote}>"Every day is a new scroll of history."</Text>
-                    <Pressable
-                        style={styles.closeButton}
-                        onPress={() => router.back()}
-                    >
-                        <Text style={styles.closeButtonText}>Done</Text>
-                    </Pressable>
+                    <View style={styles.actionRow}>
+                        <Pressable
+                            style={[styles.actionButton, { backgroundColor: 'transparent', borderWidth: 1, borderColor: AppleColors.systemBlue }]}
+                            onPress={handleShare}
+                        >
+                            <LucideIcons.Share size={20} color={AppleColors.systemBlue} />
+                            <Text style={[styles.actionButtonText, { color: AppleColors.systemBlue, marginLeft: 8 }]}>Share</Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={[styles.actionButton, { backgroundColor: AppleColors.systemBlue, flex: 2 }]}
+                            onPress={() => router.back()}
+                        >
+                            <Text style={styles.actionButtonText}>Done</Text>
+                        </Pressable>
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -236,14 +271,22 @@ const styles = StyleSheet.create({
         marginBottom: 32,
         textAlign: 'center',
     },
-    closeButton: {
-        backgroundColor: AppleColors.systemBlue,
-        paddingHorizontal: 48,
+    actionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        width: '100%',
+    },
+    actionButton: {
+        flex: 1,
+        flexDirection: 'row',
         paddingVertical: 16,
         borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
         ...AppleShadows.medium,
     },
-    closeButtonText: {
+    actionButtonText: {
         ...AppleTypography.headline,
         fontWeight: '900',
         color: '#FFFFFF',

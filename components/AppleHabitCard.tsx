@@ -49,6 +49,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
 
   const panGesture = Gesture.Pan()
     .enabled(!trackedToday)
+    .activeOffsetX([-10, 10])
     .onUpdate((event) => {
       // Small vibration when starting to move
       if (Math.abs(translateX.value) === 0 && Math.abs(event.translationX) > 1) {
@@ -134,11 +135,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
             )}
           </View>
 
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { backgroundColor: 'rgba(255,255,255,0.05)' }]}>
-              <View style={[styles.progressFill, { backgroundColor: color, width: isCompleted ? '100%' : '0%' }]} />
-            </View>
-          </View>
+
 
           {/* Watermark Overlay */}
           {trackedToday && (
@@ -160,8 +157,8 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: AppleSpacing.base,
-    marginVertical: 6,
-    height: 110,
+    marginVertical: 4,
+    height: 85,
     justifyContent: 'center',
   },
   backgroundContainer: {
@@ -178,7 +175,7 @@ const styles = StyleSheet.create({
     height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
     gap: 12,
   },
   doneSide: {
@@ -197,9 +194,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   card: {
-    backgroundColor: AppleColors.surface.glassLow,
+    backgroundColor: AppleColors.background.secondary,
     borderRadius: 24,
-    padding: 20,
+    padding: 12,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
     ...AppleShadows.level1,
@@ -211,12 +208,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
+    marginRight: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -263,19 +260,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: AppleColors.label.secondary,
   },
-  progressContainer: {
-    marginTop: 16,
-  },
-  progressBar: {
-    height: 4,
-    borderRadius: 2,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 2,
-  },
+
   watermarkOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -285,8 +270,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   watermarkBadge: {
-    paddingHorizontal: 32,
-    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 8,
     borderRadius: 20,
     transform: [{ rotate: '-10deg' }],
     borderWidth: 4,

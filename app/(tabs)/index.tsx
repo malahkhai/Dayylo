@@ -7,6 +7,7 @@ import {
     StatusBar,
     Animated,
     RefreshControl,
+    TouchableOpacity,
 } from 'react-native';
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,25 +26,24 @@ import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
-import { usePrivacy } from '../../context/PrivacyContext';
+import { formatDiscipline } from '../../utils/format';
 import { WeekCalendar } from '../../components/WeekCalendar';
 import { Habit } from '../../types';
 
 export default function HomeScreen() {
     const router = useRouter();
-    const { habits, recordHabitResult } = useHabits();
-    const { isUnlocked, authenticate } = usePrivacy();
+    const { habits, recordHabitResult, globalStreak, totalDiscipline } = useHabits();
     const [refreshing, setRefreshing] = useState(false);
     const [scrollY] = useState(new Animated.Value(0));
 
-    // Show all habits, but lock interaction for break habits if not authenticated
-    // User requested "Break habits... should still appear... but require auth for details"
-    const visibleHabits = habits;
+    const [filterCategory, setFilterCategory] = useState<'All' | 'build' | 'break'>('All');
+
+    // Filter habits based on category
+    const visibleHabits = habits.filter(h => filterCategory === 'All' ? true : h.type === filterCategory);
 
     // Stats calculations
     const activeHabits = visibleHabits.length;
     const completedHabits = visibleHabits.filter(h => h.completedToday).length;
-    const remainingHabits = activeHabits - completedHabits;
 
     // Bad habits (break) specialized stat
     const breakHabits = visibleHabits.filter(h => h.type === 'break');
@@ -87,27 +87,25 @@ export default function HomeScreen() {
     });
 
     const headerOpacity = scrollY.interpolate({
-        inputRange: [0, 60],
-        outputRange: [1, 0.9],
+        inputRange: [0, 100],
+        outputRange: [1, 0.95],
         extrapolate: 'clamp',
     });
 
     const headerScale = scrollY.interpolate({
-        inputRange: [0, 60],
-        outputRange: [1, 0.97],
+        inputRange: [0, 100],
+        outputRange: [1, 0.85],
+        extrapolate: 'clamp',
+    });
+
+    const headerTranslateY = scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: [0, -15],
         extrapolate: 'clamp',
     });
 
     const handleHabitPress = async (habit: Habit) => {
-        // Intercept "Break" habits or Private habits
-        if (habit.type === 'break' && !isUnlocked) {
-            const success = await authenticate();
-            if (success) {
-                router.push(`/habit/${habit.id}`);
-            }
-        } else {
-            router.push(`/habit/${habit.id}`);
-        }
+        router.push(`/habit/${habit.id}`);
     };
 
     return (
@@ -120,7 +118,10 @@ export default function HomeScreen() {
                     styles.header,
                     {
                         opacity: headerOpacity,
-                        transform: [{ scale: headerScale }],
+                        transform: [
+                            { translateY: headerTranslateY },
+                            { scale: headerScale }
+                        ],
                     },
                 ]}
             >
@@ -130,23 +131,23 @@ export default function HomeScreen() {
                         <Text style={styles.headerTitle}>{format(new Date(), 'MMMM d')}</Text>
                     </View>
                     <View style={styles.streakContainer}>
-                        <Text style={styles.streakNumber}>{habits.length > 0 ? Math.max(...habits.map(h => h.streak)) : 0}</Text>
-                        <Text style={styles.streakEmoji}>🔥</Text>
+                        <View style={styles.metricItem}>
+                            <Text style={styles.streakNumber}>{globalStreak}</Text>
+                            <Text style={styles.streakEmoji}>🔥</Text>
+                        </View>
+                        <View style={styles.metricDivider} />
+                        <View style={styles.metricItem}>
+                            <Text style={styles.streakNumber}>{formatDiscipline(totalDiscipline)}</Text>
+                            <Text style={styles.streakEmoji}>🛡️</Text>
+                        </View>
+                        <View style={styles.metricDivider} />
+                        <View style={styles.metricItem}>
+                            <Text style={styles.streakNumber}>{completedHabits}/{activeHabits}</Text>
+                            <Text style={styles.streakEmoji}>✅</Text>
+                        </View>
                     </View>
                 </View>
             </Animated.View>
-
-            <WeekCalendar />
-
-
-
-            {/* Privacy Banner - Only show if locked and break habits exist */}
-            {!isUnlocked && breakHabits.length > 0 && (
-                <View style={styles.privacyBanner}>
-                    <Text style={styles.privacyText}>Break habits require unlock to view details.</Text>
-                </View>
-            )}
-
             {/* Scrollable Habit List */}
             <Animated.ScrollView
                 style={styles.scrollView}
@@ -161,6 +162,30 @@ export default function HomeScreen() {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
+                <WeekCalendar />
+
+                {/* Category Filters */}
+                <View style={styles.filterContainer}>
+                    {['All', 'build', 'break'].map((cat) => (
+                        <TouchableOpacity
+                            key={cat}
+                            style={[
+                                styles.filterBadge,
+                                filterCategory === cat && styles.filterBadgeActive
+                            ]}
+                            onPress={() => setFilterCategory(cat as any)}
+                            activeOpacity={0.7}
+                        >
+                            <Text style={[
+                                styles.filterText,
+                                filterCategory === cat && styles.filterTextActive
+                            ]}>
+                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+
                 {visibleHabits.length > 0 ? (
                     <>
                         <Text style={styles.sectionTitle}>Your Habits</Text>
@@ -231,15 +256,53 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
+    },
+    metricItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 6,
     },
+    metricDivider: {
+        width: 1,
+        height: 16,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        marginHorizontal: 12,
+    },
     streakNumber: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '900',
         color: AppleColors.label.primary,
     },
     streakEmoji: {
-        fontSize: 18,
+        fontSize: 16,
+    },
+
+    filterContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: AppleSpacing.base,
+        marginBottom: AppleSpacing.md,
+        gap: 8,
+    },
+    filterBadge: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: AppleColors.surface.glassLow,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+    },
+    filterBadgeActive: {
+        backgroundColor: AppleColors.primary,
+        borderColor: AppleColors.primary,
+    },
+    filterText: {
+        ...AppleTypography.subheadline,
+        color: AppleColors.label.secondary,
+        fontWeight: '600',
+    },
+    filterTextActive: {
+        fontWeight: '800',
+        color: '#FFFFFF',
     },
 
     scrollView: {
@@ -247,6 +310,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingTop: AppleSpacing.sm,
+        paddingBottom: 110,
     },
     sectionTitle: {
         ...AppleTypography.headline,

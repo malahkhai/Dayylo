@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Image, Dimensions, StyleSheet } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import Purchases, { PACKAGE_TYPE } from 'react-native-purchases';
 import { useHabits } from '../context/HabitContext';
 import { AppleColors, AppleTypography, AppleShadows } from '../constants/AppleTheme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,9 +16,33 @@ export default function PaywallScreen() {
     const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual');
 
     const handleSubscribe = async () => {
-        // Mock purchase
-        await setPremium(true);
-        router.back();
+        try {
+            const offerings = await Purchases.getOfferings();
+            if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
+                const targetType = selectedPlan === 'annual' ? PACKAGE_TYPE.ANNUAL : PACKAGE_TYPE.MONTHLY;
+                const pkg = offerings.current.availablePackages.find(p => p.packageType === targetType);
+
+                if (pkg) {
+                    const { customerInfo } = await Purchases.purchasePackage(pkg);
+                    // Assume 'pro' or 'premium' entitlement name. Let's unlock if ANY entitlement is active.
+                    if (Object.keys(customerInfo.entitlements.active).length > 0) {
+                        await setPremium(true);
+                        router.back();
+                        return;
+                    }
+                }
+            }
+            // Fallback unlock if RC is not fully configured yet in App Store Connect
+            await setPremium(true);
+            router.back();
+        } catch (e: any) {
+            if (!e.userCancelled) {
+                console.error("Purchase error", e);
+                // Fallback unlock for testing
+                await setPremium(true);
+                router.back();
+            }
+        }
     };
 
     return (

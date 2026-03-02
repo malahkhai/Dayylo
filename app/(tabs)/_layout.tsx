@@ -1,8 +1,9 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import * as LucideIcons from 'lucide-react-native';
 import { AppleColors } from '../../constants/AppleTheme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function TabLayout() {
     return (
@@ -10,13 +11,21 @@ export default function TabLayout() {
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: AppleColors.background.tertiary,
+                    position: 'absolute',
+                    backgroundColor: 'transparent',
                     borderTopWidth: 0.5,
-                    borderTopColor: AppleColors.separator.nonOpaque,
+                    borderTopColor: 'rgba(255, 255, 255, 0.1)',
                     height: 90,
-                    paddingBottom: 30,
+                    paddingBottom: Platform.OS === 'ios' ? 30 : 15,
                     paddingTop: 10,
+                    elevation: 0,
                 },
+                tabBarBackground: () => (
+                    <LinearGradient
+                        colors={['rgba(20, 20, 22, 0.85)', 'rgba(10, 10, 12, 0.98)']}
+                        style={StyleSheet.absoluteFill}
+                    />
+                ),
                 tabBarActiveTintColor: AppleColors.systemBlue,
                 tabBarInactiveTintColor: AppleColors.systemGray,
                 tabBarLabelStyle: {

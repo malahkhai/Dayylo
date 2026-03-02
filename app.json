@@ -8,17 +8,23 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "scheme": "dayylo",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#121212"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.malahkhai.dayylo",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSFaceIDUsageDescription": "Dayylo uses Face ID to securely lock and unlock your private break habits."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#121212"
       },
       "package": "com.malahkhai.dayylo"
     },
@@ -26,7 +32,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#007AFF"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
