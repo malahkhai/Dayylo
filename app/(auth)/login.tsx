@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Dimensions, TextInput, ScrollView, Image, Linking, Alert } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -20,6 +21,11 @@ export default function AuthScreen() {
     const router = useRouter();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
+
+    // Auth State
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     // Bouncing Animation
     const bounceValue = useSharedValue(0);
@@ -51,9 +57,25 @@ export default function AuthScreen() {
         else if (mode === 'signup' || mode === 'signin') setMode('focus');
     };
 
-    const handleAuthAction = () => {
-        // Mock auth
-        router.replace('/(auth)/onboarding');
+    const handleLogin = async () => {
+        if (!email || !password) return Alert.alert("Error", "Please enter email and password.");
+        try {
+            await auth().signInWithEmailAndPassword(email.trim(), password);
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert("Login Failed", error.message);
+        }
+    };
+
+    const handleSignup = async () => {
+        if (!email || !password) return Alert.alert("Error", "Please enter valid credentials.");
+        if (password !== confirmPassword) return Alert.alert("Error", "Passwords do not match.");
+        try {
+            await auth().createUserWithEmailAndPassword(email.trim(), password);
+            router.replace('/(auth)/onboarding');
+        } catch (error: any) {
+            Alert.alert("Signup Failed", error.message);
+        }
     };
 
     const toggleFocus = (type: 'build' | 'break') => {
@@ -319,24 +341,33 @@ export default function AuthScreen() {
                             keyboardType="email-address"
                             autoCapitalize="none"
                             autoCorrect={false}
+                            value={email}
+                            onChangeText={setEmail}
                         />
                         <TextInput
                             placeholder="Password"
                             style={styles.input}
                             secureTextEntry
                             placeholderTextColor={AppleColors.label.tertiary}
+                            value={password}
+                            onChangeText={setPassword}
                         />
                         <TextInput
                             placeholder="Confirm Password"
                             style={styles.input}
                             secureTextEntry
                             placeholderTextColor={AppleColors.label.tertiary}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
                         />
 
-                        <AppleButton title="Sign Up" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 8 }} />
+                        <AppleButton title="Sign Up" onPress={handleSignup} size="large" fullWidth style={{ marginTop: 8 }} />
 
                         <Text style={styles.legalText}>
-                            By signing up, you agree to our <Text style={styles.link}>Terms</Text> and <Text style={styles.link}>Privacy Policy</Text>.
+                            By signing up, you agree to our{' '}
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>Terms</Text>
+                            {' '}and{' '}
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link')}>Privacy Policy</Text>.
                         </Text>
 
                         {/* Divider */}
@@ -347,13 +378,13 @@ export default function AuthScreen() {
                         </View>
 
                         {/* Apple Sign In — logo + text centred together as a unit, per Apple spec */}
-                        <Pressable onPress={handleAuthAction} style={styles.ssoButtonApple}>
+                        <Pressable onPress={() => { }} style={styles.ssoButtonApple}>
                             <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
                             <Text style={styles.ssoAppleText}>Sign up with Apple</Text>
                         </Pressable>
 
                         {/* Google Sign In — authentic four-color Google G SVG */}
-                        <Pressable onPress={handleAuthAction} style={styles.ssoButtonGoogle}>
+                        <Pressable onPress={() => { }} style={styles.ssoButtonGoogle}>
                             <View style={styles.ssoGoogleIconBg}>
                                 <Svg width={18} height={18} viewBox="0 0 48 48">
                                     <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -392,12 +423,12 @@ export default function AuthScreen() {
                 </View>
 
                 <View style={styles.authForm}>
-                    <Pressable onPress={handleAuthAction} style={styles.ssoButtonApple}>
+                    <Pressable onPress={() => { }} style={styles.ssoButtonApple}>
                         <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
                         <Text style={styles.ssoAppleText}>Continue with Apple</Text>
                     </Pressable>
 
-                    <Pressable onPress={handleAuthAction} style={styles.ssoButtonGoogle}>
+                    <Pressable onPress={() => { }} style={styles.ssoButtonGoogle}>
                         <View style={styles.ssoGoogleIconBg}>
                             <Svg width={18} height={18} viewBox="0 0 48 48">
                                 <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -415,14 +446,29 @@ export default function AuthScreen() {
                         <View style={styles.line} />
                     </View>
 
-                    <TextInput placeholder="Email address" style={styles.input} placeholderTextColor="#999" />
-                    <TextInput placeholder="Password" style={styles.input} secureTextEntry placeholderTextColor="#999" />
+                    <TextInput
+                        placeholder="Email address"
+                        style={styles.input}
+                        placeholderTextColor="#999"
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    <TextInput
+                        placeholder="Password"
+                        style={styles.input}
+                        secureTextEntry
+                        placeholderTextColor="#999"
+                        value={password}
+                        onChangeText={setPassword}
+                    />
 
                     <Pressable style={styles.forgotPass}>
                         <Text style={styles.linkText}>Forgot password?</Text>
                     </Pressable>
 
-                    <AppleButton title="Sign In" onPress={handleAuthAction} size="large" fullWidth style={{ marginTop: 12 }} />
+                    <AppleButton title="Sign In" onPress={handleLogin} size="large" fullWidth style={{ marginTop: 12 }} />
 
                     <View style={styles.switchAuth}>
                         <Text style={styles.switchText}>New here? </Text>

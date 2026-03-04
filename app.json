@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.malahkhai.dayylo",
+      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSFaceIDUsageDescription": "Dayylo uses Face ID to securely lock and unlock your private break habits."
@@ -26,20 +27,31 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#121212"
       },
-      "package": "com.malahkhai.dayylo"
+      "package": "com.malahkhai.dayylo",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
+      "@react-native-firebase/app",
       [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
           "color": "#007AFF"
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "./plugins/withFixGRPC"
     ],
     "experiments": {
       "typedRoutes": true

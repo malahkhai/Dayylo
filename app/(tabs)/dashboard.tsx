@@ -9,8 +9,7 @@ import { useRouter } from 'expo-router';
 const { width } = Dimensions.get('window');
 
 export default function DashboardScreen() {
-    const { habits, xp, level, userName } = useHabits();
-    const { isUnlocked, authenticate } = usePrivacy();
+    const { habits, totalDiscipline, level, userName } = useHabits();
     const router = useRouter();
 
     const buildHabits = habits.filter(h => h.type === 'build');
@@ -20,7 +19,7 @@ export default function DashboardScreen() {
     const progressPercent = habits.length > 0 ? Math.round((totalDone / habits.length) * 100) : 0;
 
     // Gamification
-    const xpProgress = xp % 100;
+    const xpProgress = totalDiscipline % 100;
     const itemsToNextLevel = 100 - xpProgress;
 
     const getPlantIcon = () => {
@@ -37,21 +36,14 @@ export default function DashboardScreen() {
         return "Seed Planter";
     };
 
-    const handlePrivacyPress = async () => {
-        if (!isUnlocked) await authenticate();
-    };
+
 
     const handleBuildPress = () => {
         router.push('/(tabs)');
     };
 
-    const handleBreakPress = async () => {
-        if (!isUnlocked) {
-            const unlocked = await authenticate();
-            if (unlocked) router.push('/(tabs)');
-        } else {
-            router.push('/(tabs)');
-        }
+    const handleBreakPress = () => {
+        router.push('/(tabs)');
     };
 
     // Get first name only
@@ -175,7 +167,7 @@ export default function DashboardScreen() {
                         </View>
                         <View className="flex-row items-baseline">
                             <Text className="text-3xl font-black text-white">
-                                {isUnlocked && breakHabits.length > 0
+                                {breakHabits.length > 0
                                     ? Math.max(...breakHabits.map(h => h.streak), 0)
                                     : '--'}
                             </Text>
@@ -213,29 +205,16 @@ export default function DashboardScreen() {
                         onPress={handleBreakPress}
                         className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5"
                     >
-                        <View className={`w-14 h-14 rounded-2xl items-center justify-center ${isUnlocked ? 'bg-white/5' : 'bg-primary/20'}`}>
-                            {isUnlocked ? (
-                                <LucideIcons.ShieldCheck size={24} color="#f97316" />
-                            ) : (
-                                <LucideIcons.Lock size={24} color="#30e8ab" />
-                            )}
+                        <View className="w-14 h-14 rounded-2xl items-center justify-center bg-white/5">
+                            <LucideIcons.ShieldCheck size={24} color="#f97316" />
                         </View>
                         <View className="ml-5 flex-1">
                             <Text className="text-lg font-black text-white">Break Habits</Text>
                             <Text className="text-[13px] font-bold text-white/40">
-                                {isUnlocked
-                                    ? `${breakHabits.length} Active • ${breakHabits.filter(h => h.completedToday).length} Done Today`
-                                    : 'Protected View'
-                                }
+                                {`${breakHabits.length} Active • ${breakHabits.filter(h => h.completedToday).length} Done Today`}
                             </Text>
                         </View>
-                        {!isUnlocked ? (
-                            <Pressable onPress={handlePrivacyPress} className="bg-primary py-2 px-4 rounded-xl">
-                                <Text className="text-[10px] font-black text-black uppercase">Unlock</Text>
-                            </Pressable>
-                        ) : (
-                            <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
-                        )}
+                        <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
                     </Pressable>
                 </View>
 
@@ -246,9 +225,9 @@ export default function DashboardScreen() {
                     </Text>
                     <View className="flex-row justify-between px-1">
                         {[
-                            { icon: 'Plus', label: 'Add', onPress: () => router.push('/(tabs)/add'), color: '#30e8ab' },
-                            { icon: 'Bell', label: 'Settings', onPress: () => router.push('/(tabs)/settings'), color: '#8b5cf6' },
-                            { icon: 'EyeOff', label: 'Privacy', onPress: handlePrivacyPress, color: '#f97316' },
+                            { icon: 'Plus', label: 'Add', onPress: () => router.push('/add-habit'), color: '#30e8ab' },
+                            { icon: 'Bell', label: 'Alerts', onPress: () => router.push('/(tabs)/settings'), color: '#8b5cf6' },
+                            { icon: 'Settings', label: 'Settings', onPress: () => router.push('/(tabs)/settings'), color: '#f97316' },
                         ].map((action, i) => {
                             const Icon = (LucideIcons as any)[action.icon];
                             return (

@@ -11,3 +11,6 @@ build
 
 expo-env.d.ts
 # @end expo-cli
+# Firebase config
+GoogleService-Info.plist
+google-services.json

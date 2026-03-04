@@ -1,0 +1,1014 @@
+› Planning build
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'BoringSSL-GRPC' from project 'Pods')
+    Run script build phase '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'hermes-engine' from project 'Pods')
+› Executing react-native Pods/hermes-engine » [CP-User] [Hermes] Replace Hermes for the right configuration, if needed
+› Executing react-native Pods/ReactNativeDependencies » [CP-User] [RNDeps] Replace React Native Dependencies for the right configuration, if needed
+› Signing   Pods/GTMSessionFetcher » GTMSessionFetcher.framework
+› Compiling Pods/abseil » absl_vers.c
+› Compiling Pods/abseil » log_format.cc
+› Compiling Pods/abseil » log_message.cc
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FirebaseAuth.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FirebaseAuth.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FirebaseAuth-umbrella.h ➜ ios/Pods/Target/ Support/ Files/FirebaseAuth/FirebaseAuth-umbrella.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRUser.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRUser.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRTwitterAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRTwitterAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRPhoneAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRPhoneAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRMultiFactor.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRMultiFactor.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRGoogleAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRGoogleAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRGitHubAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRGitHubAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRGameCenterAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRGameCenterAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRFederatedAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRFederatedAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRFacebookAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRFacebookAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIREmailAuthProvider.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIREmailAuthProvider.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRAuthErrors.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRAuthErrors.h
+› Copying   @react-native-firebase/auth FirebaseAuth/FirebaseAuth.framework/Headers/FIRAuth.h ➜ ios/Pods/FirebaseAuth/FirebaseAuth/Sources/Public/FirebaseAuth/FIRAuth.h
+› Compiling Pods/abseil » log_entry.cc
+› Compiling Pods/abseil » kernel_timeout.cc
+› Compiling Pods/abseil » int128.cc
+› Compiling Pods/abseil » hashtablez_sampler_force_weak_definition.cc
+› Executing react-native Pods/React-Core-prebuilt » [CP-User] [RNDeps] Replace React Native Core for the right configuration, if needed
+› Compiling Pods/abseil » hashtablez_sampler.cc
+› Compiling Pods/abseil » hash.cc
+› Compiling Pods/abseil » graphcycles.cc
+› Compiling Pods/abseil » globals.cc
+› Compiling Pods/abseil » globals.cc
+› Compiling Pods/abseil » gaussian_distribution.cc
+› Compiling Pods/abseil » futex_waiter.cc
+› Compiling Pods/abseil » format.cc
+› Compiling Pods/abseil » fnmatch.cc
+› Compiling Pods/abseil » float_conversion.cc
+› Compiling Pods/abseil » flag.cc
+› Compiling Pods/abseil » extension.cc
+› Compiling Pods/abseil » exponential_biased.cc
+› Compiling Pods/abseil » examine_stack.cc
+› Compiling Pods/abseil » escaping.cc
+› Compiling Pods/abseil » escaping.cc
+› Compiling Pods/abseil » elf_mem_image.cc
+› Compiling Pods/abseil » duration.cc
+› Compiling Pods/abseil » discrete_distribution.cc
+› Compiling Pods/abseil » demangle_rust.cc
+› Compiling Pods/abseil » demangle.cc
+› Compiling Pods/abseil » decode_rust_punycode.cc
+› Compiling Pods/abseil » damerau_levenshtein_distance.cc
+› Compiling Pods/abseil » cycleclock.cc
+› Compiling Pods/abseil » create_thread_identity.cc
+› Compiling Pods/abseil » crc_x86_arm_combined.cc
+› Compiling Pods/abseil » crc_non_temporal_memcpy.cc
+› Compiling Pods/abseil » crc_memcpy_x86_arm_combined.cc
+› Compiling Pods/abseil » crc_memcpy_fallback.cc
+› Compiling Pods/abseil » crc_cord_state.cc
+› Compiling Pods/abseil » crc32c.cc
+› Compiling Pods/abseil » crc.cc
+› Compiling Pods/abseil » cpu_detect.cc
+› Compiling Pods/abseil » cordz_info.cc
+› Compiling Pods/abseil » cordz_handle.cc
+› Compiling Pods/abseil » cordz_functions.cc
+› Compiling Pods/abseil » cord_rep_crc.cc
+› Compiling Pods/abseil » cord_rep_consume.cc
+› Compiling Pods/abseil » cord_rep_btree_reader.cc
+› Compiling Pods/abseil » cord_rep_btree_navigator.cc
+› Compiling Pods/abseil » cord_rep_btree.cc
+› Compiling Pods/abseil » cord_internal.cc
+› Compiling Pods/abseil » cord_buffer.cc
+› Compiling Pods/abseil » cord_analysis.cc
+› Compiling Pods/abseil » cord.cc
+› Compiling Pods/abseil » conditions.cc
+› Compiling Pods/abseil » commandlineflag.cc
+› Compiling Pods/abseil » commandlineflag.cc
+› Compiling Pods/abseil » clock.cc
+› Compiling Pods/abseil » civil_time_detail.cc
+› Compiling Pods/abseil » civil_time.cc
+› Compiling Pods/abseil » city.cc
+› Compiling Pods/abseil » check_op.cc
+› Compiling Pods/abseil » charconv_parse.cc
+› Compiling Pods/abseil » charconv_bigint.cc
+› Compiling Pods/abseil » charconv.cc
+› Compiling Pods/abseil » blocking_counter.cc
+› Compiling Pods/abseil » bind.cc
+› Compiling Pods/abseil » barrier.cc
+› Compiling Pods/abseil » bad_variant_access.cc
+› Compiling Pods/abseil » bad_optional_access.cc
+› Compiling Pods/abseil » bad_any_cast.cc
+› Compiling Pods/abseil » ascii.cc
+› Compiling Pods/abseil » arg.cc
+› Compiling Pods/abseil » address_is_readable.cc
+› Copying   react-native-purchases RNPurchases/RNPurchases.framework/Headers/RNPurchases-umbrella.h ➜ ios/Pods/Target/ Support/ Files/RNPurchases/RNPurchases-umbrella.h
+› Compiling Pods/abseil » abseil-dummy.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCoreExtension » dummy.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FirebaseCore-dummy.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRVersion.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRTimestamp.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIROptions.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRConfiguration.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRComponentType.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRComponentContainer.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRComponent.m
+› Signing   @react-native-firebase/auth Pods/FirebaseAuthInterop » FirebaseAuthInterop.framework
+› Executing react-native Pods/React-RCTFBReactNativeSpec » [CP-User] [RN]Check FBReactNativeSpec
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRLogger.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRHeartbeatLogger.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRFirebaseUserAgent.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRBundleUtil.m
+› Compiling @react-native-firebase/auth Pods/FirebaseCore » FIRApp.m
+› Preparing Dayylo Pods/ReactCodegen » ReactCodegen-Info.plist
+› Compiling react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon_vers.c
+› Signing   @react-native-firebase/auth Pods/FirebaseAppCheckInterop » FirebaseAppCheckInterop.framework
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreInternal » FirebaseCoreInternal-Info.plist
+› Compiling react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon-dummy.m
+› Signing   expo-json-utils Pods/EXJSONUtils » EXJSONUtils.framework
+› Executing Pods/abseil » Create Symlinks to Header Folders
+› Signing   expo-dev-menu-interface Pods/expo-dev-menu-interface » EXDevMenuInterface.framework
+› Executing Dayylo Pods/ReactCodegen » [CP-User] Generate Specs
+› Signing   Pods/abseil » absl.framework
+› Compiling react-native-purchases Pods/RNPurchases » RNPurchases_vers.c
+› Compiling react-native-purchases Pods/RNPurchases » RNPurchases-dummy.m
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth_vers.c
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FIRAuth.m
+› Signing   @react-native-firebase/firestore Pods/FirebaseSharedSwift » FirebaseSharedSwift.framework
+› Signing   @react-native-firebase/auth Pods/FirebaseCoreInternal » FirebaseCoreInternal.framework
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth-dummy.m
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FIRMultiFactorConstants.m
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FIRAuthProvider.m
+› Preparing @react-native-firebase/auth Pods/FirebaseCore » FirebaseCore-Info.plist
+› Compiling @react-native-firebase/auth Pods/FirebaseAuth » FIRAuthErrorUtils.m
+› Signing   react-native-purchases Pods/RevenueCat » RevenueCat.framework
+› Signing   @react-native-firebase/auth Pods/FirebaseCore » FirebaseCore.framework
+› Compiling Dayylo Pods/ReactCodegen » ReactCodegen_vers.c
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreExtension » FirebaseCoreExtension-Info.plist
+› Compiling Dayylo Pods/ReactCodegen » safeareacontextJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » safeareacontext-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnworkletsJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnworklets-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnsvgJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnsvg-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnscreensJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnscreens-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnreanimatedJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnreanimated-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rngesturehandler_codegenJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rngesturehandler_codegen-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnasyncstorageJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnasyncstorage-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ReactCodegen-dummy.m
+› Compiling Dayylo Pods/ReactCodegen » RCTUnstableModulesRequiringMainQueueSetupProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTThirdPartyComponentsProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTModulesConformingToProtocolsProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTModuleProviders.mm
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling react-native-purchases Pods/RNPurchases » RNPurchases.m
+› Preparing react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon-Info.plist
+› Signing   @react-native-firebase/auth Pods/FirebaseCoreExtension » FirebaseCoreExtension.framework
+› Preparing @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth-Info.plist
+› Signing   react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon.framework
+› Preparing react-native-purchases Pods/RNPurchases » RNPurchases-Info.plist
+› Signing   @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth.framework
+› Signing   react-native-purchases Pods/RNPurchases » RNPurchases.framework
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » openssl_grpc_vers.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls_record.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls_method.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls13_server.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls13_enc.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_pubkey.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_exten.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls13_client.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls13_both.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » t1_enc.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_x509.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_versions.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_transcript.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_stat.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_session.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_privkey.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_lib.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_key_share.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_file.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_credential.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_cipher.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_cert.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_buffer.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_asn1.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ssl_aead_ctx.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » s3_pkt.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » s3_lib.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » s3_both.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » mlkem.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » handshake_server.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » handshake_client.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » handshake.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » handoff.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » extensions.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » encrypted_client_hello.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dtls_record.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dtls_method.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » d1_srtp.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » d1_pkt.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » d1_lib.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » d1_both.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » bio_ssl.cc
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_val.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_x509a.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_spki.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_sig.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_req.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_name.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_crl.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_attrib.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_all.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x_algor.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509spki.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509name.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509rset.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509cset.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_vpm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_vfy.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_v3.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_txt.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_trs.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_set.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_req.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_obj.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_lu.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_ext.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_d2.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_def.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_cmp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509_att.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » wots.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » windows.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » voprf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_utl.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_purp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_skey.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_prn.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_pmaps.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_pcons.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_ocsp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_ncons.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_lib.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_int.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_info.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_ia5.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_genn.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_enum.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_extku.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_crld.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_cpols.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_conf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_bitst.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_alt.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_bcons.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » urandom.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_akey.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » v3_akeya.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » unicode.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » trusty.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » trust_token.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tls_cbc.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » thread_win.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » thread_pthread.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » thread_none.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » thread.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » thash.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_typ.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_utl.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_fre.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_enc.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_dec.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » tasn_new.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » t_x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » t_x509a.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » t_req.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » stack.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » spx_util.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » t_crl.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » spx.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » spake25519.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » socket_helper.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » socket.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » siphash.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » sign.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » scrypt.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rsa_pss.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rsa_print.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rsa_crypt.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rsa_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rc4.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » refcount.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » rand_extra.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » posix_time.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » print.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pool.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » poly1305_vec.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » poly1305_arm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » printf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » poly1305.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » policy.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pmbtoken.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pkcs8_x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pkcs8.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pkcs7_x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pkcs7.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_xaux.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_x509.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_pkey.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_pk8.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_oth.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_lib.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_info.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pem_all.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pbkdf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » passive.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » params.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_x25519_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » pair.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_x25519.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_hkdf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_ed25519_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_rsa_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_ed25519.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_rsa.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_ec_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_ec.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_dh_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_dh.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p_dsa_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » obj_xref.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » name_print.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » obj.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » p5_pbev2.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » merkle.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » mldsa.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » kyber.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » mem.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » lhash.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » keccak.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ios.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » i2d_pr.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » hrss.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » hpke.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » hash_to_curve.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » hexdump.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » getentropy.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » fors.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » forkunsafe.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » fork_detect.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » fips_shared_support.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » file.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » fd.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » f_int.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » f_string.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ex_data.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » evp_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » evp_ctx.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » evp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » errno.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » err_data.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » engine.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ecdsa_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » err.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ecdh_extra.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ec_derive.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_tls.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ec_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_rc4.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_null.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_des.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_aesctrhmac.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_chacha20poly1305.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_aesgcmsiv.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dsa_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » e_rc2.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dsa.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dh_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » dilithium.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » digest_extra.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » deterministic.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » des.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » derive_key.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » curve25519_64_adx.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » curve25519.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » crypto.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_intel.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_arm_linux.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_arm_freebsd.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_win.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_sysreg.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_openbsd.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_linux.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_fuchsia.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » convert.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cpu_aarch64_apple.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » connect.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » conf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cipher_extra.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » chacha.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cbs.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » cbb.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » by_file.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » buf.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » bn_asn1.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » by_dir.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » blake2.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » bio_mem.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » ber.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » bio.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » base64.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » asn_pack.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » asn1_lib.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » asn1_par.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » bcm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » asn1_gen.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » asn1_compat.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » algorithm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_verify.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_utctm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » address.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_type.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_time.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_strnid.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_octet.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_strex.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_sign.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_object.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_mbstr.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_int.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_gentm.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_i2d_fp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_dup.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_d2i_fp.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_digest.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_bool.c
+› Executing Dayylo Pods/ReactCodegen » Create Symlinks to Header Folders
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » a_bitstr.c
+› Compiling @react-native-firebase/firestore Pods/BoringSSL-GRPC » BoringSSL-GRPC-dummy.m
+› Compiling Dayylo Pods/ReactAppDependencyProvider » RCTAppDependencyProvider.mm
+› Signing   Dayylo Pods/ReactCodegen » ReactCodegen.framework
+› Compiling react-native-svg Pods/RNSVG » RNSVG_vers.c
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » react_native_safe_area_context_vers.c
+› Compiling react-native-svg Pods/RNSVG » RNSVGViewBox.mm
+› Compiling react-native-screens Pods/RNScreens » RNScreens_vers.c
+› Compiling react-native-svg Pods/RNSVG » RNSVGUseManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGUse.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTopAlignedLabel.ios.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTextProperties.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewState.cpp
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewShadowNode.cpp
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewComponentView.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaProviderComponentView.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaContext.mm
+› Compiling react-native-screens Pods/RNScreens » UIWindow+RNScreens.mm
+› Compiling react-native-screens Pods/RNScreens » UIViewController+RNScreens.mm
+› Compiling react-native-screens Pods/RNScreens » UIView+RNSUtility.mm
+› Compiling react-native-screens Pods/RNScreens » UIScrollView+RNScreens.mm
+› Compiling react-native-screens Pods/RNScreens » UINavigationBar+RNSUtility.mm
+› Compiling react-native-screens Pods/RNScreens » RNScreensTurboModule.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSViewControllerInvalidator.mm
+› Compiling react-native-screens Pods/RNScreens » RNSTabsScreenViewController.mm
+› Compiling react-native-screens Pods/RNScreens » RNSTabBarControllerDelegate.mm
+› Compiling react-native-screens Pods/RNScreens » RNSTabBarController.mm
+› Compiling react-native-screens Pods/RNScreens » RNSTabBarAppearanceCoordinator.mm
+› Compiling react-native-screens Pods/RNScreens » RNSSplitViewScreenShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSSearchBar.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScrollViewHelper.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScrollViewFinder.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenWindowTraits.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenViewEvent.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenState.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderSubviewState.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderSubviewShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderSubview.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderConfigState.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderConfigShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackHeaderConfig.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStackAnimator.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenStack.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenRemovalListener.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSScreenNavigationContainer.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenFooter.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenContentWrapper.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreenContainer.mm
+› Compiling react-native-screens Pods/RNScreens » RNSScreen.mm
+› Compiling react-native-screens Pods/RNScreens » RNSReactBaseView.mm
+› Compiling react-native-screens Pods/RNScreens » RNSPercentDrivenInteractiveTransition.mm
+› Compiling react-native-screens Pods/RNScreens » RNSModule.mm
+› Compiling react-native-screens Pods/RNScreens » RNSModalScreenShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSModalScreen.mm
+› Compiling react-native-screens Pods/RNScreens » RNSInvalidatedComponentsRegistry.mm
+› Compiling react-native-screens Pods/RNScreens » RNSHeaderHeightChangeEvent.mm
+› Compiling react-native-screens Pods/RNScreens » RNSGammaStubs.mm
+› Compiling react-native-screens Pods/RNScreens » RNSFullWindowOverlayShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSFullWindowOverlay.mm
+› Compiling react-native-screens Pods/RNScreens » RNSConvert.mm
+› Compiling react-native-screens Pods/RNScreens » RNSConversions.mm
+› Compiling react-native-screens Pods/RNScreens » RNSConversions-SplitView.mm
+› Compiling react-native-screens Pods/RNScreens » RNSConversions-Fabric.mm
+› Compiling react-native-screens Pods/RNScreens » RNSConversions-BottomTabs.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsState.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsShadowNode.cpp
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsScreenEventEmitter.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsScreenComponentViewManager.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsScreenComponentView.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsHostEventEmitter.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsHostComponentViewManager.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsHostComponentView.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsHostComponentView+RNSImageLoader.mm
+› Compiling react-native-screens Pods/RNScreens » RNSBackBarButtonItem.mm
+› Compiling react-native-screens Pods/RNScreens » RCTTouchHandler+RNSUtility.mm
+› Compiling react-native-screens Pods/RNScreens » RCTSurfaceTouchHandler+RNSUtility.mm
+› Compiling react-native-screens Pods/RNScreens » RCTImageComponentView+RNSScreenStackHeaderConfig.mm
+› Compiling react-native-screens Pods/RNScreens » RCTConvert+RNScreens.mm
+› Compiling react-native-screens Pods/RNScreens » RCTConvert+RNSBottomTabs.mm
+› Compiling react-native-screens Pods/RNScreens » NSString+RNSUtility.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTextPathManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTextPath.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTextManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGText.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTSpanManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGTSpan.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSymbolManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSymbol.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSvgViewModule.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSvgViewManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSvgView.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGSolidColorBrush.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGShadowNodes.cpp
+› Compiling react-native-svg Pods/RNSVG » RNSVGRenderableModule.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRenderableManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRenderable.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRenderUtils.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRectManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRect.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRadialGradientManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGRadialGradient.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPropHelper.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPatternManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPattern.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPathParser.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPathMeasure.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPathManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPath.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPainterBrush.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGPainter.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGNodeManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGNode.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGMaskManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGMask.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGMarkerPosition.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGMarkerManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGMarker.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLinearGradientManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLinearGradient.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLineManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLine.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLength.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGLayoutableShadowNode.cpp
+› Compiling react-native-svg Pods/RNSVG » RNSVGImageState.cpp
+› Compiling react-native-svg Pods/RNSVG » RNSVGImageShadowNode.cpp
+› Compiling react-native-svg Pods/RNSVG » RNSVGImageManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGImage.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGGroupManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGGroup.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGGlyphContext.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGForeignObjectManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGForeignObject.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFontData.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFilterRegion.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFilterPrimitiveManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFilterPrimitive.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFilterManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFilter.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeOffsetManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeOffset.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeMergeManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeMerge.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeGaussianBlurManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeGaussianBlur.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeFloodManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeFlood.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeCompositeManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeComposite.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeColorMatrixManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeColorMatrix.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeBlendManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGFeBlend.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGEllipseManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGEllipse.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGDefsManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGDefs.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGCustomFilter.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGConvert.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGContextBrush.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGCompositeXor.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGClipPath.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGClipPathManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGCircleManager.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGCircle.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGBrush.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGBezierElement.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGArithmeticFilter.mm
+› Compiling react-native-svg Pods/RNSVG » RCTConvert+RNSVG.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNNativeViewHandler.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandler_vers.c
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerRootViewComponentView.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerModule.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerManager.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerButtonManager.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerButtonComponentView.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerButton.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandler.mm
+› Compiling @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage_vers.c
+› Compiling @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » react-native-safe-area-context-dummy.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewMode.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewManager.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewLocalData.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewEdges.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewEdgeMode.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaView.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaUtils.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaShadowView.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaProviderManager.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaProvider.m
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCOnInsetsChangeEvent.m
+› Compiling Dayylo Pods/ReactAppDependencyProvider » ReactAppDependencyProvider-dummy.m
+› Compiling react-native-screens Pods/RNScreens » RNScreens-dummy.m
+› Compiling react-native-svg Pods/RNSVG » RNSVG-dummy.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNTapHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNRotationHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNRootViewGestureRecognizer.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNPinchHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNPanHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNManualHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNLongPressHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNManualActivationRecognizer.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNHoverHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerRegistry.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerPointerTracker.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerEvents.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGHVector.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGHStylusData.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNForceTouchHandler.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandler-dummy.m
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNFlingHandler.m
+› Executing @react-native-firebase/firestore Pods/BoringSSL-GRPC » Create Symlinks to Header Folders
+› Preparing react-native-safe-area-context Pods/react-native-safe-area-context » react-native-safe-area-context-Info.plist
+› Preparing react-native-screens Pods/RNScreens » RNScreens-Info.plist
+› Preparing react-native-worklets Pods/RNWorklets » RNWorklets-Info.plist
+› Packaging Dayylo Pods/ReactAppDependencyProvider » libReactAppDependencyProvider.a
+› Preparing react-native-svg Pods/RNSVG » RNSVG-Info.plist
+› Preparing react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandler-Info.plist
+› Preparing @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage-Info.plist
+› Compiling @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage-dummy.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoModulesHostObject.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » TypedArray.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » SwiftUIVirtualViewObjC.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » SharedRef.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsVersion.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsModuleProxy.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsModule.mm
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsMessageThread.mm
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsJSIUtils.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletRuntimeRegistry.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletRuntimeDecorator.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletRuntime.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletHermesRuntime.cpp
+› Compiling react-native-worklets Pods/RNWorklets » WorkletEventHandler.cpp
+› Compiling react-native-worklets Pods/RNWorklets » VersionUtils.cpp
+› Compiling react-native-worklets Pods/RNWorklets » ValueUnpacker.cpp
+› Compiling react-native-worklets Pods/RNWorklets » UIScheduler.cpp
+› Compiling react-native-worklets Pods/RNWorklets » UIRuntimeDecorator.cpp
+› Compiling react-native-worklets Pods/RNWorklets » SynchronizableUnpacker.cpp
+› Compiling react-native-worklets Pods/RNWorklets » SynchronizableAccess.cpp
+› Compiling react-native-worklets Pods/RNWorklets » Synchronizable.cpp
+› Compiling react-native-worklets Pods/RNWorklets » SlowAnimations.mm
+› Compiling react-native-worklets Pods/RNWorklets » Serializable.cpp
+› Compiling react-native-worklets Pods/RNWorklets » RuntimeManager.cpp
+› Compiling react-native-worklets Pods/RNWorklets » RuntimeData.cpp
+› Compiling react-native-worklets Pods/RNWorklets » RNWorklets_vers.c
+› Compiling react-native-worklets Pods/RNWorklets » RNRuntimeWorkletDecorator.cpp
+› Compiling react-native-worklets Pods/RNWorklets » PlatformLogger.mm
+› Compiling react-native-worklets Pods/RNWorklets » JSScheduler.cpp
+› Compiling react-native-worklets Pods/RNWorklets » JSLogger.cpp
+› Compiling react-native-worklets Pods/RNWorklets » JSIWorkletsModuleProxy.cpp
+› Compiling react-native-worklets Pods/RNWorklets » JSISerializer.cpp
+› Compiling react-native-worklets Pods/RNWorklets » IOSUIScheduler.mm
+› Compiling react-native-worklets Pods/RNWorklets » FeatureFlags.cpp
+› Compiling react-native-worklets Pods/RNWorklets » EventLoop.cpp
+› Compiling react-native-worklets Pods/RNWorklets » EventHandlerRegistry.cpp
+› Compiling react-native-worklets Pods/RNWorklets » AsyncQueueImpl.cpp
+› Compiling react-native-worklets Pods/RNWorklets » AnimationFrameQueue.mm
+› Compiling react-native-worklets Pods/RNWorklets » AnimationFrameBatchinator.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » SharedObject.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ObjectDeallocator.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » NativeModule.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » MainThreadInvoker.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » LazyObject.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » JSIUtils.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoViewShadowNode.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoViewProps.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoViewEventEmitter.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoViewComponentDescriptor.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoFabricViewObjC.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoBridgeModule.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EventEmitter.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXStringUtils.cpp
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXSharedObjectUtils.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXReactNativeAdapter.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXReactDelegateWrapper.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXRawJavaScriptFunction.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXNativeModulesProxy.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXModuleRegistry.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXLogManager.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptWeakObject.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptValue.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptTypedArray.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptSharedObjectBinding.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptRuntime.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJavaScriptObject.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJSIUtils.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJSIInstaller.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXJSIConversions.mm
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXExportedModule.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXAppDefines.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » CoreModuleHelper.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » RCTComponentData+Privates.m
+› Compiling react-native-worklets Pods/RNWorklets » RNWorklets-dummy.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXUtilities.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » ExpoModulesCore-dummy.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXSingletonModule.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXReactNativeUserNotificationCenterProxy.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXReactNativeEventEmitter.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXReactLogHandler.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXPermissionsService.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXModuleRegistryProvider.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXPermissionsMethodsDelegate.m
+› Signing   @react-native-firebase/firestore Pods/BoringSSL-GRPC » openssl_grpc.framework
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXModuleRegistryHolderReactModule.m
+› Compiling expo-modules-core Pods/ExpoModulesCore » EXModuleRegistryAdapter.m
+› Signing   react-native-safe-area-context Pods/react-native-safe-area-context » react_native_safe_area_context.framework
+› Signing   react-native-screens Pods/RNScreens » RNScreens.framework
+› Signing   react-native-svg Pods/RNSVG » RNSVG.framework
+› Signing   react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandler.framework
+› Signing   @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage.framework
+› Executing react-native-worklets Pods/RNWorklets » Create Symlinks to Header Folders
+› Preparing @react-native-firebase/firestore Pods/gRPC-Core » gRPC-Core-Info.plist
+› Signing   react-native-worklets Pods/RNWorklets » RNWorklets.framework
+› Preparing react-native-reanimated Pods/RNReanimated » RNReanimated-Info.plist
+› Compiling react-native-reanimated Pods/RNReanimated » RNReanimated_vers.c
+› Compiling react-native-reanimated Pods/RNReanimated » CSSAnimationsRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSBoolean.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » vectors.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » steps.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » props.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » matrix.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » linear.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » keyframes.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » interpolators.cpp
+› Packaging expo-modules-core Pods/ExpoModulesCore » libExpoModulesCore.a
+› Compiling react-native-reanimated Pods/RNReanimated » cubicBezier.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » common.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » algorithms.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ViewStylesRepository.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ValueInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » UpdatesRegistryManager.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » UpdatesRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » UIRuntimeDecorator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransitionStyleInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransitionProgressProvider.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformsStyleInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformOperationInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformOperation.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformOp.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformMatrix3D.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » TransformMatrix2D.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » StaticPropsRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » SimpleValueInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ShadowTreeCloner.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » SetGestureState.mm
+› Compiling react-native-reanimated Pods/RNReanimated » SVGStrokeDashArray.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » SVGLength.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ResolvableValueInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » RecordPropertiesInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedVersion.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedMountHook.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedModuleProxySpec.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedModuleProxy.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedModule.mm
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedCommitHook.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » RawProgressProvider.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » RNRuntimeDecorator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » REASlowAnimations.mm
+› Compiling react-native-reanimated Pods/RNReanimated » REANodesManager.mm
+› Compiling react-native-reanimated Pods/RNReanimated » REAKeyboardEventObserver.mm
+› Compiling react-native-reanimated Pods/RNReanimated » Quaternion.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » PropertyInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » PropValueProcessor.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » PlatformDepMethodsHolderImpl.mm
+› Compiling react-native-reanimated Pods/RNReanimated » NativeProxy.mm
+› Compiling react-native-reanimated Pods/RNReanimated » LayoutAnimationsUtils.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » LayoutAnimationsProxy.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » LayoutAnimationsManager.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » InterpolatorRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » InterpolatorFactory.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » GroupPropertiesInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » FeatureFlags.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » EasingFunctions.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » DelayedItemsManager.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSValueVariant.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSTransitionsRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSTransitionConfig.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSTransition.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSNumber.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSLength.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSKeyword.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSKeyframesRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSKeyframesConfig.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSDiscreteArray.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSColor.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSAnimationConfig.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSAnimation.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » CSSAngle.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ArrayPropertiesInterpolator.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » AnimationProgressProvider.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » AnimatedSensorModule.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » AnimatedPropsRegistry.cpp
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedSensorContainer.m
+› Compiling react-native-reanimated Pods/RNReanimated » ReanimatedSensor.m
+› Compiling react-native-reanimated Pods/RNReanimated » RNReanimated-dummy.m
+› Executing expo-modules-core Pods/ExpoModulesCore » Copy generated compatibility header
+› Compiling react-native-reanimated Pods/RNReanimated » RCTUIView+Reanimated.m
+› Copying   expo-device ExpoDevice/ExpoDevice.framework/Headers/ExpoDevice-umbrella.h ➜ ios/Pods/Target/ Support/ Files/ExpoDevice/ExpoDevice-umbrella.h
+› Copying   expo-notifications EXNotifications/EXNotifications.framework/Headers/EXNotifications-umbrella.h ➜ ios/Pods/Target/ Support/ Files/EXNotifications/EXNotifications-umbrella.h
+› Copying   expo-application EXApplication/EXApplication.framework/Headers/EXApplication-umbrella.h ➜ ios/Pods/Target/ Support/ Files/EXApplication/EXApplication-umbrella.h
+› Executing expo-constants Pods/EXConstants » [CP-User] Generate app.config for prebuilt Constants.manifest
+› Preparing expo-font Pods/ExpoFont » ExpoFont-Info.plist
+› Preparing expo-keep-awake Pods/ExpoKeepAwake » ExpoKeepAwake-Info.plist
+› Preparing expo-local-authentication Pods/ExpoLocalAuthentication » ExpoLocalAuthentication-Info.plist
+› Preparing expo-linking Pods/ExpoLinking » ExpoLinking-Info.plist
+› Preparing expo-linear-gradient Pods/ExpoLinearGradient » ExpoLinearGradient-Info.plist
+› Preparing expo-router Pods/ExpoHead » ExpoHead-Info.plist
+› Preparing expo-haptics Pods/ExpoHaptics » ExpoHaptics-Info.plist
+› Preparing expo-file-system Pods/ExpoFileSystem » ExpoFileSystem-Info.plist
+› Preparing expo-device Pods/ExpoDevice » ExpoDevice-Info.plist
+› Preparing expo-asset Pods/ExpoAsset » ExpoAsset-Info.plist
+› Preparing expo-updates-interface Pods/EXUpdatesInterface » EXUpdatesInterface-Info.plist
+› Preparing expo-notifications Pods/EXNotifications » EXNotifications-Info.plist
+› Preparing expo-manifests Pods/EXManifests » EXManifests-Info.plist
+› Preparing expo-constants Pods/EXConstants » EXConstants-Info.plist
+› Preparing expo-application Pods/EXApplication » EXApplication-Info.plist
+› Executing react-native-reanimated Pods/RNReanimated » Create Symlinks to Header Folders
+› Compiling expo-local-authentication Pods/ExpoLocalAuthentication » ExpoLocalAuthentication_vers.c
+› Compiling expo-linking Pods/ExpoLinking » ExpoLinking_vers.c
+› Compiling expo-linear-gradient Pods/ExpoLinearGradient » ExpoLinearGradient_vers.c
+› Compiling expo-local-authentication Pods/ExpoLocalAuthentication » ExpoLocalAuthentication-dummy.m
+› Compiling expo-linear-gradient Pods/ExpoLinearGradient » ExpoLinearGradient-dummy.m
+› Compiling expo-linking Pods/ExpoLinking » ExpoLinking-dummy.m
+› Compiling expo-haptics Pods/ExpoHaptics » ExpoHaptics_vers.c
+› Compiling expo-keep-awake Pods/ExpoKeepAwake » ExpoKeepAwake_vers.c
+› Compiling expo-font Pods/ExpoFont » ExpoFont_vers.c
+› Compiling expo-file-system Pods/ExpoFileSystem » ExpoFileSystem_vers.c
+› Compiling expo-keep-awake Pods/ExpoKeepAwake » ExpoKeepAwake-dummy.m
+› Compiling expo-haptics Pods/ExpoHaptics » ExpoHaptics-dummy.m
+› Compiling expo-device Pods/ExpoDevice » ExpoDevice_vers.c
+› Compiling expo-asset Pods/ExpoAsset » ExpoAsset_vers.c
+› Compiling expo-device Pods/ExpoDevice » ExpoDevice-dummy.m
+› Compiling expo-font Pods/ExpoFont » ExpoFont-dummy.m
+› Compiling expo-file-system Pods/ExpoFileSystem » ExpoFileSystem-dummy.m
+› Compiling expo-file-system Pods/ExpoFileSystem » NSData+EXFileSystem.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXTaskHandlersManager.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionUploadTaskDelegate.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionTaskDispatcher.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionTaskDelegate.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionResumableDownloadTaskDelegate.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionHandler.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionDownloadTaskDelegate.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXSessionCancelableUploadTaskDelegate.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXFileSystemLocalFileHandler.m
+› Compiling expo-file-system Pods/ExpoFileSystem » EXFileSystemAssetLibraryHandler.m
+› Compiling expo-asset Pods/ExpoAsset » ExpoAsset-dummy.m
+› Compiling expo-updates-interface Pods/EXUpdatesInterface » EXUpdatesInterface_vers.c
+› Compiling expo Pods/Expo » EXReactRootViewFactory.mm
+› Compiling expo Pods/Expo » EXAppDelegateWrapper.mm
+› Compiling expo Pods/Expo » EXAppDefinesLoader.m
+› Compiling expo-manifests Pods/EXManifests » EXManifests_vers.c
+› Compiling expo-constants Pods/EXConstants » EXConstants_vers.c
+› Compiling expo-updates-interface Pods/EXUpdatesInterface » noop-file.m
+› Compiling expo-updates-interface Pods/EXUpdatesInterface » EXUpdatesInterface-dummy.m
+› Compiling expo Pods/Expo » Expo-dummy.m
+› Compiling expo Pods/Expo » EXLegacyAppDelegateWrapper.m
+› Compiling expo Pods/Expo » EXAppDelegatesLoader.m
+› Compiling expo-manifests Pods/EXManifests » EXManifests-dummy.m
+› Compiling expo-constants Pods/EXConstants » EXConstantsInstallationIdProvider.m
+› Compiling expo-constants Pods/EXConstants » EXConstantsService.m
+› Compiling expo-constants Pods/EXConstants » EXConstants-dummy.m
+› Signing   react-native-reanimated Pods/RNReanimated » RNReanimated.framework
+› Compiling expo-router Pods/ExpoHead » LinkPreviewNativeNavigation.mm
+› Compiling expo-dev-menu Pods/expo-dev-menu » DevClientNoOpLoadingView.m
+› Compiling expo-router Pods/ExpoHead » ExpoHead_vers.c
+› Compiling expo-router Pods/ExpoHead » ExpoHead-dummy.m
+› Compiling expo-dev-menu Pods/expo-dev-menu » expo-dev-menu-dummy.m
+› Compiling expo-notifications Pods/EXNotifications » EXNotifications_vers.c
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » grpc_vers.c
+› Compiling expo-dev-menu Pods/expo-dev-menu » EXDevMenuAppInfo.m
+› Compiling expo-application Pods/EXApplication » EXApplication_vers.c
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_wrr_locality.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_transport_grpc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_server_grpc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_server_config_fetcher.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » zipkin.upbdefs.c
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » zutil.c
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » zipkin.upb_minitable.c
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_routing.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_route_config_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_route_config.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_resolver.cc
+› Packaging expo Pods/Expo » libExpo.a
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_override_host.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_metadata_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_metadata.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_listener_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_listener.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_lb_policy_registry.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_stateful_session_filter.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_rbac_filter.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_proxy_mapper.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_gcp_authn_filter.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_filter_registry.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_http_fault_filter.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_health_status.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_endpoint_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_endpoint.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_dependency_manager.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_config.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_common_types_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_common_types.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_cluster_specifier_plugin.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_cluster_parser.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_cluster_manager.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_cluster_impl.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_cluster.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_client_grpc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_bootstrap_grpc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_client.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_channel_stack_modifier.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_certificate_provider.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_bootstrap.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_backend_metric_propagation.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_audit_logger_registry.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » xds_api.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » write_size_policy.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » writing.cc
+
+❌  error: failed writing unit data: failed to create temporary file: /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Index.noindex/DataStore/v5/writing.o-1KGHEA1JRAOJ3-04a61f26
+
+
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » work_stealing_thread_pool.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » work_serializer.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » windows_listener.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » windows_engine.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » windows_endpoint.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » win_socket.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » weighted_target.cc
+
+❌  error: error opening '/Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/gRPC-Core.build/Objects-normal/arm64/weighted_target.d': /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/gRPC-Core.build/Objects-normal/arm64/weighted_target.d: No space left on device
+
+
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » weighted_round_robin.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » wakeup_fd_posix_default.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » wakeup_fd_posix.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » wakeup_fd_pipe.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » wakeup_fd_pipe.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-Core » wakeup_fd_nospecial.cc
+    Run script build phase '[CP-User] [RNFB] Core Configuration' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'Dayylo' from project 'Dayylo')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-C++' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'abseil' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'ReactCodegen' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNWorklets' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-Core' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNReanimated' from project 'Pods')
+
+› 2 error(s), and 9 warning(s)
+
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.

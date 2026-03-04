@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Switch, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Switch, Alert, TextInput, Modal, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -20,6 +20,16 @@ export default function SettingsScreen() {
         return "Seed Planter";
     };
 
+    const handleLevelTap = () => {
+        Alert.alert("Your Dayylo Journey 🌱", `You are level ${level}.\nComplete habits consistently to grow your tree and level up!`);
+    };
+
+    const SupportItems = [
+        { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
+        { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8', url: 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/' },
+        { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8', url: 'https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link' },
+    ];
+
     const handleSaveName = async () => {
         if (nameInput.trim().length > 0) {
             await updateUserName(nameInput.trim());
@@ -35,12 +45,6 @@ export default function SettingsScreen() {
                     className="pt-8 pb-10 items-center"
                     onPress={() => { setNameInput(userName); setProfileModalVisible(true); }}
                 >
-                    <View className="w-24 h-24 rounded-[32px] overflow-hidden border-2 border-primary/20 p-1 mb-4">
-                        <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop' }}
-                            className="w-full h-full rounded-[28px]"
-                        />
-                    </View>
                     <Text className="text-2xl font-black text-white">{userName}</Text>
                     <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">
                         Level {level} • {getLevelTitle(level)}
@@ -153,15 +157,12 @@ export default function SettingsScreen() {
                 <View className="mb-8">
                     <Text className="text-[11px] font-black text-white/30 uppercase tracking-[2px] mb-4 ml-1">Support</Text>
                     <View className="bg-surface-dark rounded-[32px] overflow-hidden border border-white/5">
-                        {[
-                            { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
-                            { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8' },
-                            { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8' },
-                        ].map((item, i, arr) => {
+                        {SupportItems.map((item, i, arr) => {
                             const Icon = (LucideIcons as any)[item.icon];
                             return (
                                 <Pressable
                                     key={i}
+                                    onPress={() => item.url && Linking.openURL(item.url)}
                                     className={`flex-row items-center p-5 active:bg-white/5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''}`}
                                 >
                                     <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
@@ -175,19 +176,38 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* Sign Out */}
-                <Pressable
-                    onPress={() => {
-                        Alert.alert("Sign Out", "Are you sure you want to sign out?", [
-                            { text: "Cancel", style: "cancel" },
-                            { text: "Sign Out", style: "destructive", onPress: () => router.replace('/(auth)/login') }
-                        ]);
-                    }}
-                    className="flex-row items-center justify-center py-6 mb-20"
-                >
-                    <LucideIcons.LogOut size={20} color="#ef4444" />
-                    <Text className="text-[#ef4444] font-black text-[15px] ml-2">Sign Out</Text>
-                </Pressable>
+                {/* Account Actions */}
+                <View className="mb-20 mt-2 gap-4">
+                    <Pressable
+                        onPress={() => {
+                            Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+                                { text: "Cancel", style: "cancel" },
+                                { text: "Sign Out", style: "destructive", onPress: () => router.replace('/(auth)/login') }
+                            ]);
+                        }}
+                        className="bg-surface-dark border border-white/5 py-4 rounded-2xl flex-row items-center justify-center active:bg-white/5"
+                    >
+                        <LucideIcons.LogOut size={18} color="rgba(255,255,255,0.7)" />
+                        <Text className="text-white/70 font-bold text-[15px] ml-2">Sign Out</Text>
+                    </Pressable>
+
+                    <Pressable
+                        onPress={() => {
+                            Alert.alert(
+                                "Delete Account",
+                                "Are you sure you want to delete your account? This action is permanent and your data will be erased immediately.",
+                                [
+                                    { text: "Cancel", style: "cancel" },
+                                    { text: "Delete Permanently", style: "destructive", onPress: () => router.replace('/(auth)/login') }
+                                ]
+                            );
+                        }}
+                        className="bg-red-500/10 border border-red-500/20 py-4 rounded-2xl flex-row items-center justify-center active:bg-red-500/20"
+                    >
+                        <LucideIcons.Trash2 size={18} color="#ef4444" />
+                        <Text className="text-[#ef4444] font-bold text-[15px] ml-2">Delete Account</Text>
+                    </Pressable>
+                </View>
             </ScrollView>
 
             {/* Edit Name Modal */}

@@ -2,9 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
+import firestore from '@react-native-firebase/firestore';
+import { useAuth } from './AuthContext';
 import { Habit } from '../types';
 import { INITIAL_HABITS } from '../constants';
-import { requestPermissionsAsync, scheduleDailyReminder, cancelDailyReminder } from '../utils/notifications';
+import { requestPermissionsAsync, scheduleDailyReminder, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
 
 // ─── Derived Stat Types ───────────────────────────────────────────────────────
 
@@ -95,80 +97,84 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [userName, setUserName] = useState('Alex Johnson');
     const [notificationsEnabled, setNotifications] = useState(true);
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    const { user } = useAuth();
 
     useEffect(() => {
-        if (!loading) {
+        if (user) {
+            loadData();
+        } else {
+            // Unauthenticated state
+            setHabits([]);
+            setLoading(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (!loading && user) {
             if (notificationsEnabled) {
                 requestPermissionsAsync().then(granted => {
                     if (granted) scheduleDailyReminder(20, 0); // 8:00 PM
                 });
+
+                // Fetch push token and save it to Firestore
+                registerForPushNotificationsAsync().then(token => {
+                    if (token) {
+                        firestore().collection('users').doc(user.uid).set({ pushToken: token }, { merge: true });
+                    }
+                });
             } else {
                 cancelDailyReminder();
+                // Optionally remove the token from Firestore when they disable it
+                firestore().collection('users').doc(user.uid).set({ pushToken: firestore.FieldValue.delete() }, { merge: true });
             }
         }
-    }, [notificationsEnabled, loading]);
+    }, [notificationsEnabled, loading, user]);
 
     // ── Persist + Reset ─────────────────────────────────────────────────────
 
     const loadData = async () => {
+        if (!user) return;
         try {
-            const [
-                storedHabits,
-                storedPremium,
-                storedXp,
-                lastResetDate,
-                storedName,
-                storedNotifications,
-            ] = await Promise.all([
-                AsyncStorage.getItem('daylo_habits'),
-                AsyncStorage.getItem('daylo_premium'),
-                AsyncStorage.getItem('daylo_xp'),
-                AsyncStorage.getItem('daylo_last_reset'),
-                AsyncStorage.getItem('daylo_user_name'),
-                AsyncStorage.getItem('daylo_notifications'),
-            ]);
+            const userDoc = await firestore().collection('users').doc(user.uid).get();
+            const data = userDoc.data();
 
-            let parsedHabits: Habit[] = storedHabits
-                ? JSON.parse(storedHabits)
-                : INITIAL_HABITS;
+            let parsedHabits: Habit[] = data?.habits || INITIAL_HABITS;
 
-            if (!storedHabits) {
-                await AsyncStorage.setItem('daylo_habits', JSON.stringify(INITIAL_HABITS));
-            }
-
-            // Daily reset: if last reset was before today, reset completedToday/trackedToday
+            // Daily reset logic
             const today = getTodayDate();
+            const lastResetDate = data?.lastResetDate || '';
+
             if (lastResetDate !== today) {
                 parsedHabits = parsedHabits.map(h => ({
                     ...h,
                     completedToday: false,
                     trackedToday: false,
                 }));
-                await AsyncStorage.setItem('daylo_habits', JSON.stringify(parsedHabits));
-                await AsyncStorage.setItem('daylo_last_reset', today);
+                // Save reset habits down below
+                await saveHabits(parsedHabits, today);
             }
 
             setHabits(parsedHabits);
-            if (storedPremium) setIsPremium(storedPremium === 'true');
-            if (storedXp) {
-                const parsedXp = parseInt(storedXp, 10);
+
+            // Note: Premium is checked dynamically
+            setIsPremium(data?.isPremium || false);
+
+            if (data?.totalDiscipline !== undefined) {
+                const parsedXp = data.totalDiscipline;
                 setTotalDiscipline(parsedXp);
                 setLevel(Math.floor(parsedXp / 100) + 1);
             }
-            if (storedName) setUserName(storedName);
-            if (storedNotifications) setNotifications(storedNotifications === 'true');
+            if (data?.userName) setUserName(data.userName);
+            if (data?.notificationsEnabled !== undefined) setNotifications(data.notificationsEnabled);
 
             // Secure validation with RevenueCat
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 try {
                     const customerInfo = await Purchases.getCustomerInfo();
                     const hasPremium = Object.keys(customerInfo.entitlements.active).length > 0;
-                    if (hasPremium) {
+                    if (hasPremium && !data?.isPremium) {
                         setIsPremium(true);
-                        await AsyncStorage.setItem('daylo_premium', 'true');
+                        await firestore().collection('users').doc(user.uid).set({ isPremium: true }, { merge: true });
                     }
                 } catch (e) {
                     console.log('RC check failed', e);
@@ -182,9 +188,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     };
 
-    const saveHabits = async (newHabits: Habit[]) => {
+    const saveHabits = async (newHabits: Habit[], resetDate?: string) => {
         setHabits(newHabits);
-        await AsyncStorage.setItem('daylo_habits', JSON.stringify(newHabits));
+        if (user) {
+            const updatePayload: any = { habits: newHabits };
+            if (resetDate) updatePayload.lastResetDate = resetDate;
+            await firestore().collection('users').doc(user.uid).set(updatePayload, { merge: true });
+        }
     };
 
     // ── XP / Level ──────────────────────────────────────────────────────────
@@ -193,24 +203,32 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const newXp = totalDiscipline + amount;
         setTotalDiscipline(newXp);
         setLevel(Math.floor(newXp / 100) + 1);
-        await AsyncStorage.setItem('daylo_xp', newXp.toString());
+        if (user) {
+            await firestore().collection('users').doc(user.uid).set({ totalDiscipline: newXp }, { merge: true });
+        }
     };
 
     // ── Actions ─────────────────────────────────────────────────────────────
 
     const setPremium = async (val: boolean) => {
-        await AsyncStorage.setItem('daylo_premium', val.toString());
         setIsPremium(val);
+        if (user) {
+            await firestore().collection('users').doc(user.uid).set({ isPremium: val }, { merge: true });
+        }
     };
 
     const updateUserName = async (name: string) => {
         setUserName(name);
-        await AsyncStorage.setItem('daylo_user_name', name);
+        if (user) {
+            await firestore().collection('users').doc(user.uid).set({ userName: name }, { merge: true });
+        }
     };
 
     const setNotificationsEnabled = async (val: boolean) => {
         setNotifications(val);
-        await AsyncStorage.setItem('daylo_notifications', val.toString());
+        if (user) {
+            await firestore().collection('users').doc(user.uid).set({ notificationsEnabled: val }, { merge: true });
+        }
     };
 
     const addHabit = async (

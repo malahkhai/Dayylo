@@ -1,0 +1,151 @@
+› Planning build
+    Run script build phase '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'hermes-engine' from project 'Pods')
+› Executing react-native Pods/hermes-engine » [CP-User] [Hermes] Replace Hermes for the right configuration, if needed
+› Executing react-native Pods/ReactNativeDependencies » [CP-User] [RNDeps] Replace React Native Dependencies for the right configuration, if needed
+› Preparing @react-native-firebase/auth Pods/FirebaseAppCheckInterop » FirebaseAppCheckInterop-Info.plist
+› Preparing expo-dev-menu-interface Pods/expo-dev-menu-interface » expo-dev-menu-interface-Info.plist
+› Preparing @react-native-firebase/auth Pods/RecaptchaInterop » RecaptchaInterop-Info.plist
+› Preparing react-native-purchases Pods/RevenueCat-RevenueCat » ResourceBundle-RevenueCat-RevenueCat-Info.plist
+› Preparing Pods/leveldb-library-leveldb_Privacy » ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist
+› Preparing Pods/nanopb-nanopb_Privacy » ResourceBundle-nanopb_Privacy-nanopb-Info.plist
+› Preparing Pods/gRPC-Core-grpc » ResourceBundle-grpc-gRPC-Core-Info.plist
+› Preparing Pods/gRPC-C++-grpcpp » ResourceBundle-grpcpp-gRPC-C++-Info.plist
+› Preparing Pods/gRPC-C++-gRPCCertificates-Cpp » ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist
+› Preparing Pods/expo-dev-menu-EXDevMenu » ResourceBundle-EXDevMenu-expo-dev-menu-Info.plist
+› Preparing Pods/abseil-xcprivacy » ResourceBundle-xcprivacy-abseil-Info.plist
+› Preparing Pods/React-cxxreact-React-cxxreact_privacy » ResourceBundle-React-cxxreact_privacy-React-cxxreact-Info.plist
+› Preparing Pods/React-Core-React-Core_privacy » ResourceBundle-React-Core_privacy-React-Core-Info.plist
+› Preparing Pods/RNSVG-RNSVGFilters » ResourceBundle-RNSVGFilters-RNSVG-Info.plist
+› Preparing Pods/RNCAsyncStorage-RNCAsyncStorage_resources » ResourceBundle-RNCAsyncStorage_resources-RNCAsyncStorage-Info.plist
+› Preparing react-native-purchases Pods/PurchasesHybridCommon-PurchasesHybridCommon » ResourceBundle-PurchasesHybridCommon-PurchasesHybridCommon-Info.plist
+› Preparing Pods/GoogleUtilities-GoogleUtilities_Privacy » ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist
+› Preparing Pods/GTMSessionFetcher-GTMSessionFetcher_Core_Privacy » ResourceBundle-GTMSessionFetcher_Core_Privacy-GTMSessionFetcher-Info.plist
+› Preparing @react-native-firebase/firestore Pods/FirebaseSharedSwift » FirebaseSharedSwift-Info.plist
+› Preparing Pods/FirebaseFirestoreInternal-FirebaseFirestoreInternal_Privacy » ResourceBundle-FirebaseFirestoreInternal_Privacy-FirebaseFirestoreInternal-Info.plist
+› Preparing Pods/FirebaseFirestore-FirebaseFirestore_Privacy » ResourceBundle-FirebaseFirestore_Privacy-FirebaseFirestore-Info.plist
+› Preparing Pods/FirebaseCoreInternal-FirebaseCoreInternal_Privacy » ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist
+› Preparing Pods/FirebaseCoreExtension-FirebaseCoreExtension_Privacy » ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist
+› Preparing Pods/FirebaseCore-FirebaseCore_Privacy » ResourceBundle-FirebaseCore_Privacy-FirebaseCore-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseAuthInterop » FirebaseAuthInterop-Info.plist
+› Preparing Pods/FirebaseAuth-FirebaseAuth_Privacy » ResourceBundle-FirebaseAuth_Privacy-FirebaseAuth-Info.plist
+› Preparing Pods/ExpoFileSystem-ExpoFileSystem_privacy » ResourceBundle-ExpoFileSystem_privacy-ExpoFileSystem-Info.plist
+› Preparing Pods/ExpoDevice-ExpoDevice_privacy » ResourceBundle-ExpoDevice_privacy-ExpoDevice-Info.plist
+› Preparing Pods/EXNotifications-ExpoNotifications_privacy » ResourceBundle-ExpoNotifications_privacy-EXNotifications-Info.plist
+› Preparing expo-json-utils Pods/EXJSONUtils » EXJSONUtils-Info.plist
+› Preparing Pods/EXConstants-ExpoConstants_privacy » ResourceBundle-ExpoConstants_privacy-EXConstants-Info.plist
+› Preparing expo-constants Pods/EXConstants-EXConstants » ResourceBundle-EXConstants-EXConstants-Info.plist
+› Preparing Pods/EXApplication-ExpoApplication_privacy » ResourceBundle-ExpoApplication_privacy-EXApplication-Info.plist
+› Preparing Pods/BoringSSL-GRPC-openssl_grpc » ResourceBundle-openssl_grpc-BoringSSL-GRPC-Info.plist
+› Preparing @react-native-firebase/firestore Pods/nanopb » nanopb-Info.plist
+› Preparing Pods/GoogleUtilities » GoogleUtilities-Info.plist
+› Preparing @react-native-firebase/firestore Pods/BoringSSL-GRPC » BoringSSL-GRPC-Info.plist
+› Preparing Pods/abseil » abseil-Info.plist
+› Preparing @react-native-firebase/firestore Pods/leveldb-library » leveldb-library-Info.plist
+› Preparing react-native-purchases Pods/RevenueCat » RevenueCat-Info.plist
+› Preparing Pods/GTMSessionFetcher » GTMSessionFetcher-Info.plist
+› Executing Pods/abseil » Create Symlinks to Header Folders
+› Executing react-native Pods/React-Core-prebuilt » [CP-User] [RNDeps] Replace React Native Core for the right configuration, if needed
+› Executing @react-native-firebase/firestore Pods/BoringSSL-GRPC » Create Symlinks to Header Folders
+› Preparing Pods/expo-dev-launcher-EXDevLauncher » ResourceBundle-EXDevLauncher-expo-dev-launcher-Info.plist
+› Preparing react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreInternal » FirebaseCoreInternal-Info.plist
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-Core' from project 'Pods')
+› Preparing @react-native-firebase/firestore Pods/gRPC-Core » gRPC-Core-Info.plist
+› Executing react-native Pods/React-RCTFBReactNativeSpec » [CP-User] [RN]Check FBReactNativeSpec
+› Executing @react-native-firebase/firestore Pods/gRPC-Core » Create Symlinks to Header Folders
+› Preparing react-native-purchases Pods/RNPurchases » RNPurchases-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseCore » FirebaseCore-Info.plist
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'ReactCodegen' from project 'Pods')
+› Executing Dayylo Pods/ReactCodegen » Create Symlinks to Header Folders
+› Preparing @react-native-firebase/firestore Pods/gRPC-C++ » gRPC-C++-Info.plist
+› Preparing Dayylo Pods/ReactCodegen » ReactCodegen-Info.plist
+› Executing @react-native-firebase/firestore Pods/gRPC-C++ » Create Symlinks to Header Folders
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreExtension » FirebaseCoreExtension-Info.plist
+› Compiling react-native-screens Pods/RNScreens » UIViewController+RNScreens.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaViewState.cpp
+› Compiling react-native-svg Pods/RNSVG » RNSVGUse.mm
+› Compiling @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerModule.mm
+› Compiling @react-native-firebase/firestore Pods/RNFBFirestore » RNFBFirestoreClientLanguage.mm
+› Preparing @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth-Info.plist
+› Signing   Dayylo Pods/ReactCodegen » ReactCodegen.framework
+› Preparing @react-native-firebase/firestore Pods/FirebaseFirestoreInternal » FirebaseFirestoreInternal-Info.plist
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RCTConvert+FIRApp.h:19:9)
+
+  17 | 
+  18 | #import <FirebaseCore/FirebaseCore.h>
+> 19 | #import <React/RCTConvert.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RCTConvert_FIRApp': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTConvert.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  20 | 
+  21 | @interface RCTConvert (FIRApp)
+  22 | + (FIRApp *)firAppFromString:(NSString *)appName;
+
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RCTConvert+FIROptions.h:19:9)
+
+  17 | 
+  18 | #import <FirebaseCore/FirebaseCore.h>
+> 19 | #import <React/RCTConvert.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RCTConvert_FIROptions': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTConvert.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  20 | 
+  21 | @interface RCTConvert (FIROptions)
+  22 | + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions;
+
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RNFBAppModule.h:20:9)
+
+  18 | #import <Foundation/Foundation.h>
+  19 | 
+> 20 | #import <React/RCTBridgeModule.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RNFBAppModule': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  21 | 
+  22 | @interface RNFBAppModule : NSObject <RCTBridgeModule>
+  23 | 
+
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RNFBRCTEventEmitter.h:19:9)
+
+  17 | 
+  18 | #import <Foundation/Foundation.h>
+> 19 | #import <React/RCTEventEmitter.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RNFBRCTEventEmitter': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTEventEmitter.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  20 | 
+  21 | /**
+  22 |  * Listeners for Firebase events and emits them to the JS layer
+
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RNFBSharedUtils.h:22:9)
+
+  20 | 
+  21 | #import <FirebaseCore/FirebaseCore.h>
+> 22 | #import <React/RCTBridgeModule.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RNFBSharedUtils': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  23 | 
+  24 | #ifdef DEBUG
+  25 | #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+
+
+❌  (/Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/app/ios/RNFBApp/RNFBUtilsModule.h:21:9)
+
+  19 | #import <Photos/Photos.h>
+  20 | 
+> 21 | #import <React/RCTBridgeModule.h>
+     |         ^ include of non-modular header inside framework module 'RNFBApp.RNFBUtilsModule': '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h' [-Werror,-Wnon-modular-include-in-framework-module]
+  22 | 
+  23 | @interface RNFBUtilsModule : NSObject <RCTBridgeModule>
+  24 | 
+
+› Preparing @react-native-firebase/firestore Pods/FirebaseFirestore » FirebaseFirestore-Info.plist
+› Compiling react-native-worklets Pods/RNWorklets » WorkletsModule.mm
+› Packaging Dayylo Pods/ReactAppDependencyProvider » libReactAppDependencyProvider.a
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNReanimated' from project 'Pods')
+    Run script build phase '[CP-User] [RNFB] Core Configuration' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'Dayylo' from project 'Dayylo')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'BoringSSL-GRPC' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'abseil' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-C++' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNWorklets' from project 'Pods')
+
+› 6 error(s), and 9 warning(s)
+
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.

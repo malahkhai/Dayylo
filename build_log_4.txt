@@ -1,0 +1,340 @@
+› Skipping dev server
+Unexpected devicectl JSON version output from devicectl. Connecting to physical Apple devices may not work as expected.
+› Using --device 74E699CC-F696-4665-8A58-11A5F0FEB95B
+› Planning build
+› Preparing Pods/nanopb-nanopb_Privacy » ResourceBundle-nanopb_Privacy-nanopb-Info.plist
+› Preparing Pods/leveldb-library-leveldb_Privacy » ResourceBundle-leveldb_Privacy-leveldb-library-Info.plist
+› Preparing Pods/abseil-xcprivacy » ResourceBundle-xcprivacy-abseil-Info.plist
+› Preparing expo-dev-menu-interface Pods/expo-dev-menu-interface » expo-dev-menu-interface-Info.plist
+› Preparing react-native-purchases Pods/RevenueCat-RevenueCat » ResourceBundle-RevenueCat-RevenueCat-Info.plist
+› Preparing @react-native-firebase/auth Pods/RecaptchaInterop » RecaptchaInterop-Info.plist
+› Preparing react-native-purchases Pods/PurchasesHybridCommon-PurchasesHybridCommon » ResourceBundle-PurchasesHybridCommon-PurchasesHybridCommon-Info.plist
+› Executing react-native Pods/hermes-engine » [CP-User] [Hermes] Replace Hermes for the right configuration, if needed
+› Executing react-native Pods/ReactNativeDependencies » [CP-User] [RNDeps] Replace React Native Dependencies for the right configuration, if needed
+› Preparing Pods/GoogleUtilities-GoogleUtilities_Privacy » ResourceBundle-GoogleUtilities_Privacy-GoogleUtilities-Info.plist
+› Preparing Pods/FirebaseFirestore-FirebaseFirestore_Privacy » ResourceBundle-FirebaseFirestore_Privacy-FirebaseFirestore-Info.plist
+› Preparing @react-native-firebase/firestore Pods/FirebaseSharedSwift » FirebaseSharedSwift-Info.plist
+› Preparing Pods/GTMSessionFetcher-GTMSessionFetcher_Core_Privacy » ResourceBundle-GTMSessionFetcher_Core_Privacy-GTMSessionFetcher-Info.plist
+› Preparing Pods/FirebaseCoreInternal-FirebaseCoreInternal_Privacy » ResourceBundle-FirebaseCoreInternal_Privacy-FirebaseCoreInternal-Info.plist
+› Preparing Pods/gRPC-Core-grpc » ResourceBundle-grpc-gRPC-Core-Info.plist
+› Preparing Pods/gRPC-C++-grpcpp » ResourceBundle-grpcpp-gRPC-C++-Info.plist
+› Preparing Pods/gRPC-C++-gRPCCertificates-Cpp » ResourceBundle-gRPCCertificates-Cpp-gRPC-C++-Info.plist
+› Preparing Pods/expo-dev-menu-EXDevMenu » ResourceBundle-EXDevMenu-expo-dev-menu-Info.plist
+› Preparing Pods/React-cxxreact-React-cxxreact_privacy » ResourceBundle-React-cxxreact_privacy-React-cxxreact-Info.plist
+› Preparing Pods/React-Core-React-Core_privacy » ResourceBundle-React-Core_privacy-React-Core-Info.plist
+› Preparing Pods/RNSVG-RNSVGFilters » ResourceBundle-RNSVGFilters-RNSVG-Info.plist
+› Preparing Pods/RNCAsyncStorage-RNCAsyncStorage_resources » ResourceBundle-RNCAsyncStorage_resources-RNCAsyncStorage-Info.plist
+› Preparing Pods/FirebaseFirestoreInternal-FirebaseFirestoreInternal_Privacy » ResourceBundle-FirebaseFirestoreInternal_Privacy-FirebaseFirestoreInternal-Info.plist
+› Preparing Pods/FirebaseCoreExtension-FirebaseCoreExtension_Privacy » ResourceBundle-FirebaseCoreExtension_Privacy-FirebaseCoreExtension-Info.plist
+› Preparing Pods/FirebaseCore-FirebaseCore_Privacy » ResourceBundle-FirebaseCore_Privacy-FirebaseCore-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseAuthInterop » FirebaseAuthInterop-Info.plist
+› Preparing Pods/FirebaseAuth-FirebaseAuth_Privacy » ResourceBundle-FirebaseAuth_Privacy-FirebaseAuth-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseAppCheckInterop » FirebaseAppCheckInterop-Info.plist
+› Preparing @react-native-firebase/firestore Pods/nanopb » nanopb-Info.plist
+› Preparing @react-native-firebase/firestore Pods/leveldb-library » leveldb-library-Info.plist
+› Preparing Pods/abseil » abseil-Info.plist
+› Preparing react-native-purchases Pods/RevenueCat » RevenueCat-Info.plist
+› Preparing Pods/GoogleUtilities » GoogleUtilities-Info.plist
+› Preparing Pods/GTMSessionFetcher » GTMSessionFetcher-Info.plist
+› Preparing Pods/ExpoFileSystem-ExpoFileSystem_privacy » ResourceBundle-ExpoFileSystem_privacy-ExpoFileSystem-Info.plist
+› Preparing Pods/ExpoDevice-ExpoDevice_privacy » ResourceBundle-ExpoDevice_privacy-ExpoDevice-Info.plist
+› Preparing Pods/EXNotifications-ExpoNotifications_privacy » ResourceBundle-ExpoNotifications_privacy-EXNotifications-Info.plist
+› Preparing expo-json-utils Pods/EXJSONUtils » EXJSONUtils-Info.plist
+› Preparing Pods/EXConstants-ExpoConstants_privacy » ResourceBundle-ExpoConstants_privacy-EXConstants-Info.plist
+› Preparing Pods/EXApplication-ExpoApplication_privacy » ResourceBundle-ExpoApplication_privacy-EXApplication-Info.plist
+› Preparing expo-constants Pods/EXConstants-EXConstants » ResourceBundle-EXConstants-EXConstants-Info.plist
+› Preparing Pods/BoringSSL-GRPC-openssl_grpc » ResourceBundle-openssl_grpc-BoringSSL-GRPC-Info.plist
+› Executing Pods/abseil » Create Symlinks to Header Folders
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreInternal » FirebaseCoreInternal-Info.plist
+› Preparing @react-native-firebase/firestore Pods/BoringSSL-GRPC » BoringSSL-GRPC-Info.plist
+› Preparing react-native-purchases Pods/PurchasesHybridCommon » PurchasesHybridCommon-Info.plist
+› Executing react-native Pods/React-Core-prebuilt » [CP-User] [RNDeps] Replace React Native Core for the right configuration, if needed
+› Executing @react-native-firebase/firestore Pods/BoringSSL-GRPC » Create Symlinks to Header Folders
+› Preparing Pods/expo-dev-launcher-EXDevLauncher » ResourceBundle-EXDevLauncher-expo-dev-launcher-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseCore » FirebaseCore-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseCoreExtension » FirebaseCoreExtension-Info.plist
+› Preparing @react-native-firebase/auth Pods/FirebaseAuth » FirebaseAuth-Info.plist
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-Core' from project 'Pods')
+› Preparing @react-native-firebase/firestore Pods/gRPC-Core » gRPC-Core-Info.plist
+› Executing @react-native-firebase/firestore Pods/gRPC-Core » Create Symlinks to Header Folders
+› Preparing react-native-purchases Pods/RNPurchases » RNPurchases-Info.plist
+› Executing react-native Pods/React-RCTFBReactNativeSpec » [CP-User] [RN]Check FBReactNativeSpec
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'gRPC-C++' from project 'Pods')
+› Preparing @react-native-firebase/firestore Pods/gRPC-C++ » gRPC-C++-Info.plist
+› Executing @react-native-firebase/firestore Pods/gRPC-C++ » Create Symlinks to Header Folders
+› Preparing Dayylo Pods/ReactCodegen » ReactCodegen-Info.plist
+› Preparing @react-native-firebase/firestore Pods/FirebaseFirestoreInternal » FirebaseFirestoreInternal-Info.plist
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnsvgJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » safeareacontext-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnscreensJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnsvg-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnworkletsJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » safeareacontextJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnworklets-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnscreens-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rnreanimatedJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnreanimated-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rngesturehandler_codegen-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » rngesturehandler_codegenJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnasyncstorageJSI-generated.cpp
+› Compiling Dayylo Pods/ReactCodegen » rnasyncstorage-generated.mm
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » States.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » ShadowNodes.cpp
+› Compiling Dayylo Pods/ReactCodegen » RCTUnstableModulesRequiringMainQueueSetupProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTThirdPartyComponentsProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTModulesConformingToProtocolsProvider.mm
+› Compiling Dayylo Pods/ReactCodegen » RCTModuleProviders.mm
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » Props.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Compiling Dayylo Pods/ReactCodegen » EventEmitters.cpp
+› Compiling Dayylo Pods/ReactCodegen » ComponentDescriptors.cpp
+› Signing   @react-native-firebase/firestore Pods/FirebaseFirestoreInternal » FirebaseFirestoreInternal.framework
+› Creating  @react-native-firebase/firestore Pods/FirebaseFirestoreInternal » FirebaseFirestoreInternal.framework
+› Preparing @react-native-firebase/firestore Pods/FirebaseFirestore » FirebaseFirestore-Info.plist
+› Executing Dayylo Pods/ReactCodegen » Create Symlinks to Header Folders
+› Compiling react-native-screens Pods/RNScreens » RNSBottomTabsHostComponentView.mm
+› Compiling react-native-safe-area-context Pods/react-native-safe-area-context » RNCSafeAreaContext.mm
+› Compiling react-native-gesture-handler Pods/RNGestureHandler » RNGestureHandlerButtonComponentView.mm
+› Compiling @react-native-firebase/firestore Pods/RNFBFirestore » RNFBFirestoreClientLanguage.mm
+› Compiling @react-native-async-storage/async-storage Pods/RNCAsyncStorage » RNCAsyncStorage.mm
+› Compiling react-native-svg Pods/RNSVG » RNSVGCircle.mm
+› Compiling Dayylo Pods/ReactAppDependencyProvider » RCTAppDependencyProvider.mm
+› Compiling @react-native-firebase/firestore Pods/RNFBFirestore » RNFBFirestoreTransactionModule.m
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreCommon.h:40:42)
+
+  38 |                               type:(NSString *)type;
+  39 | 
+> 40 | + (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error;
+     |                                          ^ expected a type
+  41 | 
+  42 | + (NSArray *)getCodeAndMessage:(NSError *)error;
+  43 | 
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:30:1)
+
+  28 | #pragma mark Module Setup
+  29 | 
+> 30 | RCT_EXPORT_MODULE();
+     | ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  31 | 
+  32 | - (id)init {
+  33 |   self = [super init];
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:62:19)
+
+  60 | #pragma mark Firebase Firestore Methods
+  61 | 
+> 62 | RCT_EXPORT_METHOD(transactionGetDocument
+     |                   ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  63 |                   : (FIRApp *)firebaseApp
+  64 |                   : (NSString *)databaseId
+  65 |                   : (nonnull NSNumber *)transactionId
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:63:19)
+
+  61 | 
+  62 | RCT_EXPORT_METHOD(transactionGetDocument
+> 63 |                   : (FIRApp *)firebaseApp
+     |                   ^ expected ')'
+  64 |                   : (NSString *)databaseId
+  65 |                   : (nonnull NSNumber *)transactionId
+  66 |                   : (NSString *)path
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:62:1)
+
+  60 | #pragma mark Firebase Firestore Methods
+  61 | 
+> 62 | RCT_EXPORT_METHOD(transactionGetDocument
+     | ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  63 |                   : (FIRApp *)firebaseApp
+  64 |                   : (NSString *)databaseId
+  65 |                   : (nonnull NSNumber *)transactionId
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:103:19)
+
+  101 | }
+  102 | 
+> 103 | RCT_EXPORT_METHOD(transactionDispose
+      |                   ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  104 |                   : (FIRApp *)firebaseApp
+  105 |                   : (NSString *)databaseId
+  106 |                   : (nonnull NSNumber *)transactionId) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:104:19)
+
+  102 | 
+  103 | RCT_EXPORT_METHOD(transactionDispose
+> 104 |                   : (FIRApp *)firebaseApp
+      |                   ^ expected ')'
+  105 |                   : (NSString *)databaseId
+  106 |                   : (nonnull NSNumber *)transactionId) {
+  107 |   @synchronized(transactions[[transactionId stringValue]]) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:103:1)
+
+  101 | }
+  102 | 
+> 103 | RCT_EXPORT_METHOD(transactionDispose
+      | ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  104 |                   : (FIRApp *)firebaseApp
+  105 |                   : (NSString *)databaseId
+  106 |                   : (nonnull NSNumber *)transactionId) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:120:19)
+
+  118 | }
+  119 | 
+> 120 | RCT_EXPORT_METHOD(transactionApplyBuffer
+      |                   ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  121 |                   : (FIRApp *)firebaseApp
+  122 |                   : (NSString *)databaseId
+  123 |                   : (nonnull NSNumber *)transactionId
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:121:19)
+
+  119 | 
+  120 | RCT_EXPORT_METHOD(transactionApplyBuffer
+> 121 |                   : (FIRApp *)firebaseApp
+      |                   ^ expected ')'
+  122 |                   : (NSString *)databaseId
+  123 |                   : (nonnull NSNumber *)transactionId
+  124 |                   : (NSArray *)commandBuffer) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:120:1)
+
+  118 | }
+  119 | 
+> 120 | RCT_EXPORT_METHOD(transactionApplyBuffer
+      | ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  121 |                   : (FIRApp *)firebaseApp
+  122 |                   : (NSString *)databaseId
+  123 |                   : (nonnull NSNumber *)transactionId
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:139:19)
+
+  137 | }
+  138 | 
+> 139 | RCT_EXPORT_METHOD(transactionBegin
+      |                   ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  140 |                   : (FIRApp *)firebaseApp
+  141 |                   : (NSString *)databaseId
+  142 |                   : (nonnull NSNumber *)transactionId) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:140:19)
+
+  138 | 
+  139 | RCT_EXPORT_METHOD(transactionBegin
+> 140 |                   : (FIRApp *)firebaseApp
+      |                   ^ expected ')'
+  141 |                   : (NSString *)databaseId
+  142 |                   : (nonnull NSNumber *)transactionId) {
+  143 |   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:139:1)
+
+  137 | }
+  138 | 
+> 139 | RCT_EXPORT_METHOD(transactionBegin
+      | ^ type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  140 |                   : (FIRApp *)firebaseApp
+  141 |                   : (NSString *)databaseId
+  142 |                   : (nonnull NSNumber *)transactionId) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:69:31)
+
+  67 |                   : (RCTPromiseResolveBlock)resolve
+  68 |                   : (RCTPromiseRejectBlock)reject) {
+> 69 |   @synchronized(transactions[[transactionId stringValue]]) {
+     |                               ^ use of undeclared identifier 'transactionId'; did you mean 'transactions'?
+  70 |     NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+  71 | 
+  72 |     if (!transactionState) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:69:45)
+
+  67 |                   : (RCTPromiseResolveBlock)resolve
+  68 |                   : (RCTPromiseRejectBlock)reject) {
+> 69 |   @synchronized(transactions[[transactionId stringValue]]) {
+     |                                             ^ no visible @interface for 'NSMutableDictionary' declares the selector 'stringValue'
+  70 |     NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+  71 | 
+  72 |     if (!transactionState) {
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:70:59)
+
+  68 |                   : (RCTPromiseRejectBlock)reject) {
+  69 |   @synchronized(transactions[[transactionId stringValue]]) {
+> 70 |     NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+     |                                                           ^ use of undeclared identifier 'transactionId'; did you mean 'transactions'?
+  71 | 
+  72 |     if (!transactionState) {
+  73 |       DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:70:73)
+
+  68 |                   : (RCTPromiseRejectBlock)reject) {
+  69 |   @synchronized(transactions[[transactionId stringValue]]) {
+> 70 |     NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+     |                                                                         ^ no visible @interface for 'NSMutableDictionary' declares the selector 'stringValue'
+  71 | 
+  72 |     if (!transactionState) {
+  73 |       DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
+
+
+❌  (node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreTransactionModule.m:73:80)
+
+  71 | 
+  72 |     if (!transactionState) {
+> 73 |       DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
+     |                                                                                ^ use of undeclared identifier 'transactionId'; did you mean 'transactions'?
+  74 |       return;
+  75 |     }
+  76 | 
+
+
+❌  fatal error: too many errors emitted, stopping now [-ferror-limit=]
+
+
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNWorklets' from project 'Pods')
+    Run script build phase '[CP-User] [RNFB] Core Configuration' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'Dayylo' from project 'Dayylo')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'RNReanimated' from project 'Pods')
+    Run script build phase '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'hermes-engine' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'abseil' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'BoringSSL-GRPC' from project 'Pods')
+    Run script build phase 'Create Symlinks to Header Folders' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'ReactCodegen' from project 'Pods')
+
+› 20 error(s), and 9 warning(s)
+
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.

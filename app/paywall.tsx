@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Dimensions, StyleSheet, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
@@ -65,25 +65,35 @@ export default function PaywallScreen() {
 
                     {/* Illustration */}
                     <View style={styles.illustrationContainer}>
-                        <Image
-                            source={require('../assets/images/paywall_illustration.png')}
-                            style={styles.illustration}
-                            resizeMode="contain"
-                        />
+                        <View style={{ width: 90, height: 90, borderRadius: 45, backgroundColor: 'rgba(10, 132, 255, 0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: 24, borderWidth: 1, borderColor: 'rgba(10, 132, 255, 0.3)' }}>
+                            <LucideIcons.Sparkles size={44} color={AppleColors.systemBlue} />
+                        </View>
                         <View style={styles.headingContainer}>
                             <Text style={styles.title}>Unlock <Text style={{ color: AppleColors.systemBlue }}>Pro</Text></Text>
                             <Text style={styles.subtitle}>Supercharge your habits.</Text>
                         </View>
                     </View>
 
-                    {/* Feature Ticks */}
-                    <View style={styles.featuresRow}>
-                        {['Unlimited Habits', 'Advanced Charts', 'Privacy Lock'].map((feat, i) => (
-                            <View key={i} style={styles.featureItem}>
-                                <LucideIcons.CheckCircle2 size={14} color={AppleColors.systemBlue} />
-                                <Text style={styles.featureText}>{feat}</Text>
-                            </View>
-                        ))}
+                    {/* Feature List */}
+                    <View style={styles.featuresListContainer}>
+                        {[
+                            { title: 'Unlimited Habits', subtitle: 'Track as many routines as you need', icon: 'Infinity' },
+                            { title: 'Advanced Charts', subtitle: 'Deep insights and progress visualization', icon: 'BarChart2' },
+                            { title: 'Privacy Lock', subtitle: 'Secure your data with Face ID / Touch ID', icon: 'ShieldCheck' },
+                        ].map((feat, i) => {
+                            const Icon = (LucideIcons as any)[feat.icon];
+                            return (
+                                <View key={i} style={styles.featureListItem}>
+                                    <View style={styles.featureIconContainer}>
+                                        <Icon size={20} color={AppleColors.systemBlue} />
+                                    </View>
+                                    <View style={styles.featureTextContainer}>
+                                        <Text style={styles.featureListTitle}>{feat.title}</Text>
+                                        <Text style={styles.featureListSubtitle}>{feat.subtitle}</Text>
+                                    </View>
+                                </View>
+                            );
+                        })}
                     </View>
 
                     {/* Pricing Cards */}
@@ -146,6 +156,14 @@ export default function PaywallScreen() {
                     <Text style={styles.disclaimer}>
                         Subscription automatically renews unless auto-renew is turned off at least 24-hours before the end of the current period.
                     </Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20, marginBottom: 20, gap: 20 }}>
+                        <Pressable onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>
+                            <Text style={[styles.disclaimer, { textDecorationLine: 'underline', paddingHorizontal: 0 }]}>Terms of Use</Text>
+                        </Pressable>
+                        <Pressable onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link')}>
+                            <Text style={[styles.disclaimer, { textDecorationLine: 'underline', paddingHorizontal: 0 }]}>Privacy Policy</Text>
+                        </Pressable>
+                    </View>
 
                 </ScrollView>
             </SafeAreaView>
@@ -199,25 +217,37 @@ const styles = StyleSheet.create({
         marginTop: 4,
         fontWeight: '600',
     },
-    featuresRow: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 16,
-        marginBottom: 30,
+    featuresListContainer: {
+        paddingHorizontal: 35,
+        marginBottom: 35,
+        gap: 24,
     },
-    featureItem: {
+    featureListItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 12,
+        gap: 16,
     },
-    featureText: {
+    featureIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(10, 132, 255, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    featureTextContainer: {
+        flex: 1,
+    },
+    featureListTitle: {
         color: 'white',
-        fontSize: 11,
+        fontSize: 16,
         fontWeight: '700',
+        marginBottom: 2,
+    },
+    featureListSubtitle: {
+        color: 'rgba(255,255,255,0.5)',
+        fontSize: 13,
+        fontWeight: '500',
     },
     cardsContainer: {
         flexDirection: 'row',
