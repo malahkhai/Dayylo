@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal, Animated } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal, Animated, TextInput, KeyboardAvoidingView, Platform as RNPlatform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
@@ -9,7 +9,7 @@ import { useHabits } from '../../context/HabitContext';
 
 const { width } = Dimensions.get('window');
 
-type OnboardingStep = 'HABITS';
+type OnboardingStep = 'WELCOME' | 'NAME' | 'HABITS';
 
 interface StarterHabit {
     id: string;
@@ -37,8 +37,9 @@ const STARTER_HABITS: StarterHabit[] = [
 
 export default function OnboardingScreen() {
     const router = useRouter();
-    const { addHabit } = useHabits();
-    const [currentStep, setCurrentStep] = useState<OnboardingStep>('HABITS');
+    const { addHabit, updateUserName, userName } = useHabits();
+    const [currentStep, setCurrentStep] = useState<OnboardingStep>('WELCOME');
+    const [tempName, setTempName] = useState('');
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -104,6 +105,9 @@ export default function OnboardingScreen() {
     };
 
     const finalizeOnboarding = async () => {
+        if (tempName.trim()) {
+            await updateUserName(tempName.trim());
+        }
         for (const hid of Object.keys(selectedHabits)) {
             const h = STARTER_HABITS.find(sh => sh.id === hid);
             if (h) {
@@ -218,11 +222,93 @@ export default function OnboardingScreen() {
         );
     };
 
+    const renderWelcome = () => (
+        <View style={styles.stepContainer}>
+            <View style={styles.heroContent}>
+                <View style={styles.logoContainer}>
+                    <View style={styles.logoBackground}>
+                        <LucideIcons.Zap size={60} color={AppleColors.systemGreen} />
+                    </View>
+                </View>
+                <Text style={styles.heroTitle}>Welcome to Dayylo</Text>
+                <Text style={styles.heroSubtitle}>
+                    The ultimate habit tracker designed for focus, discipline, and growth.
+                </Text>
+
+                <View style={styles.miniHeatmap}>
+                    <View style={styles.heatmapGrid}>
+                        {[...Array(21)].map((_, i) => (
+                            <View
+                                key={i}
+                                style={[
+                                    styles.heatmapCell,
+                                    { backgroundColor: i % 3 === 0 ? AppleColors.systemGreen : 'rgba(255,255,255,0.05)' }
+                                ]}
+                            />
+                        ))}
+                    </View>
+                </View>
+            </View>
+
+            <View style={styles.footerContainer}>
+                <AppleButton
+                    title="Get Started"
+                    onPress={() => transitionTo('NAME')}
+                    fullWidth
+                />
+            </View>
+        </View>
+    );
+
+    const renderNameStep = () => (
+        <KeyboardAvoidingView
+            behavior={RNPlatform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <View style={styles.stepContainer}>
+                <View style={{ marginTop: 60 }}>
+                    <Text style={styles.title}>What's your name?</Text>
+                    <Text style={styles.subtitle}>We'll use this to personalize your journey.</Text>
+
+                    <TextInput
+                        value={tempName}
+                        onChangeText={setTempName}
+                        placeholder="Your Name"
+                        placeholderTextColor="rgba(255,255,255,0.3)"
+                        autoFocus
+                        style={{
+                            backgroundColor: 'rgba(255,255,255,0.05)',
+                            borderRadius: 16,
+                            padding: 20,
+                            color: '#FFFFFF',
+                            fontSize: 18,
+                            fontWeight: '700',
+                            marginTop: 32,
+                            borderWidth: 1,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                        }}
+                    />
+                </View>
+
+                <View style={styles.footerContainer}>
+                    <AppleButton
+                        title="Continue"
+                        onPress={() => {
+                            if (tempName.trim()) transitionTo('HABITS');
+                        }}
+                        disabled={!tempName.trim()}
+                        fullWidth
+                    />
+                </View>
+            </View>
+        </KeyboardAvoidingView>
+    );
+
     const renderHabitSelection = () => (
         <View style={styles.content}>
             <View style={styles.header}>
                 <Text style={styles.title}>Define your path</Text>
-                <Text style={styles.subtitle}>Select the habits you want to track. You can always change this later.</Text>
+                <Text style={styles.subtitle}>Hi {tempName}, select the habits you want to track.</Text>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={{ paddingBottom: 160 }}>
@@ -264,6 +350,8 @@ export default function OnboardingScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+                {currentStep === 'WELCOME' && renderWelcome()}
+                {currentStep === 'NAME' && renderNameStep()}
                 {currentStep === 'HABITS' && renderHabitSelection()}
             </Animated.View>
 

@@ -2,6 +2,6 @@
 
 
 The following build commands failed:
-	CompileC /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/RNFBFirestore.build/Objects-normal/arm64/RNFBFirestoreModule.o /Users/admin/Downloads/Dayylo/node_modules/@react-native-firebase/firestore/ios/RNFBFirestore/RNFBFirestoreModule.m normal arm64 objective-c com.apple.compilers.llvm.clang.1_0.compiler (in target 'RNFBFirestore' from project 'Pods')
+	PrecompileModule /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Intermediates.noindex/ExplicitPrecompiledModules/RNFBApp-56QL2MYNJUK37SPERHZHEV0MH.scan
 	Building workspace Dayylo with scheme Dayylo and configuration Debug
 (2 failures)

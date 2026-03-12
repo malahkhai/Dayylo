@@ -5,10 +5,12 @@ import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { AppleColors } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { isPremium, level, userName, updateUserName, notificationsEnabled, setNotificationsEnabled } = useHabits();
+    const { logout, deleteAccount } = useAuth();
 
     const [profileModalVisible, setProfileModalVisible] = useState(false);
     const [nameInput, setNameInput] = useState(userName);
@@ -26,8 +28,8 @@ export default function SettingsScreen() {
 
     const SupportItems = [
         { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
-        { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8', url: 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/' },
-        { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8', url: 'https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link' },
+        { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8', url: 'https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link' },
+        { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8', url: 'https://malahkhai.notion.site/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5' },
     ];
 
     const handleSaveName = async () => {
@@ -182,7 +184,12 @@ export default function SettingsScreen() {
                         onPress={() => {
                             Alert.alert("Sign Out", "Are you sure you want to sign out?", [
                                 { text: "Cancel", style: "cancel" },
-                                { text: "Sign Out", style: "destructive", onPress: () => router.replace('/(auth)/login') }
+                                {
+                                    text: "Sign Out", style: "destructive", onPress: async () => {
+                                        await logout();
+                                        router.replace('/(auth)/login');
+                                    }
+                                }
                             ]);
                         }}
                         className="bg-surface-dark border border-white/5 py-4 rounded-2xl flex-row items-center justify-center active:bg-white/5"
@@ -198,7 +205,16 @@ export default function SettingsScreen() {
                                 "Are you sure you want to delete your account? This action is permanent and your data will be erased immediately.",
                                 [
                                     { text: "Cancel", style: "cancel" },
-                                    { text: "Delete Permanently", style: "destructive", onPress: () => router.replace('/(auth)/login') }
+                                    {
+                                        text: "Delete Permanently", style: "destructive", onPress: async () => {
+                                            try {
+                                                await deleteAccount();
+                                                router.replace('/(auth)/login');
+                                            } catch (e) {
+                                                Alert.alert("Error", "Failed to delete account. You might need to re-authenticate first.");
+                                            }
+                                        }
+                                    }
                                 ]
                             );
                         }}

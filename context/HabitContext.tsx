@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import firestore from '@react-native-firebase/firestore';
 import { useAuth } from './AuthContext';
+import { FirestoreService } from '../services/firestore';
 import { Habit } from '../types';
 import { INITIAL_HABITS } from '../constants';
 import { requestPermissionsAsync, scheduleDailyReminder, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
@@ -94,7 +95,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [totalDiscipline, setTotalDiscipline] = useState(0);
     const [level, setLevel] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [userName, setUserName] = useState('Alex Johnson');
+    const [userName, setUserName] = useState('User');
     const [notificationsEnabled, setNotifications] = useState(true);
 
     const { user } = useAuth();
@@ -135,10 +136,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const loadData = async () => {
         if (!user) return;
         try {
-            const userDoc = await firestore().collection('users').doc(user.uid).get();
-            const data = userDoc.data();
+            const data = await FirestoreService.getUserData(user.uid);
 
-            let parsedHabits: Habit[] = data?.habits || INITIAL_HABITS;
+            const isDemoAccount = user.email === 'demo@dayylo.com';
+            let parsedHabits: Habit[] = data?.habits || (isDemoAccount ? INITIAL_HABITS : []);
 
             // Daily reset logic
             const today = getTodayDate();
@@ -150,7 +151,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     completedToday: false,
                     trackedToday: false,
                 }));
-                // Save reset habits down below
+                // Save reset habits
                 await saveHabits(parsedHabits, today);
             }
 
@@ -174,7 +175,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     const hasPremium = Object.keys(customerInfo.entitlements.active).length > 0;
                     if (hasPremium && !data?.isPremium) {
                         setIsPremium(true);
-                        await firestore().collection('users').doc(user.uid).set({ isPremium: true }, { merge: true });
+                        await FirestoreService.setPremiumStatus(user.uid, true);
                     }
                 } catch (e) {
                     console.log('RC check failed', e);
@@ -191,9 +192,15 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saveHabits = async (newHabits: Habit[], resetDate?: string) => {
         setHabits(newHabits);
         if (user) {
-            const updatePayload: any = { habits: newHabits };
-            if (resetDate) updatePayload.lastResetDate = resetDate;
-            await firestore().collection('users').doc(user.uid).set(updatePayload, { merge: true });
+            try {
+                // We use set for full habit array sync for now to keep it simple and consistent
+                await firestore().collection('users').doc(user.uid).set({
+                    habits: newHabits,
+                    ...(resetDate ? { lastResetDate: resetDate } : {})
+                }, { merge: true });
+            } catch (error) {
+                console.error("Error saving habits:", error);
+            }
         }
     };
 
@@ -213,7 +220,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const setPremium = async (val: boolean) => {
         setIsPremium(val);
         if (user) {
-            await firestore().collection('users').doc(user.uid).set({ isPremium: val }, { merge: true });
+            await FirestoreService.setPremiumStatus(user.uid, val);
         }
     };
 
@@ -341,10 +348,21 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // ── Computed Stats ───────────────────────────────────────────────────────
 
-    // Global Streak: Walk backwards from today, stop at first day with no completions
+    // Global Streak: Count consecutive days where AT LEAST ONE habit was completed.
     const globalStreak = (() => {
+        const today = getTodayDate();
         let currentStreak = 0;
         let d = new Date();
+
+        // Check today first
+        const todayStr = d.toISOString().split('T')[0];
+        const hasActivityToday = habits.some(h => h.history && h.history[todayStr] === true);
+
+        // If no activity today, look at yesterday to determine if streak is still alive
+        if (!hasActivityToday) {
+            d.setDate(d.getDate() - 1);
+        }
+
         while (true) {
             const dateStr = d.toISOString().split('T')[0];
             const hasActivity = habits.some(h => h.history && h.history[dateStr] === true);
@@ -353,15 +371,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 currentStreak++;
                 d.setDate(d.getDate() - 1);
             } else {
-                // If today has no activity, don't break the streak yet, just return yesterday's streak
-                if (dateStr === getTodayDate()) {
-                    d.setDate(d.getDate() - 1);
-                    const yestActivity = habits.some(h => h.history && h.history[d.toISOString().split('T')[0]] === true);
-                    if (!yestActivity) break; // Missed yesterday and today
-                } else {
-                    break;
-                }
+                break;
             }
+
+            // Safety break
+            if (currentStreak > 3650) break;
         }
         return currentStreak;
     })();

@@ -10,6 +10,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
+import { useAuth } from '../../context/AuthContext';
 
 
 
@@ -19,8 +20,16 @@ type AuthMode = 'welcome' | 'features' | 'storyboard' | 'focus' | 'signup' | 'si
 
 export default function AuthScreen() {
     const router = useRouter();
+    const { user, loginWithGoogle, loginWithApple } = useAuth();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
+
+    // Handle initial redirect if user is already logged in
+    React.useEffect(() => {
+        if (user && mode !== 'signup') {
+            router.replace('/(tabs)');
+        }
+    }, [user, mode]);
 
     // Auth State
     const [email, setEmail] = useState('');
@@ -55,6 +64,21 @@ export default function AuthScreen() {
         else if (mode === 'features') setMode('storyboard');
         else if (mode === 'focus') setMode('features');
         else if (mode === 'signup' || mode === 'signin') setMode('focus');
+    };
+
+    const handleSocialLogin = async (provider: 'google' | 'apple') => {
+        try {
+            const isNewUser = provider === 'google' ? await loginWithGoogle() : await loginWithApple();
+            if (isNewUser) {
+                router.replace('/(auth)/onboarding');
+            } else {
+                router.replace('/(tabs)');
+            }
+        } catch (error: any) {
+            if (error?.message !== 'Sign in cancelled') {
+                Alert.alert("Authentication Failed", error.message || "Please try again.");
+            }
+        }
     };
 
     const handleLogin = async () => {
@@ -98,14 +122,11 @@ export default function AuthScreen() {
                         <Text style={styles.subtext}>Build what matters. Break what holds you back.</Text>
                     </View>
                     <AppleButton
-                        title="Continue"
+                        title="Get Started"
                         onPress={handleContinue}
                         size="large"
                         fullWidth
                     />
-                    <Pressable onPress={() => router.replace('/(tabs)')} style={styles.loginShortcut}>
-                        <Text style={styles.loginShortcutText}>Already have an account? <Text style={styles.loginShortcutBold}>Log in</Text></Text>
-                    </Pressable>
                 </View>
             </SafeAreaView>
         );
@@ -365,9 +386,9 @@ export default function AuthScreen() {
 
                         <Text style={styles.legalText}>
                             By signing up, you agree to our{' '}
-                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')}>Terms</Text>
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link')}>Terms</Text>
                             {' '}and{' '}
-                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link')}>Privacy Policy</Text>.
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://malahkhai.notion.site/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5')}>Privacy Policy</Text>.
                         </Text>
 
                         {/* Divider */}
@@ -378,13 +399,13 @@ export default function AuthScreen() {
                         </View>
 
                         {/* Apple Sign In — logo + text centred together as a unit, per Apple spec */}
-                        <Pressable onPress={() => { }} style={styles.ssoButtonApple}>
+                        <Pressable onPress={() => handleSocialLogin('apple')} style={styles.ssoButtonApple}>
                             <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
                             <Text style={styles.ssoAppleText}>Sign up with Apple</Text>
                         </Pressable>
 
                         {/* Google Sign In — authentic four-color Google G SVG */}
-                        <Pressable onPress={() => { }} style={styles.ssoButtonGoogle}>
+                        <Pressable onPress={() => handleSocialLogin('google')} style={styles.ssoButtonGoogle}>
                             <View style={styles.ssoGoogleIconBg}>
                                 <Svg width={18} height={18} viewBox="0 0 48 48">
                                     <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -423,12 +444,12 @@ export default function AuthScreen() {
                 </View>
 
                 <View style={styles.authForm}>
-                    <Pressable onPress={() => { }} style={styles.ssoButtonApple}>
+                    <Pressable onPress={() => handleSocialLogin('apple')} style={styles.ssoButtonApple}>
                         <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
                         <Text style={styles.ssoAppleText}>Continue with Apple</Text>
                     </Pressable>
 
-                    <Pressable onPress={() => { }} style={styles.ssoButtonGoogle}>
+                    <Pressable onPress={() => handleSocialLogin('google')} style={styles.ssoButtonGoogle}>
                         <View style={styles.ssoGoogleIconBg}>
                             <Svg width={18} height={18} viewBox="0 0 48 48">
                                 <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />

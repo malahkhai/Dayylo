@@ -31,7 +31,7 @@ We may update our Privacy Policy from time to time. We will notify you of any ch
 
 ### 7. Contact Us
 If you have questions or comments about this Privacy Policy, please contact us at:
-[Insert Your Contact Email Here]
+malahkhai@gmail.com
 
 ---
 
@@ -67,4 +67,4 @@ We reserve the right to modify or replace these Terms at any time. Significant c
 
 ### 8. Contact
 For any questions regarding these terms, contact us at:
-[Insert Your Contact Email Here]
+malahkhai@gmail.com
