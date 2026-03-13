@@ -6,9 +6,9 @@ Thank you for choosing to use Dayylo ("App"). We are committed to protecting you
 
 ### 1. Information We Collect
 Because Dayylo prioritizes your privacy, we collect as little data as possible.
-- **Local Data:** Your habit history, streaks, and scores are stored completely locally on your device via AsyncStorage. We do not transmit or store this data on our servers.
-- **Push Notifications:** If you opt-in, we use local notification permissions to send you daily reminders. We do not store or track push tokens off-device.
-- **Purchases:** If you purchase a premium upgrade, your transaction data is processed securely via RevenueCat and the Apple App Store / Google Play Store. We only retain the minimum required data to unlock in-app features (such as your anonymous app user ID verifying your subscription status).
+- **Cloud Sync:** Your habit history, streaks, and scores are synced to secure cloud servers via Google Cloud Firestore (Firebase). This enables you to access your data across multiple devices and ensures your progress is backed up.
+- **Push Notifications:** If you opt-in, we use Firebase Cloud Messaging to send you daily reminders.
+- **Purchases:** If you purchase a premium upgrade, your transaction data is processed securely via RevenueCat and the Apple App Store / Google Play Store. We retain the minimum required data to unlock in-app features.
 
 ### 2. How We Use Your Information
 - To operate and maintain the App's core functionality (e.g., tracking streaks and habits).
@@ -21,7 +21,7 @@ We may employ third-party services that collect data to perform their functions:
 - **Apple App Store / Google Play Store:** Process secure payments and handle your billing information.
 
 ### 4. Data Security
-The security of your data is important to us. Since your habit data is stored locally on your device, it is secured by your device's native security protocols (e.g., passcodes, FaceID). If you delete the app or clear your device data, your local habit data will be permanently lost unless you explicitly back it up using OS-level solutions (like iCloud Drive or Google Play backups).
+The security of your data is important to us. Your habit data is secured in transit and at rest using industry-standard encryption provided by Google Cloud. Access to your data is restricted to your authenticated account using Firebase Authentication. If you delete your account, you can request that all your cloud-stored habit data be permanently removed.
 
 ### 5. Children's Privacy
 Dayylo is not intended for use by children under the age of 13. We do not knowingly collect personal information from children under 13.
