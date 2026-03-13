@@ -1,7 +1,0 @@
-** BUILD FAILED **
-
-
-The following build commands failed:
-	PrecompileModule /Users/admin/Library/Developer/Xcode/DerivedData/Dayylo-bllbrelmtsnwtgfxohdzrbmaqeva/Build/Intermediates.noindex/ExplicitPrecompiledModules/RNFBApp-56QL2MYNJUK37SPERHZHEV0MH.scan
-	Building workspace Dayylo with scheme Dayylo and configuration Debug
-(2 failures)
