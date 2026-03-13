@@ -18,7 +18,14 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSFaceIDUsageDescription": "Dayylo uses Face ID to securely lock and unlock your private break habits."
+        "NSFaceIDUsageDescription": "Dayylo uses Face ID to securely lock and unlock your private break habits.",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.malahkhai.dayylo"
+            ]
+          }
+        ]
       }
     },
     "android": {
@@ -41,17 +48,18 @@
           "color": "#007AFF"
         }
       ],
+      "@react-native-google-signin/google-signin",
+      "expo-apple-authentication",
       [
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "useFrameworks": "static",
+            "newArchEnabled": true
           }
         }
       ],
-      "./plugins/withFrameworkHeaders",
-      "@react-native-google-signin/google-signin",
-      "expo-apple-authentication"
+      "./plugins/withGTMSessionFetcherFix"
     ],
     "experiments": {
       "typedRoutes": true
