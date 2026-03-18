@@ -10,6 +10,10 @@ export default ({ config }) => {
             ...config.android,
             // Similarly for Android if needed in the future
             googleServicesFile: process.env.GOOGLE_SERVICES_JSON || config.android.googleServicesFile,
+        },
+        extra: {
+            ...config.extra,
+            revenueCatApiKey: process.env.REVENUECAT_API_KEY,
         }
     };
 };

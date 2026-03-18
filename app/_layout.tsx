@@ -9,11 +9,16 @@ import { HabitProvider } from '../context/HabitContext';
 import { PrivacyProvider } from '../context/PrivacyContext';
 import { AuthProvider } from '../context/AuthContext';
 
+import Constants from 'expo-constants';
+
 export default function RootLayout() {
     useEffect(() => {
         if (Platform.OS === 'ios') {
             try {
-                Purchases.configure({ apiKey: "appl_DcIeImNBmaTUbhtvWHyDsKkLKfW" });
+                const apiKey = Constants.expoConfig?.extra?.revenueCatApiKey;
+                if (apiKey) {
+                    Purchases.configure({ apiKey });
+                }
             } catch (e) {
                 console.log('RevenueCat native module not available:', e);
             }
