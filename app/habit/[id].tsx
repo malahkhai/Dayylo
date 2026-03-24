@@ -10,6 +10,17 @@ import { AppleButton } from '../../components/AppleButton';
 
 const { width } = Dimensions.get('window');
 
+// ─── Safe Icon Component ─────────────────────────────────────────────────────
+const SafeIcon = ({ name, size, color }: { name: string; size: number; color: string }) => {
+    const IconComponent = (LucideIcons as any)[name] || LucideIcons.Circle;
+    try {
+        return React.createElement(IconComponent, { size, color });
+    } catch (error) {
+        console.error(`Error rendering icon ${name}:`, error);
+        return <LucideIcons.Circle size={size} color={color} />;
+    }
+};
+
 // ─── Component Imports ─────────────────────────────────────
 import { CalendarHeatmap } from '../../components/CalendarHeatmap';
 
@@ -51,7 +62,7 @@ export default function HabitDetailScreen() {
         );
     }
 
-    const Icon = (LucideIcons as any)[habit.icon] || LucideIcons.Circle;
+    // const Icon = (LucideIcons as any)[habit.icon] || LucideIcons.Circle; (replaced by SafeIcon)
 
     // Real completions from history
     const histEntries = Object.entries(habit.history || {});
@@ -114,7 +125,7 @@ export default function HabitDetailScreen() {
                 {/* Hero Section */}
                 <View style={styles.hero}>
                     <View style={[styles.heroIconBg, { backgroundColor: habit.color + '20' }]}>
-                        <Icon size={48} color={habit.color} />
+                        <SafeIcon name={habit.icon || 'Circle'} size={48} color={habit.color} />
                     </View>
                     <Text style={styles.heroTitle}>{habit.name}</Text>
                     <Text style={styles.heroSubtitle}>{habit.description || "Keep building this habit."}</Text>

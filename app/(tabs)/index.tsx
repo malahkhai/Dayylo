@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -38,17 +38,25 @@ export default function HomeScreen() {
 
     const [filterCategory, setFilterCategory] = useState<'All' | 'build' | 'break'>('All');
 
-    // Filter habits based on category
-    const visibleHabits = habits.filter(h => filterCategory === 'All' ? true : h.type === filterCategory);
+    // Memoized habit filtering based on category
+    const visibleHabits = useMemo(() => {
+        return habits.filter(h => filterCategory === 'All' ? true : h.type === filterCategory);
+    }, [habits, filterCategory]);
 
-    // Stats calculations
-    const activeHabits = visibleHabits.length;
-    const completedHabits = visibleHabits.filter(h => h.completedToday).length;
+    // Memoized stats calculations
+    const stats = useMemo(() => {
+        const active = visibleHabits.length;
+        const completed = visibleHabits.filter(h => h.completedToday).length;
+        const breakH = visibleHabits.filter(h => h.type === 'break');
+        return {
+            active,
+            completed,
+            breakTotal: breakH.length,
+            breakCompleted: breakH.filter(h => h.completedToday).length
+        };
+    }, [visibleHabits]);
 
-    // Bad habits (break) specialized stat
-    const breakHabits = visibleHabits.filter(h => h.type === 'break');
-    const breakTotal = breakHabits.length;
-    const breakCompleted = breakHabits.filter(h => h.completedToday).length;
+    const { active: activeHabits, completed: completedHabits } = stats;
 
     const onRefresh = () => {
         setRefreshing(true);

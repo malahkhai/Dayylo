@@ -3,7 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
+  Pressable,
 } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -16,8 +17,18 @@ import * as LucideIcons from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { AppleColors, AppleTypography, AppleShadows, AppleSpacing } from '../constants/AppleTheme';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+// const { width: SCREEN_WIDTH } = Dimensions.get('window'); // Replaced by hook
+
+// ─── Safe Icon Component ─────────────────────────────────────────────────────
+const SafeIcon = ({ name, size, color }: { name: string; size: number; color: string }) => {
+  const IconComponent = (LucideIcons as any)[name] || LucideIcons.Activity;
+  try {
+    return React.createElement(IconComponent, { size, color });
+  } catch (error) {
+    console.error(`Error rendering icon ${name}:`, error);
+    return <LucideIcons.Activity size={size} color={color} />;
+  }
+};
 
 interface HabitCardProps {
   id: string;
@@ -45,41 +56,56 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   onComplete,
   onFail,
 }) => {
+  const { width: SCREEN_WIDTH } = useWindowDimensions();
+  const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
   const translateX = useSharedValue(0);
+  const hasTriggeredHaptic = useSharedValue(0); // 0=none, 1=right, 2=left
 
-  const panGesture = Gesture.Pan()
+  const handleHaptic = (type: number) => {
+    'worklet';
+    if (hasTriggeredHaptic.value !== type) {
+      hasTriggeredHaptic.value = type;
+      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  };
+
+  const gesture = Gesture.Pan()
     .enabled(!trackedToday)
     .activeOffsetX([-10, 10])
     .onUpdate((event) => {
-      // Small vibration when starting to move
-      if (Math.abs(translateX.value) === 0 && Math.abs(event.translationX) > 1) {
-        runOnJS(Haptics.selectionAsync)();
-      }
-
-      // Feedback when crossing threshold
-      const wasBelow = Math.abs(translateX.value) < SWIPE_THRESHOLD;
-      const isAbove = Math.abs(event.translationX) >= SWIPE_THRESHOLD;
-
-      if (wasBelow && isAbove) {
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-      }
-
       translateX.value = event.translationX;
+
+      if (event.translationX > SWIPE_THRESHOLD) {
+        handleHaptic(1);
+      } else if (event.translationX < -SWIPE_THRESHOLD) {
+        handleHaptic(2);
+      } else {
+        hasTriggeredHaptic.value = 0;
+      }
     })
     .onEnd((event) => {
-      if (translateX.value > SWIPE_THRESHOLD) {
-        translateX.value = withSpring(0);
+      if (event.translationX > SWIPE_THRESHOLD) {
+        translateX.value = withSpring(SCREEN_WIDTH, { velocity: event.velocityX });
         runOnJS(() => {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          onComplete?.();
+          try {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            onComplete?.();
+          } catch (e) {
+            console.error('onComplete error:', e);
+          }
         })();
-      } else if (translateX.value < -SWIPE_THRESHOLD) {
-        translateX.value = withSpring(0);
+      } else if (event.translationX < -SWIPE_THRESHOLD) {
+        translateX.value = withSpring(-SCREEN_WIDTH, { velocity: event.velocityX });
         runOnJS(() => {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-          onFail?.();
+          try {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            onFail?.();
+          } catch (e) {
+            console.error('onFail error:', e);
+          }
         })();
       } else {
+        hasTriggeredHaptic.value = 0;
         translateX.value = withSpring(0);
       }
     });
@@ -105,15 +131,11 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
         </View>
       )}
 
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.card, rStyle]}>
           <View style={styles.content}>
-            <View style={[styles.iconContainer, { backgroundColor: isCompleted ? color : color + '15' }]}>
-              {icon ? (
-                React.createElement((LucideIcons as any)[icon], { size: 20, color: isCompleted ? '#FFF' : color })
-              ) : (
-                <LucideIcons.Activity size={20} color={isCompleted ? '#FFF' : color} />
-              )}
+            <View style={[styles.iconContainer, { backgroundColor: isCompleted ? color : `${color}20` }]}>
+              <SafeIcon name={icon || 'Activity'} size={20} color={isCompleted ? '#FFF' : color} />
             </View>
 
             <View style={styles.info}>

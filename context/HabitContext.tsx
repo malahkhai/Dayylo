@@ -1,8 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import firestore from '@react-native-firebase/firestore';
+import crashlytics from '@react-native-firebase/crashlytics';
+import analytics from '@react-native-firebase/analytics';
 import { useAuth } from './AuthContext';
 import { FirestoreService } from '../services/firestore';
 import { Habit } from '../types';
@@ -151,29 +153,40 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     completedToday: false,
                     trackedToday: false,
                 }));
-                // Save reset habits
-                await saveHabits(parsedHabits, today);
+                // Save reset habits (async, don't block UI)
+                saveHabits(parsedHabits, today);
             }
 
-            setHabits(parsedHabits);
+            // Batch multiple state updates
+            // React 18 automatically batches these in async functions, 
+            // but we ensure only necessary updates happen.
+            
+            if (JSON.stringify(parsedHabits) !== JSON.stringify(habits)) {
+                setHabits(parsedHabits);
+            }
 
-            // Note: Premium is checked dynamically
-            setIsPremium(data?.isPremium || false);
+            const newIsPremium = data?.isPremium || false;
+            if (newIsPremium !== isPremium) setIsPremium(newIsPremium);
 
             if (data?.totalDiscipline !== undefined) {
                 const parsedXp = data.totalDiscipline;
-                setTotalDiscipline(parsedXp);
-                setLevel(Math.floor(parsedXp / 100) + 1);
+                if (parsedXp !== totalDiscipline) {
+                    setTotalDiscipline(parsedXp);
+                    setLevel(Math.floor(parsedXp / 100) + 1);
+                }
             }
-            if (data?.userName) setUserName(data.userName);
-            if (data?.notificationsEnabled !== undefined) setNotifications(data.notificationsEnabled);
+            
+            if (data?.userName && data.userName !== userName) setUserName(data.userName);
+            if (data?.notificationsEnabled !== undefined && data.notificationsEnabled !== notificationsEnabled) {
+                setNotifications(data.notificationsEnabled);
+            }
 
             // Secure validation with RevenueCat
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 try {
                     const customerInfo = await Purchases.getCustomerInfo();
                     const hasPremium = Object.keys(customerInfo.entitlements.active).length > 0;
-                    if (hasPremium && !data?.isPremium) {
+                    if (hasPremium && !newIsPremium) {
                         setIsPremium(true);
                         await FirestoreService.setPremiumStatus(user.uid, true);
                     }
@@ -182,8 +195,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 }
             }
 
-        } catch (e) {
+        } catch (e: any) {
             console.error('Failed to load data', e);
+            crashlytics().recordError(e, 'loadData');
         } finally {
             setLoading(false);
         }
@@ -198,8 +212,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     habits: newHabits,
                     ...(resetDate ? { lastResetDate: resetDate } : {})
                 }, { merge: true });
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error saving habits:", error);
+                crashlytics().recordError(error, 'saveHabits');
             }
         }
     };
@@ -221,6 +236,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsPremium(val);
         if (user) {
             await FirestoreService.setPremiumStatus(user.uid, val);
+            await analytics().logEvent('premium_updated', { is_premium: val });
         }
     };
 
@@ -253,6 +269,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             history: {},
         };
         await saveHabits([...habits, newHabit]);
+        await analytics().logEvent('habit_added', {
+            type: h.type,
+            difficulty: h.difficulty
+        });
         return true;
     };
 
@@ -284,7 +304,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             };
         });
         await saveHabits(newHabits);
-        if (xpGained > 0) await addXp(xpGained);
+        if (xpGained > 0) {
+            await addXp(xpGained);
+            await analytics().logEvent('habit_completed', {
+                id,
+                xp_gained: xpGained
+            });
+        }
     };
 
     const updateHabitValue = async (id: string, delta: number) => {
@@ -346,10 +372,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (xpGained > 0) await addXp(xpGained);
     };
 
-    // ── Computed Stats ───────────────────────────────────────────────────────
-
+    // ── Computed Stats (Memoized) ─────────────────────────────────────────────
+    
     // Global Streak: Count consecutive days where AT LEAST ONE habit was completed.
-    const globalStreak = (() => {
+    const globalStreak = useMemo(() => {
+        if (habits.length === 0) return 0;
+        
         const today = getTodayDate();
         let currentStreak = 0;
         let d = new Date();
@@ -363,11 +391,19 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             d.setDate(d.getDate() - 1);
         }
 
+        // Optimization: Create a set of all active dates first
+        const activeDates = new Set<string>();
+        habits.forEach(h => {
+            if (h.history) {
+                Object.entries(h.history).forEach(([date, val]) => {
+                    if (val) activeDates.add(date);
+                });
+            }
+        });
+
         while (true) {
             const dateStr = d.toISOString().split('T')[0];
-            const hasActivity = habits.some(h => h.history && h.history[dateStr] === true);
-
-            if (hasActivity) {
+            if (activeDates.has(dateStr)) {
                 currentStreak++;
                 d.setDate(d.getDate() - 1);
             } else {
@@ -378,30 +414,35 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             if (currentStreak > 3650) break;
         }
         return currentStreak;
-    })();
+    }, [habits]);
 
-    const totalCompletions = habits.reduce((acc, h) => {
-        const hist = h.history || {};
-        return acc + Object.values(hist).filter(Boolean).length;
-    }, 0);
+    const totalCompletions = useMemo(() => {
+        return habits.reduce((acc, h) => {
+            const hist = h.history || {};
+            return acc + Object.values(hist).filter(Boolean).length;
+        }, 0);
+    }, [habits]);
 
-    const totalTracked = habits.reduce((acc, h) => {
-        const hist = h.history || {};
-        return acc + Object.keys(hist).length;
-    }, 0);
+    const totalTracked = useMemo(() => {
+        return habits.reduce((acc, h) => {
+            const hist = h.history || {};
+            return acc + Object.keys(hist).length;
+        }, 0);
+    }, [habits]);
 
-    const successRate = totalTracked > 0 ? Math.round((totalCompletions / totalTracked) * 100) : 0;
+    const successRate = useMemo(() => 
+        totalTracked > 0 ? Math.round((totalCompletions / totalTracked) * 100) : 0
+    , [totalCompletions, totalTracked]);
 
-    const avgPerDay = (() => {
-        // Count unique dates across all habits
+    const avgPerDay = useMemo(() => {
         const dates = new Set<string>();
         habits.forEach(h => Object.keys(h.history || {}).forEach(d => dates.add(d)));
         if (dates.size === 0) return 0;
         return Math.round((totalCompletions / dates.size) * 10) / 10;
-    })();
+    }, [habits, totalCompletions]);
 
     // Last 7 days completion data
-    const weeklyData: WeekDayData[] = Array.from({ length: 7 }, (_, i) => {
+    const weeklyData: WeekDayData[] = useMemo(() => Array.from({ length: 7 }, (_, i) => {
         const daysAgo = 6 - i;
         const date = getDateNDaysAgo(daysAgo);
         const dayLabel = ['S', 'M', 'T', 'W', 'T', 'F', 'S'][new Date(date + 'T12:00:00').getDay()];
@@ -412,10 +453,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const completion = tracked > 0 ? completed / tracked : 0;
 
         return { day: dayName, label: dayLabel, date, completion };
-    });
+    }), [habits]);
 
     // Monthly data: last 4 months
-    const monthlyData: MonthlyData[] = Array.from({ length: 4 }, (_, i) => {
+    const monthlyData: MonthlyData[] = useMemo(() => Array.from({ length: 4 }, (_, i) => {
         const d = new Date();
         d.setMonth(d.getMonth() - (3 - i));
         const year = d.getFullYear();
@@ -434,55 +475,63 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         });
         const value = tracked > 0 ? Math.round((completed / tracked) * 100) : 0;
         return { month: monthStr, value };
-    });
+    }), [habits]);
 
     // Today's balance score
-    const trackedToday = habits.filter(h => h.trackedToday || h.completedToday).length;
-    const completedToday = habits.filter(h => h.completedToday).length;
-    const dailyBalanceScore = habits.length > 0
-        ? Math.round((completedToday / habits.length) * 100)
-        : 0;
+    const dailyBalanceScore = useMemo(() => {
+        const completedToday = habits.filter(h => h.completedToday).length;
+        return habits.length > 0
+            ? Math.round((completedToday / habits.length) * 100)
+            : 0;
+    }, [habits]);
 
     // Compare today vs last-week avg
-    const lastWeekAvg = (() => {
-        const scores = weeklyData.slice(0, 6).map(d => Math.round(d.completion * 100));
-        if (scores.length === 0) return 0;
-        return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-    })();
-    const balanceVsLastWeek = dailyBalanceScore - lastWeekAvg;
+    const balanceVsLastWeek = useMemo(() => {
+        const lastWeekAvg = (() => {
+            const scores = weeklyData.slice(0, 6).map(d => Math.round(d.completion * 100));
+            if (scores.length === 0) return 0;
+            return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+        })();
+        return dailyBalanceScore - lastWeekAvg;
+    }, [dailyBalanceScore, weeklyData]);
 
     // ── Render ───────────────────────────────────────────────────────────────
 
+    const contextValue = useMemo(() => ({
+        habits,
+        addHabit,
+        editHabit,
+        toggleHabit,
+        updateHabitValue,
+        deleteHabit,
+        recordHabitResult,
+        isPremium,
+        setPremium,
+        loading,
+        totalDiscipline,
+        globalStreak,
+        level,
+        totalCompletions,
+        totalTracked,
+        successRate,
+        avgPerDay,
+        weeklyData,
+        monthlyData,
+        dailyBalanceScore,
+        balanceVsLastWeek,
+        userName,
+        updateUserName,
+        notificationsEnabled,
+        setNotificationsEnabled,
+    }), [
+        habits, isPremium, loading, totalDiscipline, globalStreak, level,
+        totalCompletions, totalTracked, successRate, avgPerDay,
+        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek,
+        userName, notificationsEnabled
+    ]);
+
     return (
-        <HabitContext.Provider
-            value={{
-                habits,
-                addHabit,
-                editHabit,
-                toggleHabit,
-                updateHabitValue,
-                deleteHabit,
-                recordHabitResult,
-                isPremium,
-                setPremium,
-                loading,
-                totalDiscipline,
-                globalStreak,
-                level,
-                totalCompletions,
-                totalTracked,
-                successRate,
-                avgPerDay,
-                weeklyData,
-                monthlyData,
-                dailyBalanceScore,
-                balanceVsLastWeek,
-                userName,
-                updateUserName,
-                notificationsEnabled,
-                setNotificationsEnabled,
-            }}
-        >
+        <HabitContext.Provider value={contextValue}>
             {children}
         </HabitContext.Provider>
     );

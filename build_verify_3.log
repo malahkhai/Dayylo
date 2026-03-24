@@ -1,0 +1,223 @@
+› Auto signing app using team(s): 68AB52BP2D
+› Planning build
+    Run script build phase '[CP-User] [Hermes] Replace Hermes for the right configuration, if needed' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'hermes-engine' from project 'Pods')
+› Executing react-native Pods/hermes-engine » [CP-User] [Hermes] Replace Hermes for the right configuration, if needed
+› Executing react-native Pods/ReactNativeDependencies » [CP-User] [RNDeps] Replace React Native Dependencies for the right configuration, if needed
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » xds_server_builder.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » xds_server_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » xds_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » version_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » validate_service_config.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » tls_credentials_options.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » tls_certificate_verifier.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » tls_certificate_provider.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » time_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » thread_manager.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » string_ref.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » status.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_posix.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_context.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_callback.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » server_builder.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » secure_server_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » secure_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » secure_create_auth_context.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » secure_auth_context.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » rpc_method.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » resource_quota_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » insecure_server_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » insecure_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » health_check_service_server_builder_option.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » health_check_service.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » global_callback_hook.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » external_connection_acceptor_impl.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » default_health_check_service.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » create_default_thread_pool.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » create_channel_posix.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » create_channel_internal.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » create_channel.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » completion_queue_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » client_stats_interceptor.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » client_interceptor.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » client_context.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » client_callback.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » channel_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » channel_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » channel_arguments.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » channel_argument_option.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » call_credentials.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » byte_buffer_cc.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » backend_metric_recorder.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » auth_property_iterator.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » async_generic_service.cc
+› Compiling @react-native-firebase/firestore Pods/gRPC-C++ » alarm.cc
+› Compiling @react-native-google-signin/google-signin Pods/AppAuth » OIDAuthState+IOS.m
+› Compiling @react-native-google-signin/google-signin Pods/AppAuth » AppAuth-dummy.m
+› Packaging @react-native-google-signin/google-signin Pods/AppAuth » libAppAuth.a
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+
+❌  error: module map file '/Users/admin/Downloads/Dayylo/ios/Pods/Headers/Private/grpc/gRPC-Core.modulemap' not found (in target 'gRPC-C++' from project 'Pods')
+
+
+› Compiling Pods/GoogleUtilities » GoogleUtilities-dummy.m
+› Compiling Pods/GoogleUtilities » GULUserDefaults.m
+› Compiling Pods/GoogleUtilities » GULReachabilityChecker.m
+› Compiling Pods/GoogleUtilities » GULNetworkURLSession.m
+› Compiling Pods/GoogleUtilities » GULNetworkConstants.m
+› Compiling Pods/GoogleUtilities » GULNetwork.m
+› Compiling Pods/GoogleUtilities » GULNSData+zlib.m
+› Compiling Pods/GoogleUtilities » GULMutableDictionary.m
+    Run script build phase '[CP-User] [RNFB] Core Configuration' will be run during every build because it does not specify any outputs. To address this issue, either add output dependencies to the script phase, or configure it to run in every build by unchecking "Based on dependency analysis" in the script phase. (in target 'Dayylo' from project 'Dayylo')
+
+› 38 error(s), and 2 warning(s)
+
+CommandError: Failed to build iOS project. "xcodebuild" exited with error code 65.
