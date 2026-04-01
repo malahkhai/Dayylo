@@ -20,7 +20,8 @@ import ReAnimated, {
     withTiming,
     Easing,
     interpolate,
-    Extrapolate
+    Extrapolate,
+    cancelAnimation
 } from 'react-native-reanimated';
 import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton } from '../../components/AppleButton';
@@ -86,6 +87,7 @@ export default function HomeScreen() {
             -1,
             false
         );
+        return () => cancelAnimation(rotation);
     }, []);
 
     const animatedIconStyle = useAnimatedStyle(() => {
@@ -157,7 +159,7 @@ export default function HomeScreen() {
                 </View>
             </Animated.View>
             {/* Scrollable Habit List */}
-            <Animated.ScrollView
+            <Animated.FlatList
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -169,62 +171,63 @@ export default function HomeScreen() {
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
-            >
-                <WeekCalendar />
-
-                {/* Category Filters */}
-                <View style={styles.filterContainer}>
-                    {['All', 'build', 'break'].map((cat) => (
-                        <TouchableOpacity
-                            key={cat}
-                            style={[
-                                styles.filterBadge,
-                                filterCategory === cat && styles.filterBadgeActive
-                            ]}
-                            onPress={() => setFilterCategory(cat as any)}
-                            activeOpacity={0.7}
-                        >
-                            <Text style={[
-                                styles.filterText,
-                                filterCategory === cat && styles.filterTextActive
-                            ]}>
-                                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-
-                {visibleHabits.length > 0 ? (
+                data={visibleHabits}
+                keyExtractor={(item) => item.id}
+                ListHeaderComponent={
                     <>
-                        <Text style={styles.sectionTitle}>Your Habits</Text>
-                        {visibleHabits.map((habit) => (
-                            <AppleHabitCard
-                                key={habit.id}
-                                id={habit.id}
-                                title={habit.name}
-                                description={habit.description}
-                                streak={habit.streak}
-                                isCompleted={habit.completedToday}
-                                trackedToday={habit.trackedToday}
-                                color={habit.color}
-                                icon={habit.icon}
-                                onPress={() => handleHabitPress(habit)}
-                                onComplete={() => recordHabitResult(habit.id, true)}
-                                onFail={() => recordHabitResult(habit.id, false)}
-                            />
-                        ))}
+                        <WeekCalendar />
+
+                        {/* Category Filters */}
+                        <View style={styles.filterContainer}>
+                            {['All', 'build', 'break'].map((cat) => (
+                                <TouchableOpacity
+                                    key={cat}
+                                    style={[
+                                        styles.filterBadge,
+                                        filterCategory === cat && styles.filterBadgeActive
+                                    ]}
+                                    onPress={() => setFilterCategory(cat as any)}
+                                    activeOpacity={0.7}
+                                >
+                                    <Text style={[
+                                        styles.filterText,
+                                        filterCategory === cat && styles.filterTextActive
+                                    ]}>
+                                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        {visibleHabits.length > 0 && <Text style={styles.sectionTitle}>Your Habits</Text>}
                     </>
-                ) : (
+                }
+                renderItem={({ item: habit }) => (
+                    <AppleHabitCard
+                        id={habit.id}
+                        title={habit.name}
+                        description={habit.description}
+                        streak={habit.streak}
+                        isCompleted={habit.completedToday}
+                        trackedToday={habit.trackedToday}
+                        color={habit.color}
+                        icon={habit.icon}
+                        onPress={() => handleHabitPress(habit)}
+                        onComplete={() => recordHabitResult(habit.id, true)}
+                        onFail={() => recordHabitResult(habit.id, false)}
+                    />
+                )}
+                ListEmptyComponent={
                     <View style={styles.emptyState}>
                         <Text style={styles.emptyEmoji}>🌱</Text>
                         <Text style={styles.emptyTitle}>Start your journey</Text>
                         <Text style={styles.emptyText}>Tap the + button to add your first habit</Text>
                     </View>
-                )}
-
-                {/* Bottom Spacing */}
-                <View style={{ height: 100 }} />
-            </Animated.ScrollView>
+                }
+                ListFooterComponent={
+                    <View style={{ height: 100 }} />
+                }
+            />
 
         </SafeAreaView>
     );

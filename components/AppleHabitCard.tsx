@@ -69,6 +69,24 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
     }
   };
 
+  const handleCompleteJS = () => {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (onComplete) onComplete();
+    } catch (e) {
+      console.error('onComplete error:', e);
+    }
+  };
+
+  const handleFailJS = () => {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      if (onFail) onFail();
+    } catch (e) {
+      console.error('onFail error:', e);
+    }
+  };
+
   const gesture = Gesture.Pan()
     .enabled(!trackedToday)
     .activeOffsetX([-10, 10])
@@ -86,24 +104,10 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
     .onEnd((event) => {
       if (event.translationX > SWIPE_THRESHOLD) {
         translateX.value = withSpring(SCREEN_WIDTH, { velocity: event.velocityX });
-        runOnJS(() => {
-          try {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            onComplete?.();
-          } catch (e) {
-            console.error('onComplete error:', e);
-          }
-        })();
+        runOnJS(handleCompleteJS)();
       } else if (event.translationX < -SWIPE_THRESHOLD) {
         translateX.value = withSpring(-SCREEN_WIDTH, { velocity: event.velocityX });
-        runOnJS(() => {
-          try {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            onFail?.();
-          } catch (e) {
-            console.error('onFail error:', e);
-          }
-        })();
+        runOnJS(handleFailJS)();
       } else {
         hasTriggeredHaptic.value = 0;
         translateX.value = withSpring(0);

@@ -6,6 +6,7 @@ import * as LucideIcons from 'lucide-react-native';
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
 import { useHabits } from '../../context/HabitContext';
+import { useAuth } from '../../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -37,9 +38,16 @@ const STARTER_HABITS: StarterHabit[] = [
 
 export default function OnboardingScreen() {
     const router = useRouter();
+    const { user } = useAuth();
     const { addHabit, updateUserName, userName } = useHabits();
     const [currentStep, setCurrentStep] = useState<OnboardingStep>('WELCOME');
-    const [tempName, setTempName] = useState('');
+    const [tempName, setTempName] = useState(user?.displayName || '');
+
+    React.useEffect(() => {
+        if (user?.displayName && !tempName) {
+            setTempName(user.displayName);
+        }
+    }, [user?.displayName]);
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -253,7 +261,13 @@ export default function OnboardingScreen() {
             <View style={styles.footerContainer}>
                 <AppleButton
                     title="Get Started"
-                    onPress={() => transitionTo('NAME')}
+                    onPress={() => {
+                        if (user?.displayName || tempName.trim()) {
+                            transitionTo('HABITS');
+                        } else {
+                            transitionTo('NAME');
+                        }
+                    }}
                     fullWidth
                 />
             </View>

@@ -3,6 +3,7 @@ import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
 interface AuthContextData {
     user: FirebaseAuthTypes.User | null;
@@ -42,6 +43,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (!idToken) throw new Error("No ID Token found");
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             const userCredential = await auth().signInWithCredential(googleCredential);
+            
+            if (userCredential.user.displayName) {
+                try {
+                    await firestore().collection('users').doc(userCredential.user.uid).set({ userName: userCredential.user.displayName }, { merge: true });
+                } catch (e) {
+                    console.error("Failed to save Google displayName", e);
+                }
+            }
+            
             return userCredential.additionalUserInfo?.isNewUser ?? false;
         } catch (error) {
             console.error("Google Sign-In Error:", error);
@@ -58,11 +68,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 ],
             });
 
-            const { identityToken } = appleAuthRequestResponse;
+            const { identityToken, fullName } = appleAuthRequestResponse;
 
             if (identityToken) {
                 const appleCredential = auth.AppleAuthProvider.credential(identityToken);
                 const userCredential = await auth().signInWithCredential(appleCredential);
+                
+                if (fullName && (fullName.givenName || fullName.familyName)) {
+                    const name = [fullName.givenName, fullName.familyName].filter(Boolean).join(' ');
+                    if (name) {
+                        try {
+                            await userCredential.user.updateProfile({ displayName: name });
+                            await firestore().collection('users').doc(userCredential.user.uid).set({ userName: name }, { merge: true });
+                        } catch (e) {
+                            console.error("Failed to save Apple fullName", e);
+                        }
+                    }
+                }
+                
                 return userCredential.additionalUserInfo?.isNewUser ?? false;
             }
             return false;
