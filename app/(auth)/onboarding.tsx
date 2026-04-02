@@ -44,7 +44,7 @@ export default function OnboardingScreen() {
     const [tempName, setTempName] = useState(user?.displayName || '');
 
     React.useEffect(() => {
-        if (user?.displayName && !tempName) {
+        if (user?.displayName) {
             setTempName(user.displayName);
         }
     }, [user?.displayName]);
@@ -262,7 +262,8 @@ export default function OnboardingScreen() {
                 <AppleButton
                     title="Get Started"
                     onPress={() => {
-                        if (user?.displayName || tempName.trim()) {
+                        const nameToUse = user?.displayName || tempName.trim();
+                        if (nameToUse) {
                             transitionTo('HABITS');
                         } else {
                             transitionTo('NAME');
@@ -313,6 +314,15 @@ export default function OnboardingScreen() {
                         disabled={!tempName.trim()}
                         fullWidth
                     />
+                    <Pressable
+                        onPress={() => {
+                            setTempName('Dynamic User'); // OR just keep it empty
+                            transitionTo('HABITS');
+                        }}
+                        style={[styles.skipButton, { marginTop: 12 }]}
+                    >
+                        <Text style={styles.skipText}>Skip for now</Text>
+                    </Pressable>
                 </View>
             </View>
         </KeyboardAvoidingView>

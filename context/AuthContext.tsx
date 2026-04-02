@@ -80,6 +80,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         try {
                             await userCredential.user.updateProfile({ displayName: name });
                             await firestore().collection('users').doc(userCredential.user.uid).set({ userName: name }, { merge: true });
+                            // Ensure the local user state is updated before returning
+                            setUser(auth().currentUser);
                         } catch (e) {
                             console.error("Failed to save Apple fullName", e);
                         }
