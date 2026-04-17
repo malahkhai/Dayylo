@@ -137,6 +137,14 @@ export default function AuthScreen() {
         }
 
         if (storyStep === 8) {
+            try {
+                // Request notification permissions before moving to sign up
+                console.log('[Heartbeat] Requesting notification permissions...');
+                await Notifications.requestPermissionsAsync();
+            } catch (error) {
+                console.log('[Heartbeat] Notification request ignored or failed:', error);
+            }
+            
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setMode('signup');
             return;
@@ -911,41 +919,41 @@ const styles = StyleSheet.create({
     dayOneNum: { fontSize: 72, fontWeight: '900', color: AppleColors.primary },
 
     // ─── Auth screens (Create Account + Welcome Back) ─────────────────────────
-    scrollContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40 },
+    scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20 },
     backButton: { width: 44, height: 44, justifyContent: 'center' },
     centerContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
     content: { flex: 1, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40, justifyContent: 'space-between' },
     logoContainer: { width: 140, height: 140, marginBottom: 32, alignItems: 'center', justifyContent: 'center' },
     headline: { ...AppleTypography.display, color: AppleColors.label.primary, textAlign: 'center', marginBottom: 12 },
     subtext: { ...AppleTypography.bodyLarge, fontWeight: '400', color: AppleColors.label.secondary, textAlign: 'center', paddingHorizontal: 20 },
-    authHeader: { marginTop: 40, marginBottom: 40, alignItems: 'center' },
+    authHeader: { marginTop: 24, marginBottom: 24, alignItems: 'center' },
     authTitle: { ...AppleTypography.h1, color: AppleColors.label.primary, marginBottom: 8 },
-    authSub: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'center', paddingHorizontal: 10 },
-    authForm: { gap: 12 },
+    authSub: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'center', paddingHorizontal: 20 },
+    authForm: { gap: 10 },
     input: {
         backgroundColor: AppleColors.background.secondary,
-        paddingHorizontal: 12, paddingVertical: 12,
+        paddingHorizontal: 12, paddingVertical: 14,
         borderRadius: 12,
         ...AppleTypography.body,
         color: AppleColors.label.primary,
-        marginBottom: 4,
+        marginBottom: 2,
     },
-    legalText: { ...AppleTypography.caption, color: AppleColors.label.tertiary, textAlign: 'center', marginTop: 16 },
+    legalText: { ...AppleTypography.caption, color: AppleColors.label.tertiary, textAlign: 'center', marginTop: 12 },
     link: { color: AppleColors.primary, fontWeight: '600' },
-    divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 32 },
+    divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
     line: { flex: 1, height: 1, backgroundColor: AppleColors.separator.nonOpaque },
     dividerText: { marginHorizontal: 16, ...AppleTypography.labelSmall, color: AppleColors.label.tertiary },
-    forgotPass: { alignItems: 'flex-end', marginBottom: 8 },
+    forgotPass: { alignItems: 'flex-end', marginBottom: 6 },
     linkText: { color: AppleColors.primary, ...AppleTypography.label },
-    switchAuth: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
+    switchAuth: { flexDirection: 'row', justifyContent: 'center', marginTop: 16 },
     switchText: { ...AppleTypography.bodySmall, color: AppleColors.label.secondary },
     ssoButtonApple: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
         backgroundColor: AppleColors.background.secondary,
         borderRadius: AppleBorderRadius.lg,
         borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
-        paddingVertical: 15, paddingHorizontal: 20,
-        gap: 10, marginBottom: 12,
+        paddingVertical: 14, paddingHorizontal: 20,
+        gap: 10, marginBottom: 8,
     },
     ssoAppleText: { fontSize: 16, fontWeight: '600', color: AppleColors.label.primary, letterSpacing: -0.2 },
     ssoButtonGoogle: {
@@ -953,8 +961,8 @@ const styles = StyleSheet.create({
         backgroundColor: AppleColors.background.secondary,
         borderRadius: AppleBorderRadius.lg,
         borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
-        paddingVertical: 15, paddingHorizontal: 20,
-        gap: 10, marginBottom: 12,
+        paddingVertical: 14, paddingHorizontal: 20,
+        gap: 10, marginBottom: 8,
     },
     ssoGoogleIconBg: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
     ssoGoogleText: { fontSize: 16, fontWeight: '600', color: AppleColors.label.primary, letterSpacing: -0.2 },
