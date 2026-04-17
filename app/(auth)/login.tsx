@@ -307,7 +307,7 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.streakContainer}>
                         {showConfetti && <ConfettiExplosion />}
-                        <LucideIcons.Flame size={64} color={AppleColors.primary} style={{ marginBottom: 10 }} />
+                        <LucideIcons.Flame size={64} color={AppleColors.systemOrange} style={{ marginBottom: 10 }} />
                         <Text style={styles.streakValue}>{animatedStreak}</Text>
                         <Text style={styles.accLabel}>DAY STREAK</Text>
                     </View>
