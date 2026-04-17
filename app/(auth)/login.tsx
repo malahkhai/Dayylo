@@ -475,6 +475,7 @@ const styles = StyleSheet.create({
     sbBadgeText: { fontSize: 10, fontWeight: '900', color: AppleColors.primary, letterSpacing: 1.5, textTransform: 'uppercase' },
     sbHeadline: { fontSize: 36, fontWeight: '900', color: '#FFF', textAlign: 'left', lineHeight: 44, marginBottom: 12, letterSpacing: -0.5 },
     sbSubheadline: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'left', lineHeight: 22 },
+    sbQuoteAuthor: { ...AppleTypography.caption1, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
     
     stepContent: { flex: 1, justifyContent: 'center' },
     
