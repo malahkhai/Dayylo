@@ -195,30 +195,38 @@ export default function AuthScreen() {
 
     const getStoryStepConfig = (step: number) => {
         switch(step) {
-            case 1: return { badge: 'Reality Hook', badgeIcon: 'ShieldAlert', badgeColor: AppleColors.primary, title: 'Be honest. What’s controlling you?', sub: 'Not just habits — the things you can’t seem to stop' };
-            case 2: return { badge: 'Call It Out', badgeIcon: 'Repeat', badgeColor: AppleColors.systemBlue, title: 'It’s not lack of discipline', sub: 'It’s patterns you repeat every day without noticing' };
-            case 3: return { badge: 'Your Differentiator', badgeIcon: 'ArrowLeftRight', badgeColor: AppleColors.systemBlue, title: 'Track what you want to STOP or START', sub: 'Most apps track what you do.\nDayylo tracks what you avoid.' };
-            case 4: return { badge: 'Accountability Angle', badgeIcon: 'Scale', badgeColor: AppleColors.systemOrange, title: 'Every day counts — no hiding', sub: 'You either did it… or you didn’t' };
-            case 5: return { badge: 'Dopamine Hook', badgeIcon: 'Flame', badgeColor: AppleColors.primary, title: 'Build a streak you won’t want to break', sub: 'One day becomes two. Then ten. Then a new identity.' };
-            case 6: return { badge: 'Focus Choice', badgeIcon: 'Target', badgeColor: AppleColors.primary, title: 'Choose your battle.', sub: 'Focus on just one thing for now. Make it small, make it doable.' };
-            case 7: return { badge: 'Creation', badgeIcon: 'Zap', badgeColor: AppleColors.primary, title: selectedFocus.build ? 'What do you want to start?' : 'What do you want to break?', sub: 'Keep it simple — make it doable.' };
-            case 8: return { badge: 'Commitment', badgeIcon: 'CheckCircle', badgeColor: AppleColors.primary, title: 'This is Day 1', sub: 'Just focus on today. You\'ve got this.' };
-            default: return { badge: '', badgeIcon: 'Activity', badgeColor: AppleColors.primary, title: '', sub: '' };
+            case 1: return { title: 'Be honest. What’s controlling you?', highlight: 'controlling', sub: 'Not just habits — the things you can’t seem to stop' };
+            case 2: return { title: 'It’s not lack of discipline', highlight: 'discipline', sub: 'It’s patterns you repeat every day without noticing' };
+            case 3: return { title: 'Track what you want to STOP or START', highlight: 'STOP', sub: 'Most apps track what you do.\nDayylo tracks what you avoid.' };
+            case 4: return { title: 'Every day counts — no hiding', highlight: 'counts', sub: 'You either did it… or you didn’t' };
+            case 5: return { title: 'Build a streak you won’t want to break', highlight: 'streak', sub: 'The dopamine of a long streak is your best defense' };
+            case 6: return { title: 'Choose your battle.', highlight: 'battle', sub: 'Focus on just one thing for now. Make it small, make it doable.' };
+            case 7: return { title: 'Create your identity.', highlight: 'identity', sub: 'Who do you want to become?' };
+            case 8: return { title: 'This is Day 1.', highlight: 'Day 1', sub: 'The journey of a thousand miles begins with a single step.' };
+            default: return { title: '', highlight: '', sub: '' };
         }
+    };
+
+    const renderHeadline = (title: string, highlight: string) => {
+        if (!highlight) return <Text style={styles.sbHeadline}>{title}</Text>;
+        
+        const parts = title.split(highlight);
+        return (
+            <Text style={styles.sbHeadline}>
+                {parts[0]}
+                <Text style={{ color: AppleColors.primary }}>{highlight}</Text>
+                {parts[1]}
+            </Text>
+        );
     };
 
     const renderStoryStep = () => {
         const config = getStoryStepConfig(storyStep);
-        const Icon = (LucideIcons as any)[config.badgeIcon];
 
         return (
             <View style={styles.stepContent}>
-                <View style={styles.fixedHeader}>
-                    <View style={[styles.sbBadge, { borderColor: config.badgeColor + '30', backgroundColor: config.badgeColor + '15' }]}>
-                        {Icon && <Icon size={12} color={config.badgeColor} />}
-                        <Text style={[styles.sbBadgeText, { color: config.badgeColor }]}>{config.badge}</Text>
-                    </View>
-                    <Text style={[styles.sbHeadline, storyStep === 3 && { fontSize: 28, lineHeight: 34 }]}>{config.title}</Text>
+                <View style={[styles.fixedHeader, { minHeight: 140 }]}>
+                    {renderHeadline(config.title, config.highlight)}
                     <Text style={styles.sbSubheadline}>{config.sub}</Text>
                 </View>
 
