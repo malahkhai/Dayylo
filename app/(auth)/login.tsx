@@ -247,7 +247,7 @@ export default function AuthScreen() {
 
         return (
             <View style={styles.stepContent}>
-                <View style={[styles.fixedHeader, storyStep === 8 && { minHeight: 0, marginBottom: 24 }, storyStep === 6 && { alignItems: 'center' }]}>
+                <View style={[styles.fixedHeader, storyStep === 8 && { minHeight: 0, marginBottom: 30 }, storyStep === 6 && { alignItems: 'center' }]}>
                     {renderHeadline(config.title, config.highlight)}
                     <Text style={[styles.sbSubheadline, storyStep === 6 && { textAlign: 'center' }]}>{config.sub}</Text>
                 </View>
