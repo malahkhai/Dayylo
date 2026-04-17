@@ -218,7 +218,7 @@ export default function AuthScreen() {
                         {Icon && <Icon size={12} color={config.badgeColor} />}
                         <Text style={[styles.sbBadgeText, { color: config.badgeColor }]}>{config.badge}</Text>
                     </View>
-                    <Text style={styles.sbHeadline}>{config.title}</Text>
+                    <Text style={[styles.sbHeadline, storyStep === 3 && { fontSize: 28, lineHeight: 34 }]}>{config.title}</Text>
                     <Text style={styles.sbSubheadline}>{config.sub}</Text>
                 </View>
 
@@ -254,12 +254,11 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.sbStatGrid}>
                         {[
-                            { label: 'Yes Gym', icon: 'Dumbbell', color: AppleColors.systemGreen },
-                            { label: 'No porn', icon: 'ShieldOff', color: AppleColors.systemOrange },
-                            { label: 'Yes Walk 20k', icon: 'Footprints', color: AppleColors.systemGreen },
-                            { label: 'No texting ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
-                            { label: 'Saving €20 Daily', icon: 'Euro', color: AppleColors.systemGreen },
-                            { label: 'No sugar', icon: 'Cookie', color: AppleColors.systemOrange }
+                            { label: 'Yes to Gym', icon: 'Dumbbell', color: AppleColors.systemGreen },
+                            { label: 'No to Porn', icon: 'ShieldOff', color: AppleColors.systemOrange },
+                            { label: 'Yes to 20K daily walk', icon: 'Footprints', color: AppleColors.systemGreen },
+                            { label: 'No to texting your ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
+                            { label: 'Yes to Saving daily 20 euros', icon: 'Euro', color: AppleColors.systemGreen }
                         ].map((item, i) => {
                             const ItemIcon = (LucideIcons as any)[item.icon];
                             return (
