@@ -4,12 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import firestore from '@react-native-firebase/firestore';
 import crashlytics from '@react-native-firebase/crashlytics';
-import analytics from '@react-native-firebase/analytics';
+import { Analytics } from '../services/analytics';
 import { useAuth } from './AuthContext';
 import { FirestoreService } from '../services/firestore';
 import { Habit } from '../types';
 import { INITIAL_HABITS } from '../constants';
 import { requestPermissionsAsync, scheduleDailyReminder, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
+
+console.log('[Heartbeat] HabitContext.tsx module loaded');
 
 // ─── Derived Stat Types ───────────────────────────────────────────────────────
 
@@ -101,12 +103,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [notificationsEnabled, setNotifications] = useState(true);
 
     const { user } = useAuth();
+    
+    console.log('[Heartbeat] HabitProvider mounted. Auth User loaded:', !!user);
 
     useEffect(() => {
         if (user) {
             loadData();
         } else {
-            // Unauthenticated state
+            console.log('[Heartbeat] HabitContext: User is null, clearing habits');
             setHabits([]);
             setLoading(false);
         }
@@ -119,7 +123,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     if (granted) scheduleDailyReminder(20, 0); // 8:00 PM
                 });
 
-                // Fetch push token and save it to Firestore
                 registerForPushNotificationsAsync().then(token => {
                     if (token) {
                         firestore().collection('users').doc(user.uid).set({ pushToken: token }, { merge: true });
@@ -127,7 +130,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 });
             } else {
                 cancelDailyReminder();
-                // Optionally remove the token from Firestore when they disable it
                 firestore().collection('users').doc(user.uid).set({ pushToken: firestore.FieldValue.delete() }, { merge: true });
             }
         }
@@ -138,29 +140,25 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const loadData = async () => {
         if (!user) return;
         try {
+            console.log('[Heartbeat] HabitContext: Loading user data for uid:', user.uid);
             const data = await FirestoreService.getUserData(user.uid);
 
             const isDemoAccount = user.email === 'demo@dayylo.com';
             let parsedHabits: Habit[] = data?.habits || (isDemoAccount ? INITIAL_HABITS : []);
 
-            // Daily reset logic
             const today = getTodayDate();
             const lastResetDate = data?.lastResetDate || '';
 
             if (lastResetDate !== today) {
+                console.log('[Heartbeat] HabitContext: Performing daily reset');
                 parsedHabits = parsedHabits.map(h => ({
                     ...h,
                     completedToday: false,
                     trackedToday: false,
                 }));
-                // Save reset habits (async, don't block UI)
                 saveHabits(parsedHabits, today);
             }
 
-            // Batch multiple state updates
-            // React 18 automatically batches these in async functions, 
-            // but we ensure only necessary updates happen.
-            
             if (JSON.stringify(parsedHabits) !== JSON.stringify(habits)) {
                 setHabits(parsedHabits);
             }
@@ -181,7 +179,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setNotifications(data.notificationsEnabled);
             }
 
-            // Secure validation with RevenueCat
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 try {
                     const customerInfo = await Purchases.getCustomerInfo();
@@ -191,12 +188,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                         await FirestoreService.setPremiumStatus(user.uid, true);
                     }
                 } catch (e) {
-                    console.log('RC check failed', e);
+                    console.log('[Heartbeat] RC check failed (safe ignored)', e);
                 }
             }
 
         } catch (e: any) {
-            console.error('Failed to load data', e);
+            console.error('[Heartbeat] HabitContext: Failed to load data', e);
             crashlytics().recordError(e, 'loadData');
         } finally {
             setLoading(false);
@@ -207,7 +204,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setHabits(newHabits);
         if (user) {
             try {
-                // We use set for full habit array sync for now to keep it simple and consistent
                 await firestore().collection('users').doc(user.uid).set({
                     habits: newHabits,
                     ...(resetDate ? { lastResetDate: resetDate } : {})
@@ -236,7 +232,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsPremium(val);
         if (user) {
             await FirestoreService.setPremiumStatus(user.uid, val);
-            await analytics().logEvent('premium_updated', { is_premium: val });
+            await Analytics.logEvent('premium_updated', { is_premium: val });
         }
     };
 
@@ -269,7 +265,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             history: {},
         };
         await saveHabits([...habits, newHabit]);
-        await analytics().logEvent('habit_added', {
+        await Analytics.logEvent('habit_added', {
             type: h.type,
             difficulty: h.difficulty
         });
@@ -306,7 +302,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await saveHabits(newHabits);
         if (xpGained > 0) {
             await addXp(xpGained);
-            await analytics().logEvent('habit_completed', {
+            await Analytics.logEvent('habit_completed', {
                 id,
                 xp_gained: xpGained
             });
@@ -374,24 +370,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // ── Computed Stats (Memoized) ─────────────────────────────────────────────
     
-    // Global Streak: Count consecutive days where AT LEAST ONE habit was completed.
     const globalStreak = useMemo(() => {
         if (habits.length === 0) return 0;
         
-        const today = getTodayDate();
-        let currentStreak = 0;
-        let d = new Date();
-
-        // Check today first
-        const todayStr = d.toISOString().split('T')[0];
-        const hasActivityToday = habits.some(h => h.history && h.history[todayStr] === true);
-
-        // If no activity today, look at yesterday to determine if streak is still alive
-        if (!hasActivityToday) {
-            d.setDate(d.getDate() - 1);
-        }
-
-        // Optimization: Create a set of all active dates first
+        const d = new Date();
         const activeDates = new Set<string>();
         habits.forEach(h => {
             if (h.history) {
@@ -401,6 +383,16 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
         });
 
+        if (activeDates.size === 0) return 0;
+
+        let currentStreak = 0;
+        const todayStr = d.toISOString().split('T')[0];
+        const hasActivityToday = activeDates.has(todayStr);
+
+        if (!hasActivityToday) {
+            d.setDate(d.getDate() - 1);
+        }
+
         while (true) {
             const dateStr = d.toISOString().split('T')[0];
             if (activeDates.has(dateStr)) {
@@ -409,8 +401,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             } else {
                 break;
             }
-
-            // Safety break
             if (currentStreak > 3650) break;
         }
         return currentStreak;
@@ -441,7 +431,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return Math.round((totalCompletions / dates.size) * 10) / 10;
     }, [habits, totalCompletions]);
 
-    // Last 7 days completion data
     const weeklyData: WeekDayData[] = useMemo(() => Array.from({ length: 7 }, (_, i) => {
         const daysAgo = 6 - i;
         const date = getDateNDaysAgo(daysAgo);
@@ -455,14 +444,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return { day: dayName, label: dayLabel, date, completion };
     }), [habits]);
 
-    // Monthly data: last 4 months
     const monthlyData: MonthlyData[] = useMemo(() => Array.from({ length: 4 }, (_, i) => {
         const d = new Date();
         d.setMonth(d.getMonth() - (3 - i));
-        const year = d.getFullYear();
-        const month = d.getMonth();
         const monthStr = d.toLocaleString('default', { month: 'short' });
-        const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+        const prefix = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 
         let tracked = 0, completed = 0;
         habits.forEach(h => {
@@ -477,15 +463,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return { month: monthStr, value };
     }), [habits]);
 
-    // Today's balance score
     const dailyBalanceScore = useMemo(() => {
         const completedToday = habits.filter(h => h.completedToday).length;
-        return habits.length > 0
-            ? Math.round((completedToday / habits.length) * 100)
-            : 0;
+        return habits.length > 0 ? Math.round((completedToday / habits.length) * 100) : 0;
     }, [habits]);
 
-    // Compare today vs last-week avg
     const balanceVsLastWeek = useMemo(() => {
         const lastWeekAvg = (() => {
             const scores = weeklyData.slice(0, 6).map(d => Math.round(d.completion * 100));
@@ -495,34 +477,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return dailyBalanceScore - lastWeekAvg;
     }, [dailyBalanceScore, weeklyData]);
 
-    // ── Render ───────────────────────────────────────────────────────────────
-
     const contextValue = useMemo(() => ({
-        habits,
-        addHabit,
-        editHabit,
-        toggleHabit,
-        updateHabitValue,
-        deleteHabit,
-        recordHabitResult,
-        isPremium,
-        setPremium,
-        loading,
-        totalDiscipline,
-        globalStreak,
-        level,
-        totalCompletions,
-        totalTracked,
-        successRate,
-        avgPerDay,
-        weeklyData,
-        monthlyData,
-        dailyBalanceScore,
-        balanceVsLastWeek,
-        userName,
-        updateUserName,
-        notificationsEnabled,
-        setNotificationsEnabled,
+        habits, addHabit, editHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult,
+        isPremium, setPremium, loading, totalDiscipline, globalStreak, level,
+        totalCompletions, totalTracked, successRate, avgPerDay,
+        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek,
+        userName, updateUserName, notificationsEnabled, setNotificationsEnabled,
     }), [
         habits, isPremium, loading, totalDiscipline, globalStreak, level,
         totalCompletions, totalTracked, successRate, avgPerDay,

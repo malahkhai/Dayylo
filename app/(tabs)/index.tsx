@@ -30,6 +30,7 @@ import { useHabits } from '../../context/HabitContext';
 import { formatDiscipline } from '../../utils/format';
 import { WeekCalendar } from '../../components/WeekCalendar';
 import { Habit } from '../../types';
+import { MotiView } from 'moti';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -202,20 +203,26 @@ export default function HomeScreen() {
                         {visibleHabits.length > 0 && <Text style={styles.sectionTitle}>Your Habits</Text>}
                     </>
                 }
-                renderItem={({ item: habit }) => (
-                    <AppleHabitCard
-                        id={habit.id}
-                        title={habit.name}
-                        description={habit.description}
-                        streak={habit.streak}
-                        isCompleted={habit.completedToday}
-                        trackedToday={habit.trackedToday}
-                        color={habit.color}
-                        icon={habit.icon}
-                        onPress={() => handleHabitPress(habit)}
-                        onComplete={() => recordHabitResult(habit.id, true)}
-                        onFail={() => recordHabitResult(habit.id, false)}
-                    />
+                renderItem={({ item: habit, index }) => (
+                    <MotiView
+                        from={{ opacity: 0, translateY: 20 }}
+                        animate={{ opacity: 1, translateY: 0 }}
+                        transition={{ type: 'timing', duration: 500, delay: index * 100 }}
+                    >
+                        <AppleHabitCard
+                            id={habit.id}
+                            title={habit.name}
+                            description={habit.description}
+                            streak={habit.streak}
+                            isCompleted={habit.completedToday}
+                            trackedToday={habit.trackedToday}
+                            color={habit.color}
+                            icon={habit.icon}
+                            onPress={() => handleHabitPress(habit)}
+                            onComplete={() => recordHabitResult(habit.id, true)}
+                            onFail={() => recordHabitResult(habit.id, false)}
+                        />
+                    </MotiView>
                 )}
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
@@ -225,7 +232,30 @@ export default function HomeScreen() {
                     </View>
                 }
                 ListFooterComponent={
-                    <View style={{ height: 100 }} />
+                    <View style={{ paddingBottom: 100 }}>
+                        {habits.length === 1 && (
+                            <MotiView
+                                from={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ type: 'spring', delay: 800 }}
+                                style={styles.nudgeCard}
+                            >
+                                <TouchableOpacity 
+                                    onPress={() => router.push('/add-habit')}
+                                    style={styles.nudgeContent}
+                                >
+                                    <View style={styles.nudgeIconBg}>
+                                        <LucideIcons.Plus size={20} color={AppleColors.primary} />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.nudgeTitle}>Ready to scale?</Text>
+                                        <Text style={styles.nudgeSub}>Add a {habits[0].type === 'build' ? 'Stop' : 'Start'} habit 👉</Text>
+                                    </View>
+                                    <LucideIcons.ChevronRight size={20} color={AppleColors.label.tertiary} />
+                                </TouchableOpacity>
+                            </MotiView>
+                        )}
+                    </View>
                 }
             />
 
@@ -373,5 +403,38 @@ const styles = StyleSheet.create({
         ...AppleTypography.body,
         color: AppleColors.label.secondary,
         textAlign: 'center',
+    },
+    nudgeCard: {
+        marginHorizontal: AppleSpacing.base,
+        marginTop: 20,
+        backgroundColor: AppleColors.primary + '10',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: AppleColors.primary + '20',
+        overflow: 'hidden',
+    },
+    nudgeContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+        gap: 14,
+    },
+    nudgeIconBg: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: AppleColors.primary + '15',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nudgeTitle: {
+        ...AppleTypography.callout,
+        fontWeight: '700',
+        color: AppleColors.label.primary,
+    },
+    nudgeSub: {
+        ...AppleTypography.footnote,
+        color: AppleColors.label.secondary,
+        marginTop: 2,
     },
 });

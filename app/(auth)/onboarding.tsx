@@ -7,6 +7,7 @@ import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleSha
 import { AppleButton } from '../../components/AppleButton';
 import { useHabits } from '../../context/HabitContext';
 import { useAuth } from '../../context/AuthContext';
+import { SwipeButton } from '../../components/SwipeButton';
 
 const { width } = Dimensions.get('window');
 
@@ -240,7 +241,7 @@ export default function OnboardingScreen() {
                 </View>
                 <Text style={styles.heroTitle}>Welcome to Dayylo</Text>
                 <Text style={styles.heroSubtitle}>
-                    The ultimate habit tracker designed for focus, discipline, and growth.
+                    Habit tracker for real-life struggles, not perfect routines
                 </Text>
 
                 <View style={styles.miniHeatmap}>
@@ -259,9 +260,9 @@ export default function OnboardingScreen() {
             </View>
 
             <View style={styles.footerContainer}>
-                <AppleButton
-                    title="Get Started"
-                    onPress={() => {
+                <SwipeButton
+                    title="Slide to start"
+                    onSwipeComplete={() => {
                         const nameToUse = user?.displayName || tempName.trim();
                         if (nameToUse) {
                             transitionTo('HABITS');
@@ -269,7 +270,6 @@ export default function OnboardingScreen() {
                             transitionTo('NAME');
                         }
                     }}
-                    fullWidth
                 />
             </View>
         </View>

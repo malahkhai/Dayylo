@@ -16,6 +16,7 @@ import Animated, {
 import * as LucideIcons from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { AppleColors, AppleTypography, AppleShadows, AppleSpacing } from '../constants/AppleTheme';
+import { useCelebration } from '../context/CelebrationContext';
 
 // const { width: SCREEN_WIDTH } = Dimensions.get('window'); // Replaced by hook
 
@@ -57,6 +58,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   onFail,
 }) => {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
+  const { triggerCelebration } = useCelebration();
   const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
   const translateX = useSharedValue(0);
   const hasTriggeredHaptic = useSharedValue(0); // 0=none, 1=right, 2=left
@@ -72,6 +74,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   const handleCompleteJS = () => {
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      triggerCelebration();
       if (onComplete) onComplete();
     } catch (e) {
       console.error('onComplete error:', e);
@@ -114,10 +117,23 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
       }
     });
 
+  const scale = useSharedValue(1);
+
   const rStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [
+      { translateX: translateX.value },
+      { scale: scale.value }
+    ],
     opacity: trackedToday ? 0.6 : 1,
   }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.96);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
 
   return (
     <View style={styles.container}>
@@ -137,29 +153,36 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
 
       <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.card, rStyle]}>
-          <View style={styles.content}>
-            <View style={[styles.iconContainer, { backgroundColor: isCompleted ? color : `${color}20` }]}>
-              <SafeIcon name={icon || 'Activity'} size={20} color={isCompleted ? '#FFF' : color} />
-            </View>
+          <Pressable 
+            onPress={onPress} 
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            style={styles.pressable}
+          >
+            <View style={styles.content}>
+              <View style={[styles.iconContainer, { backgroundColor: isCompleted ? color : `${color}20` }]}>
+                <SafeIcon name={icon || 'Activity'} size={20} color={isCompleted ? '#FFF' : color} />
+              </View>
 
-            <View style={styles.info}>
-              <Text style={styles.title} numberOfLines={1}>
-                {title}
-              </Text>
-              {description && (
-                <Text style={styles.description} numberOfLines={2}>
-                  {description}
+              <View style={styles.info}>
+                <Text style={styles.title} numberOfLines={1}>
+                  {title}
                 </Text>
+                {description && (
+                  <Text style={styles.description} numberOfLines={2}>
+                    {description}
+                  </Text>
+                )}
+              </View>
+
+              {streak > 0 && !trackedToday && (
+                <View style={[styles.streakBadge, { backgroundColor: color }]}>
+                  <Text style={styles.streakEmoji}>🔥</Text>
+                  <Text style={styles.streakText}>{streak}</Text>
+                </View>
               )}
             </View>
-
-            {streak > 0 && !trackedToday && (
-              <View style={[styles.streakBadge, { backgroundColor: color }]}>
-                <Text style={styles.streakEmoji}>🔥</Text>
-                <Text style={styles.streakText}>{streak}</Text>
-              </View>
-            )}
-          </View>
+          </Pressable>
 
 
 
@@ -227,6 +250,9 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.08)',
     ...AppleShadows.level1,
     height: '100%',
+  },
+  pressable: {
+    flex: 1,
   },
   content: {
     flexDirection: 'row',

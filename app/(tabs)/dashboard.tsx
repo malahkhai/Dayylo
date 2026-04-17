@@ -5,8 +5,11 @@ import * as LucideIcons from 'lucide-react-native';
 import { useHabits } from '../../context/HabitContext';
 import { usePrivacy } from '../../context/PrivacyContext';
 import { useRouter } from 'expo-router';
+import { MotiView } from 'moti';
 
 const { width } = Dimensions.get('window');
+
+import { AuroraBackground } from '../../components/AuroraBackground';
 
 export default function DashboardScreen() {
     const { habits, totalDiscipline, level, userName } = useHabits();
@@ -36,8 +39,6 @@ export default function DashboardScreen() {
         return "Seed Planter";
     };
 
-
-
     const handleBuildPress = () => {
         router.push('/(tabs)');
     };
@@ -50,10 +51,17 @@ export default function DashboardScreen() {
     const firstName = userName.split(' ')[0] || userName;
 
     return (
-        <SafeAreaView className="flex-1 bg-black">
-            <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-                {/* Header */}
-                <View className="pt-8 pb-10 flex-row justify-between items-center">
+        <View style={{ flex: 1, backgroundColor: '#000' }}>
+            <AuroraBackground />
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+                    {/* Header */}
+                    <MotiView
+                        from={{ opacity: 0, translateY: -20 }}
+                        animate={{ opacity: 1, translateY: 0 }}
+                        transition={{ type: 'timing', duration: 800, delay: 100 }}
+                        className="pt-8 pb-10 flex-row justify-between items-center"
+                    >
                     <View>
                         <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40 mb-1">
                             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
@@ -71,11 +79,16 @@ export default function DashboardScreen() {
                             className="w-full h-full rounded-xl"
                         />
                     </Pressable>
-                </View>
+                </MotiView>
 
                 {/* Today's Progress Card */}
                 {habits.length > 0 && (
-                    <View className="bg-surface-dark rounded-[32px] p-6 mb-6 border border-white/5">
+                    <MotiView
+                        from={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: 'spring', delay: 200 }}
+                        className="bg-surface-dark rounded-[32px] p-6 mb-6 border border-white/5"
+                    >
                         <View className="flex-row justify-between items-center mb-4">
                             <Text className="text-[11px] font-black uppercase tracking-[2px] text-white/40">
                                 Today's Progress
@@ -85,10 +98,12 @@ export default function DashboardScreen() {
                             </Text>
                         </View>
                         <View className="h-2 bg-white/5 rounded-full overflow-hidden">
-                            <View
+                            <MotiView
+                                from={{ width: 0 }}
+                                animate={{ width: `${progressPercent}%` }}
+                                transition={{ type: 'timing', duration: 1000, delay: 500 }}
                                 className="h-full rounded-full"
                                 style={{
-                                    width: `${progressPercent}%`,
                                     backgroundColor: progressPercent === 100 ? '#30e8ab' : '#3b82f6',
                                 }}
                             />
@@ -99,11 +114,16 @@ export default function DashboardScreen() {
                                 : `${habits.length - totalDone} habit${habits.length - totalDone !== 1 ? 's' : ''} remaining`
                             }
                         </Text>
-                    </View>
+                    </MotiView>
                 )}
 
                 {/* Gamification Card */}
-                <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl relative overflow-hidden">
+                <MotiView
+                    from={{ opacity: 0, translateY: 30 }}
+                    animate={{ opacity: 1, translateY: 0 }}
+                    transition={{ type: 'spring', delay: 300 }}
+                    className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 shadow-2xl relative overflow-hidden"
+                >
                     <View className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
 
                     <View className="flex-row justify-between items-start mb-6">
@@ -124,9 +144,11 @@ export default function DashboardScreen() {
                             {getPlantIcon()}
                         </View>
                         <View className="flex-1 ml-4 h-3 bg-white/5 rounded-full overflow-hidden">
-                            <View
+                            <MotiView
+                                from={{ width: 0 }}
+                                animate={{ width: `${xpProgress}%` }}
+                                transition={{ type: 'timing', duration: 1000, delay: 600 }}
                                 className="h-full bg-primary rounded-full"
-                                style={{ width: `${xpProgress}%` }}
                             />
                         </View>
                     </View>
@@ -134,11 +156,16 @@ export default function DashboardScreen() {
                     <Text className="text-white/30 text-[10px] text-center mt-4 font-bold uppercase tracking-widest">
                         {itemsToNextLevel} XP to next level
                     </Text>
-                </View>
+                </MotiView>
 
                 {/* Stats Grid */}
                 <View className="flex-row gap-4 mb-10">
-                    <View className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg">
+                    <MotiView
+                        from={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: 'spring', delay: 400 }}
+                        className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg"
+                    >
                         <View className="flex-row items-center mb-4">
                             <View className="p-2 bg-orange-500/10 rounded-lg">
                                 <LucideIcons.Flame size={14} color="#f97316" fill="#f97316" />
@@ -154,9 +181,14 @@ export default function DashboardScreen() {
                             <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
                         <Text className="text-[10px] font-bold text-white/20 mt-1 uppercase">Best streak</Text>
-                    </View>
+                    </MotiView>
 
-                    <View className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg">
+                    <MotiView
+                        from={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: 'spring', delay: 500 }}
+                        className="flex-1 bg-surface-dark rounded-[32px] p-6 border border-white/5 shadow-lg"
+                    >
                         <View className="flex-row items-center mb-4">
                             <View className="p-2 bg-primary/10 rounded-lg">
                                 <LucideIcons.Shield size={14} color="#30e8ab" />
@@ -174,7 +206,7 @@ export default function DashboardScreen() {
                             <Text className="text-[13px] font-bold text-white/40 ml-1">Days</Text>
                         </View>
                         <Text className="text-[10px] font-bold text-white/20 mt-1 uppercase">Best streak</Text>
-                    </View>
+                    </MotiView>
                 </View>
 
                 {/* Your Categories */}
@@ -184,38 +216,50 @@ export default function DashboardScreen() {
                     </Text>
 
                     {/* Build Habits Block */}
-                    <Pressable
-                        onPress={handleBuildPress}
-                        className="bg-surface-dark rounded-[32px] p-6 mb-4 border border-white/5 flex-row items-center active:bg-white/5"
+                    <MotiView
+                        from={{ opacity: 0, translateX: -50 }}
+                        animate={{ opacity: 1, translateX: 0 }}
+                        transition={{ type: 'spring', delay: 600 }}
                     >
-                        <View className="w-14 h-14 bg-blue-500/10 rounded-2xl items-center justify-center">
-                            <LucideIcons.TrendingUp size={24} color="#3b82f6" />
-                        </View>
-                        <View className="ml-5 flex-1">
-                            <Text className="text-lg font-black text-white">Build Habits</Text>
-                            <Text className="text-[13px] font-bold text-white/40">
-                                {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Done Today
-                            </Text>
-                        </View>
-                        <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
-                    </Pressable>
+                        <Pressable
+                            onPress={handleBuildPress}
+                            className="bg-surface-dark rounded-[32px] p-6 mb-4 border border-white/5 flex-row items-center active:bg-white/5"
+                        >
+                            <View className="w-14 h-14 bg-blue-500/10 rounded-2xl items-center justify-center">
+                                <LucideIcons.TrendingUp size={24} color="#3b82f6" />
+                            </View>
+                            <View className="ml-5 flex-1">
+                                <Text className="text-lg font-black text-white">Build Habits</Text>
+                                <Text className="text-[13px] font-bold text-white/40">
+                                    {buildHabits.length} Active • {buildHabits.filter(h => h.completedToday).length} Done Today
+                                </Text>
+                            </View>
+                            <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+                    </MotiView>
 
                     {/* Break Habits Block */}
-                    <Pressable
-                        onPress={handleBreakPress}
-                        className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5"
+                    <MotiView
+                        from={{ opacity: 0, translateX: 50 }}
+                        animate={{ opacity: 1, translateX: 0 }}
+                        transition={{ type: 'spring', delay: 700 }}
                     >
-                        <View className="w-14 h-14 rounded-2xl items-center justify-center bg-white/5">
-                            <LucideIcons.ShieldCheck size={24} color="#f97316" />
-                        </View>
-                        <View className="ml-5 flex-1">
-                            <Text className="text-lg font-black text-white">Break Habits</Text>
-                            <Text className="text-[13px] font-bold text-white/40">
-                                {`${breakHabits.length} Active • ${breakHabits.filter(h => h.completedToday).length} Done Today`}
-                            </Text>
-                        </View>
-                        <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
-                    </Pressable>
+                        <Pressable
+                            onPress={handleBreakPress}
+                            className="bg-surface-dark rounded-[32px] p-6 mb-8 border border-white/5 flex-row items-center active:bg-white/5"
+                        >
+                            <View className="w-14 h-14 rounded-2xl items-center justify-center bg-white/5">
+                                <LucideIcons.ShieldCheck size={24} color="#f97316" />
+                            </View>
+                            <View className="ml-5 flex-1">
+                                <Text className="text-lg font-black text-white">Break Habits</Text>
+                                <Text className="text-[13px] font-bold text-white/40">
+                                    {`${breakHabits.length} Active • ${breakHabits.filter(h => h.completedToday).length} Done Today`}
+                                </Text>
+                            </View>
+                            <LucideIcons.ChevronRight size={20} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
+                    </MotiView>
                 </View>
 
                 {/* Quick Actions */}
@@ -231,7 +275,14 @@ export default function DashboardScreen() {
                         ].map((action, i) => {
                             const Icon = (LucideIcons as any)[action.icon];
                             return (
-                                <View key={i} className="items-center" style={{ width: (width - 64) / 3 }}>
+                                <MotiView
+                                    key={i}
+                                    from={{ opacity: 0, translateY: 20 }}
+                                    animate={{ opacity: 1, translateY: 0 }}
+                                    transition={{ type: 'spring', delay: 800 + (i * 100) }}
+                                    className="items-center"
+                                    style={{ width: (width - 64) / 3 }}
+                                >
                                     <Pressable
                                         onPress={action.onPress}
                                         className="w-16 h-16 bg-surface-dark rounded-[24px] items-center justify-center border border-white/5 shadow-xl active:bg-white/5"
@@ -241,12 +292,18 @@ export default function DashboardScreen() {
                                     <Text className="mt-3 text-[10px] font-black text-white/30 uppercase tracking-widest text-center">
                                         {action.label}
                                     </Text>
-                                </View>
+                                </MotiView>
                             );
                         })}
                     </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
+    </View>
     );
 }
+
+/** 
+ * End of Dashboard Screen.
+ * If you see a syntax error here, please clear your Metro cache.
+ */

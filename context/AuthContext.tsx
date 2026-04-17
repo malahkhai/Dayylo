@@ -10,6 +10,7 @@ interface AuthContextData {
     isLoading: boolean;
     loginWithGoogle: () => Promise<boolean>;
     loginWithApple: () => Promise<boolean>;
+    loginAnonymously: () => Promise<void>;
     logout: () => Promise<void>;
     deleteAccount: () => Promise<void>;
 }
@@ -97,6 +98,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const loginAnonymously = async () => {
+        try {
+            await auth().signInAnonymously();
+        } catch (error) {
+            console.error("Anonymous Sign-In Error:", error);
+            throw error;
+        }
+    };
+
     const logout = async () => {
         try {
             const isSignedIn = await GoogleSignin.hasPreviousSignIn();
@@ -127,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, loginWithApple, logout, deleteAccount }}>
+        <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, loginWithApple, loginAnonymously, logout, deleteAccount }}>
             {children}
         </AuthContext.Provider>
     );

@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#121212"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": false,
@@ -20,6 +20,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSFaceIDUsageDescription": "Dayylo uses Face ID to securely lock and unlock your private break habits.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to provide you a personalized experience and for improved app attribution.",
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
@@ -60,6 +61,17 @@
           }
         }
       ],
+      [
+        "react-native-appsflyer",
+        {
+          "devKey": "pSod3dnLRpDm8aDbaV3HbL",
+          "appleAppId": "6759918121",
+          "isDebug": true,
+          "shouldUseStrictMode": false,
+          "shouldUsePurchaseConnector": true
+        }
+      ],
+      "expo-tracking-transparency",
       "./plugins/withGTMSessionFetcherFix"
     ],
     "experiments": {
