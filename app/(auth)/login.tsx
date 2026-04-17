@@ -188,6 +188,62 @@ export default function AuthScreen() {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
 
+    // Transforms raw habit input into a motivational mission statement for Screen 8
+    const getMissionStatement = (input: string, type: 'build' | 'break'): string => {
+        const clean = input.trim();
+        if (!clean) return type === 'build' ? 'Starting something new' : 'Breaking the cycle';
+        const lower = clean.toLowerCase()
+            .replace(/^no\s+/i, '')
+            .replace(/^stop\s+/i, '')
+            .replace(/^avoid\s+/i, '');
+
+        if (type === 'build') {
+            if (/gym|exercise|workout|lift|fitness/.test(lower))
+                return 'Doing daily exercise, no excuses';
+            if (/water|hydrat/.test(lower))
+                return 'Drinking water every single day';
+            if (/read|book/.test(lower))
+                return 'Reading every day, consistently';
+            if (/sleep|bed early/.test(lower))
+                return 'Sleeping early, every single night';
+            if (/run|jog|walk/.test(lower))
+                return 'Running daily and building stamina';
+            if (/meditat|mindful/.test(lower))
+                return 'Meditating every morning, no skipping';
+            if (/journal|write|diary/.test(lower))
+                return 'Writing in my journal every day';
+            if (/cold shower|cold/.test(lower))
+                return 'Taking cold showers, building discipline';
+            // Generic build fallback
+            const cap = clean.charAt(0).toUpperCase() + clean.slice(1);
+            return `Doing ${cap} every single day`;
+        } else {
+            if (/porn|adult content/.test(lower))
+                return 'Stop watching porn and stay clean';
+            if (/texting ex|ex |my ex/.test(lower))
+                return 'Stop texting my ex, for real this time';
+            if (/sugar|sweets|candy|junk|snack/.test(lower))
+                return 'Stop eating junk and fuel my body right';
+            if (/scroll|social media|instagram|tiktok|twitter/.test(lower))
+                return 'Stop mindless scrolling, reclaim my time';
+            if (/smok|cigarett/.test(lower))
+                return 'Stop smoking and breathe free';
+            if (/alcohol|drink|beer|wine/.test(lower))
+                return 'Stop drinking and stay clear-headed';
+            if (/gambl/.test(lower))
+                return 'Stop gambling and take back control';
+            if (/gaming|video game/.test(lower))
+                return 'Stop excessive gaming and live fully';
+            if (/procrastinat/.test(lower))
+                return 'Stop procrastinating and take action';
+            if (/late night|midnight/.test(lower))
+                return 'Stop late night habits and protect my sleep';
+            // Generic break fallback
+            const habit = lower.charAt(0).toUpperCase() + lower.slice(1);
+            return `Stop ${habit} and be consistent`;
+        }
+    };
+
     const handleBack = () => {
         if (mode === 'storyboard') {
             if (storyStep > 1) {
@@ -457,7 +513,7 @@ export default function AuthScreen() {
             case 8: {
                 const ac = selectedFocus.build ? AppleColors.primary : '#FF9500';
                 const missionLabel = selectedFocus.build ? '🚀 Build Mission' : '🔥 Break Mission';
-                const habitName = habitInput || (selectedFocus.build ? 'Your new habit' : 'Your new focus');
+                const habitName = getMissionStatement(habitInput, selectedFocus.build ? 'build' : 'break');
 
                 const FeatureRows = () => (
                     <View style={{ width: '100%', gap: 12, marginRight: -20 }}>
