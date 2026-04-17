@@ -324,6 +324,7 @@ export default function AuthScreen() {
                                 <View style={{ flex: 1 }}>
                                     <Text style={[styles.choiceTitle, { fontSize: 20 }]}>START (Build)</Text>
                                     <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Start routines that improve your life</Text>
+                                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#34C759', marginTop: 10 }}>👉 Start a habit</Text>
                                 </View>
                             </View>
                             
@@ -359,6 +360,7 @@ export default function AuthScreen() {
                                 <View style={{ flex: 1 }}>
                                     <Text style={[styles.choiceTitle, { fontSize: 20 }]}>STOP (Break)</Text>
                                     <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Stop patterns that control you</Text>
+                                    <Text style={{ fontSize: 13, fontWeight: '900', color: '#FF9500', marginTop: 10 }}>👉 Break a habit</Text>
                                 </View>
                             </View>
                             
