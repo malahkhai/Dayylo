@@ -217,14 +217,14 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
-                            <LucideIcons.Repeat size={12} color={AppleColors.systemRed} />
-                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemRed }]}>Call It Out</Text>
+                            <LucideIcons.Repeat size={12} color={AppleColors.systemBlue} />
+                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemBlue }]}>Call It Out</Text>
                         </View>
                         <Text style={styles.sbHeadline}>It’s not lack of discipline</Text>
                         <Text style={styles.sbSubheadline}>It’s patterns you repeat every day without noticing</Text>
                         <View style={styles.loopContainer}>
                             <Animated.View style={animatedRotateStyle}>
-                                <LucideIcons.RefreshCw size={80} color={AppleColors.systemRed} />
+                                <LucideIcons.RefreshCw size={80} color={AppleColors.systemBlue} />
                             </Animated.View>
                             <Text style={[styles.sbQuoteAuthor, { marginTop: 20, color: AppleColors.label.tertiary }]}>again… and again…</Text>
                         </View>
