@@ -190,9 +190,20 @@ export default function AuthScreen() {
 
     const handleBack = () => {
         if (mode === 'storyboard') {
-            if (storyStep > 1) setStoryStep(prev => prev - 1);
-            else setMode('welcome');
-        } else setMode('welcome');
+            if (storyStep > 1) {
+                const prevStep = storyStep - 1;
+                // If returning to step 6 (Build/Break choice), reset path state
+                if (prevStep === 6) {
+                    setHabitInput('');
+                    setSelectedFocus({ build: false, break: false });
+                }
+                setStoryStep(prevStep);
+            } else {
+                setMode('welcome');
+            }
+        } else {
+            setMode('welcome');
+        }
     };
 
     const toggleFocus = (type: 'build' | 'break') => {
