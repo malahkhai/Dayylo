@@ -340,7 +340,7 @@ export default function AuthScreen() {
                     <Text style={[styles.sbSubheadline, storyStep === 6 && { textAlign: 'center' }]}>{config.sub}</Text>
                 </View>
 
-                <View style={styles.visualSection}>
+                <View style={[styles.visualSection, storyStep === 6 && { paddingBottom: 0 }]}>
                     {renderStepVisual()}
                 </View>
             </View>
@@ -424,9 +424,20 @@ export default function AuthScreen() {
                 );
             case 6:
                 return (
-                    <View style={[styles.choiceGrid, { gap: 24, marginTop: 10 }]}>
-                        {/* START CARD */}
-                        <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
+                    <View style={[styles.choiceGrid, { gap: 14, marginTop: 0 }]}>
+                        {/* START CARD — entire card tappable */}
+                        <Pressable
+                            onPress={() => {
+                                setSelectedFocus({ build: true, break: false });
+                                setStoryStep(7);
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            }}
+                            style={({ pressed }) => [
+                                styles.contrastCard,
+                                { backgroundColor: '#070707', borderColor: '#111', padding: 16 },
+                                pressed && { transform: [{ scale: 0.98 }], opacity: 0.92 }
+                            ]}
+                        >
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
                                 <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.primary, width: 56, height: 56, borderRadius: 16 }]}>
                                     <LucideIcons.PlusCircle size={32} color="#FFF" />
@@ -436,8 +447,8 @@ export default function AuthScreen() {
                                     <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Start routines that improve your life</Text>
                                 </View>
                             </View>
-                            
-                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
                                 {['Exercise', 'Read', 'Sleep early'].map(ex => (
                                     <View key={ex} style={{ backgroundColor: '#1A1A1A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 }}>
                                         <Text style={{ color: '#888', fontSize: 13, fontWeight: '600' }}>{ex}</Text>
@@ -445,23 +456,24 @@ export default function AuthScreen() {
                                 ))}
                             </View>
 
-                            <Pressable 
-                                onPress={() => {
-                                    setSelectedFocus({ build: true, break: false });
-                                    setStoryStep(7);
-                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                }}
-                                style={({ pressed }) => [
-                                    { backgroundColor: AppleColors.primary, borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
-                                ]}
-                            >
+                            <View style={{ backgroundColor: AppleColors.primary, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Start a habit</Text>
-                            </Pressable>
-                        </View>
+                            </View>
+                        </Pressable>
 
-                        {/* STOP CARD */}
-                        <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
+                        {/* STOP CARD — entire card tappable */}
+                        <Pressable
+                            onPress={() => {
+                                setSelectedFocus({ build: false, break: true });
+                                setStoryStep(7);
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            }}
+                            style={({ pressed }) => [
+                                styles.contrastCard,
+                                { backgroundColor: '#070707', borderColor: '#111', padding: 16 },
+                                pressed && { transform: [{ scale: 0.98 }], opacity: 0.92 }
+                            ]}
+                        >
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
                                 <View style={[styles.choiceIconBg, { backgroundColor: '#FF9500', width: 56, height: 56, borderRadius: 16 }]}>
                                     <LucideIcons.MinusCircle size={32} color="#FFF" />
@@ -471,8 +483,8 @@ export default function AuthScreen() {
                                     <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Stop patterns that control you</Text>
                                 </View>
                             </View>
-                            
-                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
                                 {['Late night scrolling', 'Texting ex', 'Porn'].map(ex => (
                                     <View key={ex} style={{ backgroundColor: '#1A1A1A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 }}>
                                         <Text style={{ color: '#888', fontSize: 13, fontWeight: '600' }}>{ex}</Text>
@@ -480,20 +492,10 @@ export default function AuthScreen() {
                                 ))}
                             </View>
 
-                            <Pressable 
-                                onPress={() => {
-                                    setSelectedFocus({ build: false, break: true });
-                                    setStoryStep(7);
-                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                                }}
-                                style={({ pressed }) => [
-                                    { backgroundColor: '#FF9500', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
-                                ]}
-                            >
+                            <View style={{ backgroundColor: '#FF9500', borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                                 <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Break a habit</Text>
-                            </Pressable>
-                        </View>
+                            </View>
+                        </Pressable>
                     </View>
                 );
             case 7:
