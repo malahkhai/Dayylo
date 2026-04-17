@@ -362,10 +362,6 @@ export default function AuthScreen() {
             default: return null;
         }
     };
-            default:
-                return null;
-        }
-    };
 
     if (mode === 'welcome') {
         return (
