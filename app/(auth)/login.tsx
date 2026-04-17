@@ -206,7 +206,12 @@ export default function AuthScreen() {
                     return { title: 'What do you want to start?', highlight: 'start', sub: 'Keep it simple — make it doable' };
                 }
                 return { title: 'What do you want to stop?', highlight: 'stop', sub: 'Be honest — this is for you' };
-            case 8: return { title: 'This is Day 1.', highlight: 'Day 1', sub: 'The journey of a thousand miles begins with a single step.' };
+            case 8: return { 
+                title: 'This is Day 1', 
+                highlight: 'Day 1', 
+                sub: 'Just focus on today',
+                cta: '👉 Sign UP'
+            };
             default: return { title: '', highlight: '', sub: '' };
         }
     };
@@ -435,6 +440,28 @@ export default function AuthScreen() {
                         <View style={styles.dayOneCircle}>
                             <Text style={styles.dayOneNum}>1</Text>
                         </View>
+                        
+                        <View style={{ gap: 20, width: '100%', marginTop: 20 }}>
+                            <View style={{ flexDirection: 'row', gap: 14 }}>
+                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: AppleColors.primary + '15', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.Bell size={20} color={AppleColors.primary} />
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Twice-daily accountability</Text>
+                                    <Text style={{ color: '#888', fontSize: 13, lineHeight: 18 }}>We'll remind you in the morning and track your progress late at night.</Text>
+                                </View>
+                            </View>
+
+                            <View style={{ flexDirection: 'row', gap: 14 }}>
+                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#FF950015', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.ShieldCheck size={20} color="#FF9500" />
+                                </View>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Save your mission</Text>
+                                    <Text style={{ color: '#888', fontSize: 13, lineHeight: 18 }}>You'll need to sign up so we can track your progress and protect your streak.</Text>
+                                </View>
+                            </View>
+                        </View>
                     </View>
                 );
             default: return null;
@@ -447,13 +474,30 @@ export default function AuthScreen() {
                 <View style={styles.content}>
                     <View style={styles.centerContent}>
                         <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
-                            <Image source={require('../../assets/welcome-logo.png')} style={styles.appIcon} resizeMode="contain" />
+                            <LucideIcons.CloudRain size={80} color={AppleColors.primary} />
                         </Animated.View>
-                        <Text style={styles.headline}>Welcome to Dayylo</Text>
-                        <Text style={styles.subtext}>Habit tracker for real-life struggles, not perfect routines</Text>
+                        <Text style={[styles.headline, { textAlign: 'center' }]}>Save your progress</Text>
+                        <Text style={[styles.subtext, { textAlign: 'center' }]}>Don’t lose your streak — access it anytime</Text>
                     </View>
-                    <View style={{ width: '100%', paddingHorizontal: 4 }}>
-                        <SwipeButton title="Slide to start" onSwipeComplete={handleContinue} />
+
+                    <View style={{ width: '100%', gap: 12, paddingBottom: 20 }}>
+                        <Pressable 
+                            style={styles.appleButton}
+                            onPress={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}
+                        >
+                            <LucideIcons.Apple size={20} color="#000" fill="#000" />
+                            <Text style={styles.appleButtonText}>Continue with Apple</Text>
+                        </Pressable>
+
+                        <Pressable 
+                            style={styles.googleButton}
+                            onPress={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}
+                        >
+                            <View style={styles.googleIconBg}>
+                                <Text style={{ fontSize: 13, fontWeight: '900', color: '#4285F4' }}>G</Text>
+                            </View>
+                            <Text style={styles.googleButtonText}>Continue with Google</Text>
+                        </Pressable>
                     </View>
                 </View>
             </SafeAreaView>
