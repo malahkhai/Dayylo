@@ -6,7 +6,8 @@ import {
 import { Easing } from 'react-native-reanimated';
 import auth from '@react-native-firebase/auth';
 import Animated, { 
-    useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence 
+    useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence,
+    FadeInRight, FadeIn
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
