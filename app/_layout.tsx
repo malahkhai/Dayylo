@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import React, { useEffect, useState, useCallback } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import Animated, { FadeOut } from 'react-native-reanimated';
 import "../global.css";
 import { HabitProvider } from '../context/HabitContext';
 import { PrivacyProvider } from '../context/PrivacyContext';
-import { AuthProvider } from '../context/AuthContext';
+import { AuthProvider, useAuth } from '../context/AuthContext';
 
 import Constants from 'expo-constants';
 
@@ -21,6 +21,30 @@ import { DayyloSplashScreen } from '../components/DayyloSplashScreen';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// Inner component with access to AuthContext
+function AuthGate({ children }: { children: React.ReactNode }) {
+    const { user, isLoading } = useAuth();
+    const router = useRouter();
+    const segments = useSegments();
+
+    useEffect(() => {
+        if (isLoading) return; // Wait for auth state to resolve
+
+        const inAuthGroup = segments[0] === '(auth)';
+        const isVerifiedUser = user && !user.isAnonymous;
+
+        if (isVerifiedUser && inAuthGroup) {
+            // Verified user lands on auth screen → push to app
+            router.replace('/(tabs)');
+        } else if (!isVerifiedUser && !inAuthGroup) {
+            // Anonymous or no user lands on tabs → push to onboarding
+            router.replace('/(auth)/login');
+        }
+    }, [user, isLoading, segments]);
+
+    return <>{children}</>;
+}
 
 export default function RootLayout() {
     const [appIsReady, setAppIsReady] = useState(false);
@@ -78,9 +102,7 @@ export default function RootLayout() {
                 console.error('[Init] Critical initialization error:', e);
             } finally {
                 console.log('[Init] Finalizing app readiness...');
-                // Mark app as ready but keep custom splash visible for its animation
                 setAppIsReady(true);
-                // Hide native splash immediately since we have our custom one
                 await SplashScreen.hideAsync();
             }
         };
@@ -103,25 +125,27 @@ export default function RootLayout() {
                     <PrivacyProvider>
                         <CelebrationProvider>
                             <HabitProvider>
-                                <View style={{ flex: 1 }}>
-                                    <Stack screenOptions={{ headerShown: false }}>
-                                        <Stack.Screen name="(auth)/login" options={{ animation: 'fade' }} />
-                                        <Stack.Screen name="(auth)/onboarding" options={{ animation: 'slide_from_right' }} />
-                                        <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
-                                        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-                                        <Stack.Screen name="add-habit" options={{ presentation: 'formSheet' }} />
-                                        <Stack.Screen name="habit/[id]" options={{ presentation: 'card' }} />
-                                    </Stack>
+                                <AuthGate>
+                                    <View style={{ flex: 1 }}>
+                                        <Stack screenOptions={{ headerShown: false }}>
+                                            <Stack.Screen name="(auth)/login" options={{ animation: 'fade' }} />
+                                            <Stack.Screen name="(auth)/onboarding" options={{ animation: 'slide_from_right' }} />
+                                            <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
+                                            <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+                                            <Stack.Screen name="add-habit" options={{ presentation: 'formSheet' }} />
+                                            <Stack.Screen name="habit/[id]" options={{ presentation: 'card' }} />
+                                        </Stack>
 
-                                    {splashVisible && (
-                                        <Animated.View 
-                                            exiting={FadeOut.duration(800)}
-                                            style={{ ...StyleSheet.absoluteFillObject, zIndex: 99999 }}
-                                        >
-                                            <DayyloSplashScreen onAnimationComplete={handleSplashComplete} />
-                                        </Animated.View>
-                                    )}
-                                </View>
+                                        {splashVisible && (
+                                            <Animated.View 
+                                                exiting={FadeOut.duration(800)}
+                                                style={{ ...StyleSheet.absoluteFillObject, zIndex: 99999 }}
+                                            >
+                                                <DayyloSplashScreen onAnimationComplete={handleSplashComplete} />
+                                            </Animated.View>
+                                        )}
+                                    </View>
+                                </AuthGate>
                             </HabitProvider>
                         </CelebrationProvider>
                     </PrivacyProvider>
