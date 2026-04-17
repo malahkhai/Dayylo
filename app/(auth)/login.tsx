@@ -445,29 +445,89 @@ export default function AuthScreen() {
             case 8:
                 const accentColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
                 return (
-                    <View style={[styles.visualSection, { alignItems: 'center', justifyContent: 'center' }]}>
-                        <View style={[styles.dayOneCircle, { borderColor: accentColor }]}>
-                            <Text style={[styles.dayOneNum, { color: accentColor }]}>1</Text>
-                        </View>
+                    <View style={[styles.visualSection, { alignItems: 'center', justifyContent: 'flex-start', paddingTop: 10 }]}>
                         
-                        <View style={{ gap: 20, width: '100%', marginTop: 30 }}>
-                            <View style={{ flexDirection: 'row', gap: 14 }}>
-                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: accentColor + '15', alignItems: 'center', justifyContent: 'center' }}>
-                                    <LucideIcons.Bell size={20} color={accentColor} />
+                        {/* Mission Badge */}
+                        <View style={{ 
+                            backgroundColor: accentColor + '18', 
+                            borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, 
+                            borderWidth: 1, borderColor: accentColor + '40',
+                            marginBottom: 8, alignSelf: 'flex-start'
+                        }}>
+                            <Text style={{ color: accentColor, fontSize: 11, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase' }}>
+                                {selectedFocus.build ? '🚀 Your Build Mission' : '🔥 Your Break Mission'}
+                            </Text>
+                        </View>
+
+                        {/* Habit Name */}
+                        <Text style={{ 
+                            color: '#FFF', fontSize: 22, fontWeight: '900', 
+                            alignSelf: 'flex-start', marginBottom: 32, letterSpacing: -0.3
+                        }} numberOfLines={2}>
+                            {habitInput || (selectedFocus.build ? 'Your new habit' : 'Your new focus')}
+                        </Text>
+
+                        {/* Glowing Day 1 Orb */}
+                        <View style={{ alignItems: 'center', marginBottom: 36 }}>
+                            {/* Outer glow ring */}
+                            <View style={{
+                                position: 'absolute',
+                                width: 160, height: 160, borderRadius: 80,
+                                backgroundColor: accentColor + '08',
+                                borderWidth: 1, borderColor: accentColor + '20',
+                            }} />
+                            {/* Mid glow ring */}
+                            <View style={{
+                                position: 'absolute',
+                                width: 130, height: 130, borderRadius: 65,
+                                backgroundColor: accentColor + '12',
+                                borderWidth: 1, borderColor: accentColor + '30',
+                            }} />
+                            {/* Core circle */}
+                            <View style={{
+                                width: 100, height: 100, borderRadius: 50,
+                                backgroundColor: accentColor + '20',
+                                borderWidth: 2, borderColor: accentColor,
+                                alignItems: 'center', justifyContent: 'center',
+                                shadowColor: accentColor,
+                                shadowOffset: { width: 0, height: 0 },
+                                shadowOpacity: 0.6,
+                                shadowRadius: 20,
+                                elevation: 12,
+                            }}>
+                                <Text style={{ fontSize: 48, fontWeight: '900', color: accentColor, letterSpacing: -2 }}>1</Text>
+                            </View>
+                        </View>
+
+                        {/* Feature Cards */}
+                        <View style={{ width: '100%', gap: 12 }}>
+                            <View style={{
+                                flexDirection: 'row', gap: 16, alignItems: 'center',
+                                backgroundColor: 'rgba(255,255,255,0.04)',
+                                borderRadius: 18, padding: 16,
+                                borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)'
+                            }}>
+                                <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: accentColor + '20', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.Bell size={22} color={accentColor} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Twice-daily accountability</Text>
-                                    <Text style={{ color: '#888', fontSize: 13, lineHeight: 18 }}>We'll remind you in the morning and track your progress late at night.</Text>
+                                    <Text style={{ color: '#FFF', fontSize: 15, fontWeight: '800', marginBottom: 3 }}>Twice-daily check-ins</Text>
+                                    <Text style={{ color: '#666', fontSize: 12, lineHeight: 17 }}>Morning reminder + nightly progress tracking.</Text>
                                 </View>
                             </View>
 
-                            <View style={{ flexDirection: 'row', gap: 14 }}>
-                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: accentColor + '15', alignItems: 'center', justifyContent: 'center' }}>
-                                    <LucideIcons.ShieldCheck size={20} color={accentColor} />
+                            <View style={{
+                                flexDirection: 'row', gap: 16, alignItems: 'center',
+                                backgroundColor: 'rgba(255,255,255,0.04)',
+                                borderRadius: 18, padding: 16,
+                                borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)'
+                            }}>
+                                <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: accentColor + '20', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.ShieldCheck size={22} color={accentColor} />
                                 </View>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Save your mission</Text>
-                                    <Text style={{ color: '#888', fontSize: 13, lineHeight: 18 }}>You'll need to sign up so we can track your progress and protect your streak.</Text>
+                                    <Text style={{ color: '#FFF', fontSize: 15, fontWeight: '800', marginBottom: 3 }}>Protect your streak</Text>
+                                    <Text style={{ color: '#666', fontSize: 12, lineHeight: 17 }}>Sign up to save your mission and never lose progress.</Text>
                                 </View>
                             </View>
                         </View>
