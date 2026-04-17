@@ -49,9 +49,11 @@ export default function AuthScreen() {
     const addHabit = habitsContext?.addHabit;
 
     // Handle initial redirect if user is already logged in
+    // Only redirect NON-anonymous users — anonymous users were created
+    // internally during onboarding and should not skip the flow on reload.
     useEffect(() => {
-        if (user && mode !== 'signup') {
-            console.log('[Heartbeat] User detected, redirecting to tabs');
+        if (user && !user.isAnonymous && mode !== 'signup') {
+            console.log('[Heartbeat] Verified user detected, redirecting to tabs');
             router.replace('/(tabs)');
         }
     }, [user, mode]);
