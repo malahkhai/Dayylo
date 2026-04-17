@@ -197,6 +197,7 @@ export default function AuthScreen() {
 
     const toggleFocus = (type: 'build' | 'break') => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        setHabitInput(''); // Clear input when switching Build ↔ Break
         setSelectedFocus({ build: type === 'build', break: type === 'break' });
         setTimeout(() => setStoryStep(7), 400);
     };
