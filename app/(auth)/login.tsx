@@ -192,196 +192,176 @@ export default function AuthScreen() {
         setTimeout(() => setStoryStep(7), 400);
     };
 
+    const getStoryStepConfig = (step: number) => {
+        switch(step) {
+            case 1: return { badge: 'Reality Hook', badgeIcon: 'ShieldAlert', badgeColor: AppleColors.primary, title: 'Be honest. What’s controlling you?', sub: 'Not just habits — the things you can’t seem to stop' };
+            case 2: return { badge: 'Call It Out', badgeIcon: 'Repeat', badgeColor: AppleColors.systemBlue, title: 'It’s not lack of discipline', sub: 'It’s patterns you repeat every day without noticing' };
+            case 3: return { badge: 'Your Differentiator', badgeIcon: 'ArrowLeftRight', badgeColor: AppleColors.systemBlue, title: 'Track what you want to STOP or START', sub: 'Most apps track what you do.\nDayylo tracks what you avoid.' };
+            case 4: return { badge: 'Accountability Angle', badgeIcon: 'Scale', badgeColor: AppleColors.systemOrange, title: 'Every day counts — no hiding', sub: 'You either did it… or you didn’t' };
+            case 5: return { badge: 'Dopamine Hook', badgeIcon: 'Flame', badgeColor: AppleColors.primary, title: 'Build a streak you won’t want to break', sub: 'One day becomes two. Then ten. Then a new identity.' };
+            case 6: return { badge: 'Focus Choice', badgeIcon: 'Target', badgeColor: AppleColors.primary, title: 'Choose your battle.', sub: 'Focus on just one thing for now. Make it small, make it doable.' };
+            case 7: return { badge: 'Creation', badgeIcon: 'Zap', badgeColor: AppleColors.primary, title: selectedFocus.build ? 'What do you want to start?' : 'What do you want to break?', sub: 'Keep it simple — make it doable.' };
+            case 8: return { badge: 'Commitment', badgeIcon: 'CheckCircle', badgeColor: AppleColors.primary, title: 'This is Day 1', sub: 'Just focus on today. You\'ve got this.' };
+            default: return { badge: '', badgeIcon: 'Activity', badgeColor: AppleColors.primary, title: '', sub: '' };
+        }
+    };
+
     const renderStoryStep = () => {
+        const config = getStoryStepConfig(storyStep);
+        const Icon = (LucideIcons as any)[config.badgeIcon];
+
+        return (
+            <View style={styles.stepContent}>
+                <View style={styles.fixedHeader}>
+                    <View style={[styles.sbBadge, { borderColor: config.badgeColor + '30', backgroundColor: config.badgeColor + '15' }]}>
+                        {Icon && <Icon size={12} color={config.badgeColor} />}
+                        <Text style={[styles.sbBadgeText, { color: config.badgeColor }]}>{config.badge}</Text>
+                    </View>
+                    <Text style={styles.sbHeadline}>{config.title}</Text>
+                    <Text style={styles.sbSubheadline}>{config.sub}</Text>
+                </View>
+
+                <View style={styles.visualSection}>
+                    {renderStepVisual()}
+                </View>
+            </View>
+        );
+    };
+
+    const renderStepVisual = () => {
         switch(storyStep) {
             case 1:
                 return (
-                    <View style={styles.stepContent}>
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.ShieldAlert size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>Reality Hook</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>Be honest. What’s controlling you?</Text>
-                        <Text style={styles.sbSubheadline}>Not just habits — the things you can’t seem to stop</Text>
-                        
-                        <View style={styles.bubbleGrid}>
-                            {['Late night scrolling', 'Texting your ex', 'Skipping workouts', 'Porn', 'Junk food'].map((item, i) => (
-                                <View key={i} style={[styles.blurredBubble, { opacity: 1 - (i * 0.15), transform: [{ scale: 1 - (i * 0.05) }] }]}>
-                                    <Text style={styles.bubbleText}>{item}</Text>
-                                </View>
-                            ))}
-                        </View>
+                    <View style={styles.bubbleGrid}>
+                        {['Late night scrolling', 'Texting your ex', 'Skipping workouts', 'Porn', 'Junk food'].map((item, i) => (
+                            <View key={i} style={[styles.blurredBubble, { opacity: 1 - (i * 0.15), transform: [{ scale: 1 - (i * 0.05) }] }]}>
+                                <Text style={styles.bubbleText}>{item}</Text>
+                            </View>
+                        ))}
                     </View>
                 );
             case 2:
                 return (
-                    <View style={styles.stepContent}>
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.Repeat size={12} color={AppleColors.systemBlue} />
-                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemBlue }]}>Call It Out</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>It’s not lack of discipline</Text>
-                        <Text style={styles.sbSubheadline}>It’s patterns you repeat every day without noticing</Text>
-                        <View style={styles.loopContainer}>
-                            <Animated.View style={animatedRotateStyle}>
-                                <LucideIcons.RefreshCw size={80} color={AppleColors.systemBlue} />
-                            </Animated.View>
-                            <Text style={[styles.sbQuoteAuthor, { marginTop: 20, color: AppleColors.label.tertiary }]}>again… and again…</Text>
-                        </View>
+                    <View style={styles.loopContainer}>
+                        <Animated.View style={animatedRotateStyle}>
+                            <LucideIcons.RefreshCw size={80} color={AppleColors.systemBlue} />
+                        </Animated.View>
+                        <Text style={[styles.sbQuoteAuthor, { marginTop: 20, color: AppleColors.label.tertiary }]}>again… and again…</Text>
                     </View>
                 );
             case 3:
                 return (
-                    <View style={styles.stepContent}>
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.ArrowLeftRight size={12} color={AppleColors.systemBlue} />
-                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemBlue }]}>Your Differentiator</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>Track what you want to STOP or START</Text>
-                        <Text style={styles.sbSubheadline}>Most apps track what you do.{"\n"}Dayylo tracks what you avoid.</Text>
-                        
-                        <View style={styles.sbStatGrid}>
-                            {[
-                                { label: 'Yes Gym', icon: 'CheckCircle', color: AppleColors.systemGreen },
-                                { label: 'No porn', icon: 'EyeOff', color: AppleColors.systemOrange },
-                                { label: 'Yes Walk 20k', icon: 'Footprints', color: AppleColors.systemGreen },
-                                { label: 'No texting ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
-                                { label: 'Saving €20 Daily', icon: 'Wallet', color: AppleColors.systemGreen },
-                                { label: 'No sugar', icon: 'Cookie', color: AppleColors.systemOrange }
-                            ].map((item, i) => (
-                                <View key={i} style={[styles.sbStatCard, { paddingVertical: 10, borderColor: item.color + '30' }]}>
-                                    <View style={[styles.sbStatIcon, { width: 32, height: 32, backgroundColor: item.color + '15' }]}>
-                                        <LucideIcons.Check size={16} color={item.color} />
-                                    </View>
-                                    <Text style={[styles.sbStatLabel, { fontSize: 13, color: '#FFF' }]}>{item.label}</Text>
-                                    <View style={{ flex: 1 }} />
-                                    <LucideIcons.CheckCircle size={18} color={item.color} />
+                    <View style={styles.sbStatGrid}>
+                        {[
+                            { label: 'Yes Gym', icon: 'CheckCircle', color: AppleColors.systemGreen },
+                            { label: 'No porn', icon: 'EyeOff', color: AppleColors.systemOrange },
+                            { label: 'Yes Walk 20k', icon: 'Footprints', color: AppleColors.systemGreen },
+                            { label: 'No texting ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
+                            { label: 'Saving €20 Daily', icon: 'Wallet', color: AppleColors.systemGreen },
+                            { label: 'No sugar', icon: 'Cookie', color: AppleColors.systemOrange }
+                        ].map((item, i) => (
+                            <View key={i} style={[styles.sbStatCard, { paddingVertical: 10, borderColor: item.color + '30' }]}>
+                                <View style={[styles.sbStatIcon, { width: 32, height: 32, backgroundColor: item.color + '15' }]}>
+                                    <LucideIcons.Check size={16} color={item.color} />
                                 </View>
-                            ))}
-                        </View>
+                                <Text style={[styles.sbStatLabel, { fontSize: 13, color: '#FFF' }]}>{item.label}</Text>
+                                <View style={{ flex: 1 }} />
+                                <LucideIcons.CheckCircle size={18} color={item.color} />
+                            </View>
+                        ))}
                     </View>
                 );
             case 4:
                 return (
-                    <View style={styles.stepContent}>
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.Scale size={12} color={AppleColors.systemOrange} />
-                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemOrange }]}>Accountability Angle</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>Every day counts — no hiding</Text>
-                        <Text style={styles.sbSubheadline}>You either did it… or you didn’t</Text>
-                        
-                        <View style={styles.contrastGrid}>
-                            <View style={[styles.contrastCard, { borderColor: AppleColors.systemRed + '40' }]}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                    <LucideIcons.X size={24} color={AppleColors.systemRed} />
-                                    <Text style={styles.contrastText}>Did it</Text>
-                                </View>
+                    <View style={styles.contrastGrid}>
+                        <View style={[styles.contrastCard, { borderColor: AppleColors.systemRed + '40' }]}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <LucideIcons.X size={24} color={AppleColors.systemRed} />
+                                <Text style={styles.contrastText}>Did it</Text>
                             </View>
-                            <View style={[styles.contrastCard, { borderColor: AppleColors.systemGreen + '40' }]}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                                    <LucideIcons.Check size={24} color={AppleColors.systemGreen} />
-                                    <Text style={styles.contrastText}>Avoided it</Text>
-                                </View>
+                        </View>
+                        <View style={[styles.contrastCard, { borderColor: AppleColors.systemGreen + '40' }]}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <LucideIcons.Check size={24} color={AppleColors.systemGreen} />
+                                <Text style={styles.contrastText}>Avoided it</Text>
                             </View>
                         </View>
                     </View>
                 );
             case 5:
                 return (
-                    <View style={styles.stepContent}>
+                    <View style={styles.streakContainer}>
                         {showConfetti && <ConfettiExplosion />}
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.Flame size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>Dopamine Hook</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>Build a streak you won’t want to break</Text>
-                        <Text style={styles.sbSubheadline}>One day becomes two. Then ten. Then a new identity.</Text>
-                        <View style={styles.streakContainer}>
-                            <Text style={styles.streakValue}>{animatedStreak}</Text>
-                            <Text style={styles.accLabel}>DAY STREAK</Text>
-                        </View>
+                        <Text style={styles.streakValue}>{animatedStreak}</Text>
+                        <Text style={styles.accLabel}>DAY STREAK</Text>
                     </View>
                 );
             case 6:
                 return (
-                    <View style={styles.stepContent}>
-                        <View style={styles.sbBadge}>
-                            <LucideIcons.Target size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>Focus Choice</Text>
-                        </View>
-                        <Text style={styles.sbHeadline}>Choose your battle.</Text>
-                        <Text style={[styles.sbSubheadline, { marginBottom: 30 }]}>Focus on just one thing for now. Make it small, make it doable.</Text>
-                        
-                        <View style={styles.choiceGrid}>
-                            <Pressable 
-                                style={[styles.choiceCard, selectedFocus.build && styles.choiceCardSelectedBuild]} 
-                                onPress={() => toggleFocus('build')}
-                            >
-                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
-                                    <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
-                                </View>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={styles.choiceTitle}>Start a habit</Text>
-                                    <Text style={styles.choiceDesc}>Build a positive momentum</Text>
-                                </View>
-                                {selectedFocus.build && <LucideIcons.CheckCircle size={20} color={AppleColors.systemGreen} />}
-                            </Pressable>
+                    <View style={styles.choiceGrid}>
+                        <Pressable 
+                            style={[styles.choiceCard, selectedFocus.build && styles.choiceCardSelectedBuild]} 
+                            onPress={() => toggleFocus('build')}
+                        >
+                            <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
+                                <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.choiceTitle}>Start a habit</Text>
+                                <Text style={styles.choiceDesc}>Build a positive momentum</Text>
+                            </View>
+                            {selectedFocus.build && <LucideIcons.CheckCircle size={20} color={AppleColors.systemGreen} />}
+                        </Pressable>
 
-                            <Pressable 
-                                style={[styles.choiceCard, selectedFocus.break && styles.choiceCardSelectedBreak]} 
-                                onPress={() => toggleFocus('break')}
-                            >
-                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
-                                    <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
-                                </View>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={styles.choiceTitle}>Stop a habit</Text>
-                                    <Text style={styles.choiceDesc}>Break a toxic cycle</Text>
-                                </View>
-                                {selectedFocus.break && <LucideIcons.CheckCircle size={20} color={AppleColors.systemOrange} />}
-                            </Pressable>
-                        </View>
+                        <Pressable 
+                            style={[styles.choiceCard, selectedFocus.break && styles.choiceCardSelectedBreak]} 
+                            onPress={() => toggleFocus('break')}
+                        >
+                            <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
+                                <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.choiceTitle}>Stop a habit</Text>
+                                <Text style={styles.choiceDesc}>Break a toxic cycle</Text>
+                            </View>
+                            {selectedFocus.break && <LucideIcons.CheckCircle size={20} color={AppleColors.systemOrange} />}
+                        </Pressable>
                     </View>
                 );
             case 7:
                 return (
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                        <View style={styles.stepContent}>
-                            <Text style={styles.sbHeadline}>{selectedFocus.build ? 'What do you want to start?' : 'What do you want to break?'}</Text>
-                            <Text style={styles.sbSubheadline}>Keep it simple — make it doable.</Text>
-                            
-                            <View style={styles.creationContainer}>
-                                <TextInput 
-                                    style={styles.largeInput}
-                                    placeholder={selectedFocus.build ? "e.g. go to the gym" : "e.g. junk food"}
-                                    placeholderTextColor="rgba(255,255,255,0.2)"
-                                    value={habitInput}
-                                    onChangeText={setHabitInput}
-                                    autoFocus
-                                    selectionColor={AppleColors.primary}
-                                />
-                                <View style={styles.suggestionGrid}>
-                                    {(selectedFocus.build ? ['Exercise', 'Drink water', 'Read', 'Sleep early'] : ['Social Media', 'Sugar', 'Caffeine', 'Late Nights']).map(s => (
-                                        <Pressable key={s} style={styles.suggestionPill} onPress={() => setHabitInput(s)}>
-                                            <Text style={styles.suggestionText}>{s}</Text>
-                                        </Pressable>
-                                    ))}
-                                </View>
+                        <View style={styles.creationContainer}>
+                            <TextInput 
+                                style={styles.largeInput}
+                                placeholder={selectedFocus.build ? "e.g. go to the gym" : "e.g. junk food"}
+                                placeholderTextColor="rgba(255,255,255,0.2)"
+                                value={habitInput}
+                                onChangeText={setHabitInput}
+                                autoFocus
+                                selectionColor={AppleColors.primary}
+                            />
+                            <View style={styles.suggestionGrid}>
+                                {(selectedFocus.build ? ['Exercise', 'Drink water', 'Read', 'Sleep early'] : ['Social Media', 'Sugar', 'Caffeine', 'Late Nights']).map(s => (
+                                    <Pressable key={s} style={styles.suggestionPill} onPress={() => setHabitInput(s)}>
+                                        <Text style={styles.suggestionText}>{s}</Text>
+                                    </Pressable>
+                                ))}
                             </View>
                         </View>
                     </KeyboardAvoidingView>
                 );
             case 8:
                 return (
-                    <View style={[styles.stepContent, { alignItems: 'center', justifyContent: 'center' }]}>
+                    <View style={[styles.visualSection, { alignItems: 'center', justifyContent: 'center' }]}>
                         <View style={styles.dayOneCircle}>
                             <Text style={styles.dayOneNum}>1</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>This is Day 1</Text>
-                        <Text style={styles.sbSubheadline}>Just focus on today. You've got this.</Text>
                     </View>
                 );
+            default: return null;
+        }
+    };
             default:
                 return null;
         }
@@ -476,7 +456,9 @@ const styles = StyleSheet.create({
     sbSubheadline: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'left', lineHeight: 22 },
     sbQuoteAuthor: { ...AppleTypography.caption1, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
     
-    stepContent: { flex: 1, justifyContent: 'center' },
+    stepContent: { flex: 1, paddingTop: 60 },
+    fixedHeader: { paddingHorizontal: 20, marginBottom: 40, minHeight: 180 },
+    visualSection: { flex: 1, paddingHorizontal: 20 },
     
     // Reality Hook Bubbles
     bubbleGrid: { marginVertical: 40, alignItems: 'center', gap: 12 },
