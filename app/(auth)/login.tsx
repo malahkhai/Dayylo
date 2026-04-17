@@ -200,7 +200,7 @@ export default function AuthScreen() {
             case 3: return { title: 'Track what you want to STOP or START', highlight: 'STOP', sub: 'Most apps track what you do.\nDayylo tracks what you avoid.' };
             case 4: return { title: 'Every day counts — no hiding', highlight: 'counts', sub: 'You either did it… or you didn’t' };
             case 5: return { title: 'Build a streak you won’t want to break', highlight: 'streak', sub: 'One day becomes two. Then twelve. Then a new identity.' };
-            case 6: return { title: 'Choose your battle.', highlight: 'battle', sub: 'Focus on just one thing for now. Make it small, make it doable.' };
+            case 6: return { title: 'What do you want to change?', highlight: 'change', sub: 'Start something better or stop something holding you back' };
             case 7: return { title: 'Create your identity.', highlight: 'identity', sub: 'Who do you want to become?' };
             case 8: return { title: 'This is Day 1.', highlight: 'Day 1', sub: 'The journey of a thousand miles begins with a single step.' };
             default: return { title: '', highlight: '', sub: '' };
@@ -316,31 +316,41 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.choiceGrid}>
                         <Pressable 
-                            style={[styles.choiceCard, selectedFocus.build && styles.choiceCardSelectedBuild]} 
-                            onPress={() => toggleFocus('build')}
+                            onPress={() => {
+                                setSelectedFocus({ build: true, break: false });
+                                setStoryStep(7);
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            }}
+                            style={[styles.choiceCard, { borderLeftColor: AppleColors.systemGreen, borderLeftWidth: 4 }]}
                         >
                             <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
-                                <LucideIcons.TrendingUp size={28} color={AppleColors.systemGreen} />
+                                <LucideIcons.PlusCircle size={24} color={AppleColors.systemGreen} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.choiceTitle}>Start a habit</Text>
-                                <Text style={styles.choiceDesc}>Build a positive momentum</Text>
+                                <Text style={styles.choiceTitle}>Build a habit</Text>
+                                <Text style={styles.choiceDesc}>Start routines that improve your life</Text>
+                                <Text style={[styles.suggestionText, { fontSize: 11, marginTop: 8 }]}>EX: Exercise • Read • Sleep early</Text>
+                                <Text style={[styles.choiceTitle, { fontSize: 13, color: AppleColors.systemGreen, marginTop: 6 }]}>👉 Start a habit</Text>
                             </View>
-                            {selectedFocus.build && <LucideIcons.CheckCircle size={20} color={AppleColors.systemGreen} />}
                         </Pressable>
 
                         <Pressable 
-                            style={[styles.choiceCard, selectedFocus.break && styles.choiceCardSelectedBreak]} 
-                            onPress={() => toggleFocus('break')}
+                            onPress={() => {
+                                setSelectedFocus({ build: false, break: true });
+                                setStoryStep(7);
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            }}
+                            style={[styles.choiceCard, { borderLeftColor: AppleColors.systemOrange, borderLeftWidth: 4 }]}
                         >
                             <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
-                                <LucideIcons.ShieldOff size={28} color={AppleColors.systemOrange} />
+                                <LucideIcons.ShieldOff size={24} color={AppleColors.systemOrange} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.choiceTitle}>Stop a habit</Text>
-                                <Text style={styles.choiceDesc}>Break a toxic cycle</Text>
+                                <Text style={styles.choiceTitle}>Break a habit</Text>
+                                <Text style={styles.choiceDesc}>Stop patterns that control you</Text>
+                                <Text style={[styles.suggestionText, { fontSize: 11, marginTop: 8 }]}>EX: Late night scrolling • Texting ex • Porn</Text>
+                                <Text style={[styles.choiceTitle, { fontSize: 13, color: AppleColors.systemOrange, marginTop: 6 }]}>👉 Break a habit</Text>
                             </View>
-                            {selectedFocus.break && <LucideIcons.CheckCircle size={20} color={AppleColors.systemOrange} />}
                         </Pressable>
                     </View>
                 );
