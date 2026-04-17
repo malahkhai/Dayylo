@@ -206,7 +206,7 @@ export default function AuthScreen() {
                         
                         <View style={styles.bubbleGrid}>
                             {['Late night scrolling', 'Texting your ex', 'Skipping workouts', 'Porn', 'Junk food'].map((item, i) => (
-                                <View key={i} style={[styles.blurredBubble, { opacity: 0.8 - (i * 0.1), transform: [{ scale: 1 - (i * 0.05) }] }]}>
+                                <View key={i} style={[styles.blurredBubble, { opacity: 1 - (i * 0.15), transform: [{ scale: 1 - (i * 0.05) }] }]}>
                                     <Text style={styles.bubbleText}>{item}</Text>
                                 </View>
                             ))}
@@ -217,15 +217,16 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
-                            <LucideIcons.Infinity size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>The Loop</Text>
+                            <LucideIcons.Repeat size={12} color={AppleColors.systemRed} />
+                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemRed }]}>Call It Out</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>Stuck in the cycle?</Text>
-                        <Text style={styles.sbSubheadline}>The "I'll start Monday" lie is killing your momentum.</Text>
+                        <Text style={styles.sbHeadline}>It’s not lack of discipline</Text>
+                        <Text style={styles.sbSubheadline}>It’s patterns you repeat every day without noticing</Text>
                         <View style={styles.loopContainer}>
                             <Animated.View style={animatedRotateStyle}>
-                                <LucideIcons.RefreshCw size={80} color={AppleColors.primary} />
+                                <LucideIcons.RefreshCw size={80} color={AppleColors.systemRed} />
                             </Animated.View>
+                            <Text style={[styles.sbQuoteAuthor, { marginTop: 20, color: AppleColors.label.tertiary }]}>again… and again…</Text>
                         </View>
                     </View>
                 );
@@ -233,23 +234,27 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
-                            <LucideIcons.UserSquare size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>Identity Shift</Text>
+                            <LucideIcons.ShieldCheck size={12} color={AppleColors.systemBlue} />
+                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemBlue }]}>Your Differentiator</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>Stop being the person who fails.</Text>
-                        <Text style={styles.sbSubheadline}>Dayylo shifts your focus from what you "should" do, to who you ARE.</Text>
+                        <Text style={styles.sbHeadline}>Track what you want to STOP</Text>
+                        <Text style={styles.sbSubheadline}>Most apps track what you do.{"\n"}Dayylo tracks what you avoid.</Text>
                         
                         <View style={styles.sbStatGrid}>
-                            <View style={styles.sbStatCard}>
-                                <View style={[styles.sbStatIcon, { backgroundColor: AppleColors.systemBlue + '15' }]}>
-                                    <LucideIcons.CheckCircle size={24} color={AppleColors.systemBlue} />
+                            {[
+                                { label: 'No porn', icon: 'EyeOff' },
+                                { label: 'No texting ex', icon: 'MessageCircle' },
+                                { label: 'No sugar', icon: 'Cookie' }
+                            ].map((item, i) => (
+                                <View key={i} style={styles.sbStatCard}>
+                                    <View style={[styles.sbStatIcon, { backgroundColor: AppleColors.systemBlue + '15' }]}>
+                                        <LucideIcons.Check size={20} color={AppleColors.systemBlue} />
+                                    </View>
+                                    <Text style={styles.sbStatLabel}>{item.label}</Text>
+                                    <View style={{ flex: 1 }} />
+                                    <LucideIcons.CheckCircle size={20} color={AppleColors.systemBlue} />
                                 </View>
-                                <View style={{ flex: 1 }}>
-                                    <Text style={styles.sbStatLabel}>New Persona</Text>
-                                    <Text style={styles.sbStatSub}>Tracking consistent identity wins</Text>
-                                </View>
-                                <LucideIcons.Check size={20} color={AppleColors.systemBlue} />
-                            </View>
+                            ))}
                         </View>
                     </View>
                 );
@@ -257,20 +262,24 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
-                            <LucideIcons.Shield size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>Accountability</Text>
+                            <LucideIcons.Scale size={12} color={AppleColors.systemOrange} />
+                            <Text style={[styles.sbBadgeText, { color: AppleColors.systemOrange }]}>Accountability Angle</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>No more excuses.</Text>
-                        <Text style={styles.sbSubheadline}>Build a resistance army against your worst self.</Text>
+                        <Text style={styles.sbHeadline}>Every day counts — no hiding</Text>
+                        <Text style={styles.sbSubheadline}>You either did it… or you didn’t</Text>
                         
                         <View style={styles.contrastGrid}>
                             <View style={[styles.contrastCard, { borderColor: AppleColors.systemRed + '40' }]}>
-                                <Text style={styles.contrastLabel}>Old You</Text>
-                                <Text style={styles.contrastText}>Makes Excuses</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                    <LucideIcons.X size={24} color={AppleColors.systemRed} />
+                                    <Text style={styles.contrastText}>Did it</Text>
+                                </View>
                             </View>
                             <View style={[styles.contrastCard, { borderColor: AppleColors.systemGreen + '40' }]}>
-                                <Text style={styles.contrastLabel}>Dayylo You</Text>
-                                <Text style={styles.contrastText}>Takes Responsibility</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                    <LucideIcons.Check size={24} color={AppleColors.systemGreen} />
+                                    <Text style={styles.contrastText}>Avoided it</Text>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -280,10 +289,10 @@ export default function AuthScreen() {
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
                             <LucideIcons.Flame size={12} color={AppleColors.primary} />
-                            <Text style={styles.sbBadgeText}>The Momentum</Text>
+                            <Text style={styles.sbBadgeText}>Dopamine Hook</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>Watch it grow.</Text>
-                        <Text style={styles.sbSubheadline}>Consistency creates a fire that guilt can't put out.</Text>
+                        <Text style={styles.sbHeadline}>Build a streak you won’t want to break</Text>
+                        <Text style={styles.sbSubheadline}>One day becomes two. Then ten. Then a new identity.</Text>
                         <View style={styles.streakContainer}>
                             {showConfetti && <ConfettiExplosion />}
                             <Text style={styles.streakValue}>{animatedStreak}</Text>
@@ -421,10 +430,10 @@ export default function AuthScreen() {
                         <AppleButton 
                             title={
                                 storyStep === 1 ? "👉 I’m ready to change" :
-                                storyStep === 2 ? "Break the cycle" :
-                                storyStep === 3 ? "I'm a new person" :
-                                storyStep === 4 ? "Hold me accountable" :
-                                storyStep === 5 ? "Start my streak" :
+                                storyStep === 2 ? "👉 Break the cycle" :
+                                storyStep === 3 ? "👉 Take control" :
+                                storyStep === 4 ? "👉 Be accountable" :
+                                storyStep === 5 ? "👉 Start my streak" :
                                 storyStep === 7 ? "Start Day 1" : 
                                 storyStep === 8 ? "Continue" : "Next"
                             } 
