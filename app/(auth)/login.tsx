@@ -314,44 +314,76 @@ export default function AuthScreen() {
                 );
             case 6:
                 return (
-                    <View style={styles.choiceGrid}>
-                        <Pressable 
-                            onPress={() => {
-                                setSelectedFocus({ build: true, break: false });
-                                setStoryStep(7);
-                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            }}
-                            style={[styles.choiceCard, { borderLeftColor: AppleColors.systemGreen, borderLeftWidth: 4 }]}
-                        >
-                            <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '15' }]}>
-                                <LucideIcons.PlusCircle size={24} color={AppleColors.systemGreen} />
+                    <View style={[styles.choiceGrid, { gap: 20 }]}>
+                        {/* START CARD */}
+                        <View style={styles.contrastCard}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '20' }]}>
+                                    <LucideIcons.PlusCircle size={32} color={AppleColors.systemGreen} />
+                                </View>
+                                <View>
+                                    <Text style={styles.choiceTitle}>START (Build)</Text>
+                                    <Text style={styles.choiceDesc}>Start routines that improve your life</Text>
+                                </View>
                             </View>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.choiceTitle}>Build a habit</Text>
-                                <Text style={styles.choiceDesc}>Start routines that improve your life</Text>
-                                <Text style={[styles.suggestionText, { fontSize: 11, marginTop: 8 }]}>EX: Exercise • Read • Sleep early</Text>
-                                <Text style={[styles.choiceTitle, { fontSize: 13, color: AppleColors.systemGreen, marginTop: 6 }]}>👉 Start a habit</Text>
+                            
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                                {['Exercise', 'Read', 'Sleep early'].map(ex => (
+                                    <View key={ex} style={styles.suggestionPill}>
+                                        <Text style={[styles.suggestionText, { fontSize: 12 }]}>{ex}</Text>
+                                    </View>
+                                ))}
                             </View>
-                        </Pressable>
 
-                        <Pressable 
-                            onPress={() => {
-                                setSelectedFocus({ build: false, break: true });
-                                setStoryStep(7);
-                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            }}
-                            style={[styles.choiceCard, { borderLeftColor: AppleColors.systemOrange, borderLeftWidth: 4 }]}
-                        >
-                            <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '15' }]}>
-                                <LucideIcons.ShieldOff size={24} color={AppleColors.systemOrange} />
+                            <Pressable 
+                                onPress={() => {
+                                    setSelectedFocus({ build: true, break: false });
+                                    setStoryStep(7);
+                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                }}
+                                style={({ pressed }) => [
+                                    { backgroundColor: AppleColors.systemGreen, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+                                    pressed && { opacity: 0.8 }
+                                ]}
+                            >
+                                <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '800' }}>👉 Start a habit</Text>
+                            </Pressable>
+                        </View>
+
+                        {/* STOP CARD */}
+                        <View style={styles.contrastCard}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '20' }]}>
+                                    <LucideIcons.MinusCircle size={32} color={AppleColors.systemOrange} />
+                                </View>
+                                <View>
+                                    <Text style={styles.choiceTitle}>STOP (Break)</Text>
+                                    <Text style={styles.choiceDesc}>Stop patterns that control you</Text>
+                                </View>
                             </View>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.choiceTitle}>Break a habit</Text>
-                                <Text style={styles.choiceDesc}>Stop patterns that control you</Text>
-                                <Text style={[styles.suggestionText, { fontSize: 11, marginTop: 8 }]}>EX: Late night scrolling • Texting ex • Porn</Text>
-                                <Text style={[styles.choiceTitle, { fontSize: 13, color: AppleColors.systemOrange, marginTop: 6 }]}>👉 Break a habit</Text>
+                            
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                                {['Late night scrolling', 'Texting ex', 'Porn'].map(ex => (
+                                    <View key={ex} style={styles.suggestionPill}>
+                                        <Text style={[styles.suggestionText, { fontSize: 12 }]}>{ex}</Text>
+                                    </View>
+                                ))}
                             </View>
-                        </Pressable>
+
+                            <Pressable 
+                                onPress={() => {
+                                    setSelectedFocus({ build: false, break: true });
+                                    setStoryStep(7);
+                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                }}
+                                style={({ pressed }) => [
+                                    { backgroundColor: AppleColors.systemOrange, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
+                                    pressed && { opacity: 0.8 }
+                                ]}
+                            >
+                                <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '800' }}>👉 Break a habit</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 );
             case 7:
