@@ -12,6 +12,8 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
@@ -38,6 +40,10 @@ export default function AuthScreen() {
     const [animatedStreak, setAnimatedStreak] = useState(1);
     const [showConfetti, setShowConfetti] = useState(false);
     const [habitInput, setHabitInput] = useState('');
+    // Auth form state (restored — required for Create Account & Welcome Back screens)
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     
     // Safely attempt hook resolution
     let habitsContext: any = null;
@@ -131,32 +137,8 @@ export default function AuthScreen() {
         }
 
         if (storyStep === 8) {
-            try {
-                console.log('[Heartbeat] Requesting notifications handshake...');
-                const { status } = await Notifications.requestPermissionsAsync();
-                console.log('[Heartbeat] Notification status:', status);
-                
-                console.log('[Heartbeat] Finalizing Day 1 commitment...');
-                await loginAnonymously();
-                
-                const formattedName = formatHabitName(habitInput, selectedFocus.build ? 'build' : 'break');
-                if (addHabit) {
-                    await addHabit({
-                        name: formattedName,
-                        type: selectedFocus.build ? 'build' : 'break',
-                        icon: selectedFocus.build ? 'Zap' : 'Ban',
-                        color: selectedFocus.build ? AppleColors.systemGreen : AppleColors.systemOrange,
-                        frequency: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        difficulty: 'medium',
-                    });
-                }
-                
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                setMode('signup'); // Show 'Save your progress' screen
-            } catch (e) {
-                console.error("[Heartbeat] Onboarding finalization failed", e);
-                setMode('signup'); // Fail-safe: still show sign-up
-            }
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setMode('signup');
             return;
         }
 
@@ -245,10 +227,11 @@ export default function AuthScreen() {
     };
 
     const handleBack = () => {
+        if (mode === 'signin') { setMode('signup'); return; }
+        if (mode === 'signup') { setMode('storyboard'); return; }
         if (mode === 'storyboard') {
             if (storyStep > 1) {
                 const prevStep = storyStep - 1;
-                // If returning to step 6 (Build/Break choice), reset path state
                 if (prevStep === 6) {
                     setHabitInput('');
                     setSelectedFocus({ build: false, break: false });
@@ -259,6 +242,43 @@ export default function AuthScreen() {
             }
         } else {
             setMode('welcome');
+        }
+    };
+
+    // Restored auth handlers — required for Create Account & Welcome Back
+    const handleSocialLogin = async (provider: 'google' | 'apple') => {
+        try {
+            const isNewUser = provider === 'google' ? await loginWithGoogle() : await loginWithApple();
+            if (isNewUser) {
+                router.replace('/(auth)/onboarding');
+            } else {
+                router.replace('/(tabs)');
+            }
+        } catch (error: any) {
+            if (error?.message !== 'Sign in cancelled') {
+                Alert.alert('Authentication Failed', error.message || 'Please try again.');
+            }
+        }
+    };
+
+    const handleLogin = async () => {
+        if (!email || !password) return Alert.alert('Error', 'Please enter email and password.');
+        try {
+            await auth().signInWithEmailAndPassword(email.trim(), password);
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert('Login Failed', error.message);
+        }
+    };
+
+    const handleSignup = async () => {
+        if (!email || !password) return Alert.alert('Error', 'Please enter valid credentials.');
+        if (password !== confirmPassword) return Alert.alert('Error', 'Passwords do not match.');
+        try {
+            await auth().createUserWithEmailAndPassword(email.trim(), password);
+            router.replace('/(auth)/onboarding');
+        } catch (error: any) {
+            Alert.alert('Signup Failed', error.message);
         }
     };
 
@@ -595,37 +615,165 @@ export default function AuthScreen() {
     }
 
     if (mode === 'signup') {
+        // Journey accent color: Blue for Build, Orange for Break
+        const journeyColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
         return (
             <SafeAreaView style={styles.container}>
-                <View style={styles.content}>
-                    <View style={styles.centerContent}>
-                        <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
-                            <LucideIcons.CloudRain size={80} color={AppleColors.primary} />
-                        </Animated.View>
-                        <Text style={[styles.headline, { textAlign: 'center' }]}>Save your progress</Text>
-                        <Text style={[styles.subtext, { textAlign: 'center' }]}>Don't lose your streak — access it anytime</Text>
+                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                    <Pressable onPress={handleBack} style={styles.backButton}>
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
+                    </Pressable>
+
+                    <View style={styles.authHeader}>
+                        <Text style={[styles.authTitle, { color: journeyColor }]}>Create Account</Text>
+                        <Text style={styles.authSub}>
+                            To stay active and store your streak, you need to{' '}
+                            <Text style={{ color: journeyColor, fontWeight: '700' }}>create an account</Text>.
+                        </Text>
                     </View>
 
-                    <View style={{ width: '100%', gap: 12, paddingBottom: 20 }}>
-                        <Pressable 
-                            style={styles.appleButton}
-                            onPress={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}
-                        >
-                            <LucideIcons.Apple size={20} color="#000" fill="#000" />
-                            <Text style={styles.appleButtonText}>Continue with Apple</Text>
+                    <View style={styles.authForm}>
+                        <TextInput
+                            placeholder="Email address"
+                            style={styles.input}
+                            placeholderTextColor={AppleColors.label.tertiary}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+                        <TextInput
+                            placeholder="Password"
+                            style={styles.input}
+                            secureTextEntry
+                            placeholderTextColor={AppleColors.label.tertiary}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <TextInput
+                            placeholder="Confirm Password"
+                            style={styles.input}
+                            secureTextEntry
+                            placeholderTextColor={AppleColors.label.tertiary}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                        />
+
+                        <AppleButton title="Sign Up" onPress={handleSignup} size="large" fullWidth style={{ marginTop: 8 }} />
+
+                        <Text style={styles.legalText}>
+                            By signing up, you agree to our{' '}
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link')}>Terms</Text>
+                            {' '}and{' '}
+                            <Text style={styles.link} onPress={() => Linking.openURL('https://malahkhai.notion.site/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5')}>Privacy Policy</Text>.
+                        </Text>
+
+                        <View style={styles.divider}>
+                            <View style={styles.line} />
+                            <Text style={styles.dividerText}>OR SIGN UP WITH</Text>
+                            <View style={styles.line} />
+                        </View>
+
+                        <Pressable onPress={() => handleSocialLogin('apple')} style={styles.ssoButtonApple}>
+                            <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
+                            <Text style={styles.ssoAppleText}>Sign up with Apple</Text>
                         </Pressable>
 
-                        <Pressable 
-                            style={styles.googleButton}
-                            onPress={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}
-                        >
-                            <View style={styles.googleIconBg}>
-                                <Text style={{ fontSize: 13, fontWeight: '900', color: '#4285F4' }}>G</Text>
+                        <Pressable onPress={() => handleSocialLogin('google')} style={styles.ssoButtonGoogle}>
+                            <View style={styles.ssoGoogleIconBg}>
+                                <Svg width={18} height={18} viewBox="0 0 48 48">
+                                    <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                    <Path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                    <Path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                    <Path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                                </Svg>
                             </View>
-                            <Text style={styles.googleButtonText}>Continue with Google</Text>
+                            <Text style={styles.ssoGoogleText}>Sign up with Google</Text>
                         </Pressable>
+
+                        <View style={styles.switchAuth}>
+                            <Text style={styles.switchText}>Already have an account? </Text>
+                            <Pressable onPress={() => setMode('signin')}>
+                                <Text style={styles.linkText}>Sign in</Text>
+                            </Pressable>
+                        </View>
                     </View>
-                </View>
+                </ScrollView>
+            </SafeAreaView>
+        );
+    }
+
+    // Welcome Back — Sign In Mode
+    if (mode === 'signin') {
+        return (
+            <SafeAreaView style={styles.container}>
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <Pressable onPress={handleBack} style={styles.backButton}>
+                        <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
+                    </Pressable>
+
+                    <View style={styles.authHeader}>
+                        <Text style={styles.authTitle}>Welcome Back</Text>
+                        <Text style={styles.authSub}>Let's get you focused.</Text>
+                    </View>
+
+                    <View style={styles.authForm}>
+                        <Pressable onPress={() => handleSocialLogin('apple')} style={styles.ssoButtonApple}>
+                            <FontAwesome name="apple" size={22} color={AppleColors.label.primary} />
+                            <Text style={styles.ssoAppleText}>Continue with Apple</Text>
+                        </Pressable>
+
+                        <Pressable onPress={() => handleSocialLogin('google')} style={styles.ssoButtonGoogle}>
+                            <View style={styles.ssoGoogleIconBg}>
+                                <Svg width={18} height={18} viewBox="0 0 48 48">
+                                    <Path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                    <Path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                    <Path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                    <Path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                                </Svg>
+                            </View>
+                            <Text style={styles.ssoGoogleText}>Continue with Google</Text>
+                        </Pressable>
+
+                        <View style={styles.divider}>
+                            <View style={styles.line} />
+                            <Text style={styles.dividerText}>OR LOG IN WITH EMAIL</Text>
+                            <View style={styles.line} />
+                        </View>
+
+                        <TextInput
+                            placeholder="Email address"
+                            style={styles.input}
+                            placeholderTextColor="#999"
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            value={email}
+                            onChangeText={setEmail}
+                        />
+                        <TextInput
+                            placeholder="Password"
+                            style={styles.input}
+                            secureTextEntry
+                            placeholderTextColor="#999"
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+
+                        <Pressable style={styles.forgotPass}>
+                            <Text style={styles.linkText}>Forgot password?</Text>
+                        </Pressable>
+
+                        <AppleButton title="Sign In" onPress={handleLogin} size="large" fullWidth style={{ marginTop: 12 }} />
+
+                        <View style={styles.switchAuth}>
+                            <Text style={styles.switchText}>New here? </Text>
+                            <Pressable onPress={() => setMode('signup')}>
+                                <Text style={styles.linkText}>Create an account</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </ScrollView>
             </SafeAreaView>
         );
     }
@@ -759,4 +907,53 @@ const styles = StyleSheet.create({
     
     dayOneCircle: { width: 140, height: 140, borderRadius: 70, backgroundColor: AppleColors.primary + '20', borderWidth: 3, borderColor: AppleColors.primary, alignItems: 'center', justifyContent: 'center', marginBottom: 40, ...AppleShadows.medium },
     dayOneNum: { fontSize: 72, fontWeight: '900', color: AppleColors.primary },
+
+    // ─── Auth screens (Create Account + Welcome Back) ─────────────────────────
+    scrollContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40 },
+    backButton: { width: 44, height: 44, justifyContent: 'center' },
+    centerContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    content: { flex: 1, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40, justifyContent: 'space-between' },
+    logoContainer: { width: 140, height: 140, marginBottom: 32, alignItems: 'center', justifyContent: 'center' },
+    headline: { ...AppleTypography.display, color: AppleColors.label.primary, textAlign: 'center', marginBottom: 12 },
+    subtext: { ...AppleTypography.bodyLarge, fontWeight: '400', color: AppleColors.label.secondary, textAlign: 'center', paddingHorizontal: 20 },
+    authHeader: { marginTop: 40, marginBottom: 40, alignItems: 'center' },
+    authTitle: { ...AppleTypography.h1, color: AppleColors.label.primary, marginBottom: 8 },
+    authSub: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'center', paddingHorizontal: 10 },
+    authForm: { gap: 12 },
+    input: {
+        backgroundColor: AppleColors.background.secondary,
+        paddingHorizontal: 12, paddingVertical: 12,
+        borderRadius: 12,
+        ...AppleTypography.body,
+        color: AppleColors.label.primary,
+        marginBottom: 4,
+    },
+    legalText: { ...AppleTypography.caption, color: AppleColors.label.tertiary, textAlign: 'center', marginTop: 16 },
+    link: { color: AppleColors.primary, fontWeight: '600' },
+    divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 32 },
+    line: { flex: 1, height: 1, backgroundColor: AppleColors.separator.nonOpaque },
+    dividerText: { marginHorizontal: 16, ...AppleTypography.labelSmall, color: AppleColors.label.tertiary },
+    forgotPass: { alignItems: 'flex-end', marginBottom: 8 },
+    linkText: { color: AppleColors.primary, ...AppleTypography.label },
+    switchAuth: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
+    switchText: { ...AppleTypography.bodySmall, color: AppleColors.label.secondary },
+    ssoButtonApple: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.lg,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+        paddingVertical: 15, paddingHorizontal: 20,
+        gap: 10, marginBottom: 12,
+    },
+    ssoAppleText: { fontSize: 16, fontWeight: '600', color: AppleColors.label.primary, letterSpacing: -0.2 },
+    ssoButtonGoogle: {
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: AppleColors.background.secondary,
+        borderRadius: AppleBorderRadius.lg,
+        borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+        paddingVertical: 15, paddingHorizontal: 20,
+        gap: 10, marginBottom: 12,
+    },
+    ssoGoogleIconBg: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+    ssoGoogleText: { fontSize: 16, fontWeight: '600', color: AppleColors.label.primary, letterSpacing: -0.2 },
 });
