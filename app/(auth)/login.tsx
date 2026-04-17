@@ -434,7 +434,7 @@ export default function AuthScreen() {
                             }}
                             style={({ pressed }) => [
                                 styles.contrastCard,
-                                { backgroundColor: '#070707', borderColor: '#111', padding: 16 },
+                                { backgroundColor: '#070707', borderColor: AppleColors.primary, borderWidth: 1.5, padding: 16 },
                                 pressed && { transform: [{ scale: 0.98 }], opacity: 0.92 }
                             ]}
                         >
@@ -470,7 +470,7 @@ export default function AuthScreen() {
                             }}
                             style={({ pressed }) => [
                                 styles.contrastCard,
-                                { backgroundColor: '#070707', borderColor: '#111', padding: 16 },
+                                { backgroundColor: '#070707', borderColor: '#FF9500', borderWidth: 1.5, padding: 16 },
                                 pressed && { transform: [{ scale: 0.98 }], opacity: 0.92 }
                             ]}
                         >
