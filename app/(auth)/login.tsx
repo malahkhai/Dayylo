@@ -244,9 +244,13 @@ export default function AuthScreen() {
                             {[
                                 { label: 'No porn', icon: 'EyeOff' },
                                 { label: 'No texting ex', icon: 'MessageCircle' },
-                                { label: 'No sugar', icon: 'Cookie' }
+                                { label: 'No sugar', icon: 'Cookie' },
+                                { label: 'No junk food', icon: 'Pizza' },
+                                { label: 'No scrolling', icon: 'Smartphone' },
+                                { label: 'No smoking', icon: 'Wind' },
+                                { label: 'No late nights', icon: 'Moon' }
                             ].map((item, i) => (
-                                <View key={i} style={styles.sbStatCard}>
+                                <View key={i} style={[styles.sbStatCard, { opacity: 1 - (i * 0.05) }]}>
                                     <View style={[styles.sbStatIcon, { backgroundColor: AppleColors.systemBlue + '15' }]}>
                                         <LucideIcons.Check size={20} color={AppleColors.systemBlue} />
                                     </View>
@@ -287,6 +291,7 @@ export default function AuthScreen() {
             case 5:
                 return (
                     <View style={styles.stepContent}>
+                        {showConfetti && <ConfettiExplosion />}
                         <View style={styles.sbBadge}>
                             <LucideIcons.Flame size={12} color={AppleColors.primary} />
                             <Text style={styles.sbBadgeText}>Dopamine Hook</Text>
@@ -294,7 +299,6 @@ export default function AuthScreen() {
                         <Text style={styles.sbHeadline}>Build a streak you won’t want to break</Text>
                         <Text style={styles.sbSubheadline}>One day becomes two. Then ten. Then a new identity.</Text>
                         <View style={styles.streakContainer}>
-                            {showConfetti && <ConfettiExplosion />}
                             <Text style={styles.streakValue}>{animatedStreak}</Text>
                             <Text style={styles.accLabel}>DAY STREAK</Text>
                         </View>

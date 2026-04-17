@@ -1,79 +1,123 @@
-import React, { useEffect, useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Dimensions } from 'react-native';
+import { 
+    Canvas, 
+    Rect, 
+    useSharedValueEffect, 
+    useValue, 
+    runOnJS,
+    Group,
+    Circle,
+    Skia,
+    useComputedValue,
+    Selector
+} from '@shopify/react-native-skia';
 import Animated, { 
-  useSharedValue, 
-  withTiming, 
-  withDelay, 
-  Easing, 
-  useAnimatedStyle,
-  interpolate
+    useSharedValue, 
+    useAnimatedStyle, 
+    withTiming, 
+    withDelay, 
+    runOnUI,
+    Easing
 } from 'react-native-reanimated';
 
-const COLORS = ['#FFD700', '#FF4500', '#1E90FF', '#32CD32', '#BA55D3', '#FF69B4', '#00FFFF', '#FFFFFF'];
-const PARTICLE_COUNT = 60;
+const { width, height } = Dimensions.get('window');
 
-const Particle = ({ delay }: { delay: number }) => {
-  const { width, height } = useWindowDimensions();
-  const centerX = width / 2;
-  const centerY = height / 2;
+const CONFETTI_COUNT = 100;
+const COLORS = [
+    '#FF3B30', // systemRed
+    '#FF9500', // systemOrange
+    '#FFCC00', // systemYellow
+    '#34C759', // systemGreen
+    '#007AFF', // systemBlue
+    '#5856D6', // systemPurple
+    '#FF2D55', // systemPink
+];
 
-  const progress = useSharedValue(0);
-  const color = useMemo(() => COLORS[Math.floor(Math.random() * COLORS.length)], []);
-  const size = useMemo(() => Math.random() * 8 + 4, []);
-  
-  // Random trajectory
-  const angle = useMemo(() => Math.random() * Math.PI * 2, []);
-  const distance = useMemo(() => Math.random() * 300 + 100, []);
-  const targetX = useMemo(() => Math.cos(angle) * distance, [angle, distance]);
-  const targetY = useMemo(() => Math.sin(angle) * distance - 100, [angle, distance]); // Burst up/out then fall
-  const fallY = useMemo(() => targetY + 500, [targetY]);
+interface Particle {
+    x: Animated.SharedValue<number>;
+    y: Animated.SharedValue<number>;
+    rotation: Animated.SharedValue<number>;
+    color: string;
+    size: number;
+    delay: number;
+}
 
-  useEffect(() => {
-    progress.value = withDelay(delay, withTiming(1, { 
-      duration: 3000, 
-      easing: Easing.out(Easing.cubic) 
-    }));
-  }, []);
+const ParticleComponent = ({ particle }: { particle: Particle }) => {
+    const animatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                { translateX: particle.x.value },
+                { translateY: particle.y.value },
+                { rotate: `${particle.rotation.value}deg` },
+            ],
+            opacity: withTiming(particle.y.value > height - 100 ? 0 : 1, { duration: 500 }),
+        };
+    });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(progress.value, [0, 0.3, 1], [0, targetX, targetX * 1.2]);
-    const translateY = interpolate(progress.value, [0, 0.3, 1], [0, targetY, fallY]);
-    const rotate = interpolate(progress.value, [0, 1], [0, 720]);
-    const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0]);
-    const scale = interpolate(progress.value, [0, 0.1, 0.8, 1], [0, 1, 1, 0]);
-
-    return {
-      transform: [
-        { translateX },
-        { translateY },
-        { rotate: `${rotate}deg` },
-        { scale }
-      ],
-      opacity,
-    };
-  });
-
-  return (
-    <Animated.View
-      style={[{
-        position: 'absolute',
-        top: centerY,
-        left: centerX,
-        width: size,
-        height: size * 1.5,
-        backgroundColor: color,
-        borderRadius: size / 4,
-      }, animatedStyle]}
-    />
-  );
+    return (
+        <Animated.View 
+            style={[
+                styles.particle, 
+                { 
+                    backgroundColor: particle.color, 
+                    width: particle.size, 
+                    height: particle.size * 1.5,
+                    borderRadius: particle.size / 4
+                }, 
+                animatedStyle
+            ]} 
+        />
+    );
 };
 
 export const ConfettiExplosion = () => {
-  return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      {[...Array(PARTICLE_COUNT)].map((_, i) => (
-        <Particle key={i} delay={i * 20} />
-      ))}
-    </View>
-  );
+    const particles = React.useRef<Particle[]>(
+        Array.from({ length: CONFETTI_COUNT }).map(() => ({
+            x: useSharedValue(width / 2),
+            y: useSharedValue(height / 2),
+            rotation: useSharedValue(0),
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            size: Math.random() * 8 + 4,
+            delay: Math.random() * 500,
+        }))
+    ).current;
+
+    useEffect(() => {
+        particles.forEach((p) => {
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 400 + 200;
+            const targetX = width / 2 + Math.cos(angle) * velocity;
+            const targetY = height / 2 + Math.sin(angle) * velocity;
+            
+            // Explosion phase
+            p.x.value = withDelay(p.delay, withTiming(targetX, { duration: 1000, easing: Easing.out(Easing.quad) }));
+            p.y.value = withDelay(p.delay, withTiming(targetY, { duration: 1000, easing: Easing.out(Easing.quad) }));
+            p.rotation.value = withDelay(p.delay, withTiming(Math.random() * 1000, { duration: 3000 }));
+
+            // Gravity phase
+            setTimeout(() => {
+                p.y.value = withTiming(height + 100, { duration: 3000 + Math.random() * 2000, easing: Easing.in(Easing.quad) });
+                p.x.value = withTiming(p.x.value + (Math.random() - 0.5) * 200, { duration: 3000 });
+            }, 1000 + p.delay);
+        });
+    }, []);
+
+    return (
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            {particles.map((p, i) => (
+                <ParticleComponent key={i} particle={p} />
+            ))}
+        </View>
+    );
 };
+
+import { View } from 'react-native';
+
+const styles = StyleSheet.create({
+    particle: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+    },
+});
