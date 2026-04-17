@@ -448,7 +448,7 @@ export default function AuthScreen() {
                 const habitName = habitInput || (selectedFocus.build ? 'Your new habit' : 'Your new focus');
 
                 const FeatureRows = () => (
-                    <View style={{ width: '100%', gap: 12 }}>
+                    <View style={{ width: '100%', gap: 12, marginRight: -20 }}>
                         <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}>
                             <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: ac + '20', alignItems: 'center', justifyContent: 'center' }}>
                                 <LucideIcons.Bell size={18} color={ac} />
@@ -472,7 +472,7 @@ export default function AuthScreen() {
 
                 // Journey Timeline (locked design)
                 return (
-                    <View style={[styles.visualSection, { flexDirection: 'row', gap: 20, paddingTop: 8 }]}>
+                    <View style={{ flex: 1, flexDirection: 'row', gap: 20, paddingTop: 8 }}>
                         {/* Left timeline */}
                         <View style={{ alignItems: 'center', width: 32 }}>
                             <View style={{ width: 2, position: 'absolute', top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.08)' }} />
