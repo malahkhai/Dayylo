@@ -246,7 +246,7 @@ export default function AuthScreen() {
         const config = getStoryStepConfig(storyStep);
 
         return (
-            <View style={[styles.stepContent, storyStep === 8 && { paddingTop: 16 }]}>
+            <View style={styles.stepContent}>
                 <View style={[styles.fixedHeader, storyStep !== 8 && { minHeight: 180 }, storyStep === 6 && { alignItems: 'center' }]}>
                     {renderHeadline(config.title, config.highlight)}
                     <Text style={[styles.sbSubheadline, storyStep === 6 && { textAlign: 'center' }]}>{config.sub}</Text>
