@@ -535,6 +535,15 @@ export default function AuthScreen() {
                                 <Text style={{ color: '#555', fontSize: 12, lineHeight: 16 }}>Sign up to save your mission and never lose progress.</Text>
                             </View>
                         </View>
+                        <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' }}>
+                            <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: ac + '20', alignItems: 'center', justifyContent: 'center' }}>
+                                <LucideIcons.Flame size={18} color={ac} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '800', marginBottom: 2 }}>Be consistent</Text>
+                                <Text style={{ color: '#555', fontSize: 12, lineHeight: 16 }}>One day at a time — small wins build big change.</Text>
+                            </View>
+                        </View>
                     </View>
                 );
 
