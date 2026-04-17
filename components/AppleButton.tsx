@@ -33,6 +33,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
   loading = false,
   fullWidth = false,
   icon,
+  style,
   backgroundColor,
 }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
