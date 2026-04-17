@@ -201,7 +201,11 @@ export default function AuthScreen() {
             case 4: return { title: 'Every day counts — no hiding', highlight: 'counts', sub: 'You either did it… or you didn’t' };
             case 5: return { title: 'Build a streak you won’t want to break', highlight: 'streak', sub: 'One day becomes two. Then twelve. Then a new identity.' };
             case 6: return { title: 'What do you want to change?', highlight: 'change', sub: 'Start something better or stop something holding you back' };
-            case 7: return { title: 'Create your identity.', highlight: 'identity', sub: 'Who do you want to become?' };
+            case 7: 
+                if (selectedFocus.build) {
+                    return { title: 'What do you want to start?', highlight: 'start', sub: 'Keep it simple — make it doable' };
+                }
+                return { title: 'What do you want to stop?', highlight: 'stop', sub: 'Be honest — this is for you' };
             case 8: return { title: 'This is Day 1.', highlight: 'Day 1', sub: 'The journey of a thousand miles begins with a single step.' };
             default: return { title: '', highlight: '', sub: '' };
         }
@@ -387,12 +391,16 @@ export default function AuthScreen() {
                     </View>
                 );
             case 7:
+                const suggestions = selectedFocus.build 
+                    ? ['Exercise', 'Drink water', 'Read', 'Sleep early']
+                    : ['No porn', 'No texting ex', 'No sugar', 'No late night scrolling'];
+
                 return (
-                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, width: '100%' }}>
                         <View style={styles.creationContainer}>
                             <TextInput 
                                 style={styles.largeInput}
-                                placeholder={selectedFocus.build ? "e.g. go to the gym" : "e.g. junk food"}
+                                placeholder={selectedFocus.build ? "e.g. go to the gym" : "e.g. texting my ex"}
                                 placeholderTextColor="rgba(255,255,255,0.2)"
                                 value={habitInput}
                                 onChangeText={setHabitInput}
@@ -400,12 +408,45 @@ export default function AuthScreen() {
                                 selectionColor={AppleColors.primary}
                             />
                             <View style={styles.suggestionGrid}>
-                                {(selectedFocus.build ? ['Exercise', 'Drink water', 'Read', 'Sleep early'] : ['Social Media', 'Sugar', 'Caffeine', 'Late Nights']).map(s => (
-                                    <Pressable key={s} style={styles.suggestionPill} onPress={() => setHabitInput(s)}>
+                                {suggestions.map(s => (
+                                    <Pressable 
+                                        key={s} 
+                                        style={styles.suggestionPill} 
+                                        onPress={() => {
+                                            setHabitInput(s);
+                                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                        }}
+                                    >
                                         <Text style={styles.suggestionText}>{s}</Text>
                                     </Pressable>
                                 ))}
                             </View>
+
+                            <Pressable 
+                                onPress={() => {
+                                    if (habitInput.trim()) {
+                                        setStoryStep(8);
+                                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                                    }
+                                }}
+                                style={({ pressed }) => [
+                                    { 
+                                        backgroundColor: AppleColors.primary, 
+                                        borderRadius: 16, 
+                                        padding: 18, 
+                                        marginTop: 40,
+                                        flexDirection: 'row', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center', 
+                                        gap: 10,
+                                        opacity: habitInput.trim() ? 1 : 0.5
+                                    },
+                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.8 }
+                                ]}
+                                disabled={!habitInput.trim()}
+                            >
+                                <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Start Day 1</Text>
+                            </Pressable>
                         </View>
                     </KeyboardAvoidingView>
                 );
