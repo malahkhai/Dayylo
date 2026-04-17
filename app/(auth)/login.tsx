@@ -199,7 +199,7 @@ export default function AuthScreen() {
             case 2: return { title: 'It’s not lack of discipline', highlight: 'discipline', sub: 'It’s patterns you repeat every day without noticing' };
             case 3: return { title: 'Track what you want to STOP or START', highlight: 'STOP', sub: 'Most apps track what you do.\nDayylo tracks what you avoid.' };
             case 4: return { title: 'Every day counts — no hiding', highlight: 'counts', sub: 'You either did it… or you didn’t' };
-            case 5: return { title: 'Build a streak you won’t want to break', highlight: 'streak', sub: 'The dopamine of a long streak is your best defense' };
+            case 5: return { title: 'Build a streak you won’t want to break', highlight: 'identity', sub: 'One day becomes two. Then ten. Then a new identity.' };
             case 6: return { title: 'Choose your battle.', highlight: 'battle', sub: 'Focus on just one thing for now. Make it small, make it doable.' };
             case 7: return { title: 'Create your identity.', highlight: 'identity', sub: 'Who do you want to become?' };
             case 8: return { title: 'This is Day 1.', highlight: 'Day 1', sub: 'The journey of a thousand miles begins with a single step.' };
@@ -307,6 +307,7 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.streakContainer}>
                         {showConfetti && <ConfettiExplosion />}
+                        <LucideIcons.Flame size={64} color={AppleColors.primary} style={{ marginBottom: 10 }} />
                         <Text style={styles.streakValue}>{animatedStreak}</Text>
                         <Text style={styles.accLabel}>DAY STREAK</Text>
                     </View>
