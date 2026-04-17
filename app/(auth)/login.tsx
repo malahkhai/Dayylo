@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     sbSubheadline: { ...AppleTypography.body, color: AppleColors.label.secondary, textAlign: 'left', lineHeight: 22 },
     sbQuoteAuthor: { ...AppleTypography.caption1, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 },
     
-    stepContent: { flex: 1, paddingTop: 60 },
+    stepContent: { flex: 1, paddingTop: 150 },
     fixedHeader: { paddingHorizontal: 20, marginBottom: 40, minHeight: 180 },
     visualSection: { flex: 1, paddingHorizontal: 20 },
     
