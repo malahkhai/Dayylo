@@ -13,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 
 import { AppleColors, AppleTypography, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
@@ -128,6 +130,10 @@ export default function AuthScreen() {
 
         if (storyStep === 8) {
             try {
+                console.log('[Heartbeat] Requesting notifications handshake...');
+                const { status } = await Notifications.requestPermissionsAsync();
+                console.log('[Heartbeat] Notification status:', status);
+                
                 console.log('[Heartbeat] Finalizing Day 1 commitment...');
                 await loginAnonymously();
                 
@@ -218,7 +224,7 @@ export default function AuthScreen() {
 
     const renderHeadline = (title: string, highlight: string) => {
         let highlightColor = AppleColors.primary;
-        if (storyStep === 7 && !selectedFocus.build) {
+        if ((storyStep === 7 || storyStep === 8) && !selectedFocus.build) {
             highlightColor = '#FF9500';
         }
 
@@ -435,16 +441,17 @@ export default function AuthScreen() {
                     </KeyboardAvoidingView>
                 );
             case 8:
+                const accentColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
                 return (
                     <View style={[styles.visualSection, { alignItems: 'center', justifyContent: 'center' }]}>
-                        <View style={styles.dayOneCircle}>
-                            <Text style={styles.dayOneNum}>1</Text>
+                        <View style={[styles.dayOneCircle, { borderColor: accentColor }]}>
+                            <Text style={[styles.dayOneNum, { color: accentColor }]}>1</Text>
                         </View>
                         
-                        <View style={{ gap: 20, width: '100%', marginTop: 20 }}>
+                        <View style={{ gap: 20, width: '100%', marginTop: 30 }}>
                             <View style={{ flexDirection: 'row', gap: 14 }}>
-                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: AppleColors.primary + '15', alignItems: 'center', justifyContent: 'center' }}>
-                                    <LucideIcons.Bell size={20} color={AppleColors.primary} />
+                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: accentColor + '15', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.Bell size={20} color={accentColor} />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Twice-daily accountability</Text>
@@ -453,8 +460,8 @@ export default function AuthScreen() {
                             </View>
 
                             <View style={{ flexDirection: 'row', gap: 14 }}>
-                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#FF950015', alignItems: 'center', justifyContent: 'center' }}>
-                                    <LucideIcons.ShieldCheck size={20} color="#FF9500" />
+                                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: accentColor + '15', alignItems: 'center', justifyContent: 'center' }}>
+                                    <LucideIcons.ShieldCheck size={20} color={accentColor} />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '700', marginBottom: 4 }}>Save your mission</Text>
@@ -512,12 +519,20 @@ export default function AuthScreen() {
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
                     <View style={{ flexDirection: 'row', gap: 6 }}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-                            <View key={s} style={[{
-                                width: s === storyStep ? 16 : 6, height: 6, borderRadius: 3,
-                                backgroundColor: s === storyStep ? AppleColors.primary : 'rgba(255,255,255,0.1)'
-                            }]} />
-                        ))}
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => {
+                            const isMissionStep = s >= 6;
+                            const hasChosen = selectedFocus.build || selectedFocus.break;
+                            let dotColor = AppleColors.primary;
+                            if (isMissionStep && hasChosen) {
+                                dotColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
+                            }
+                            return (
+                                <View key={s} style={[{
+                                    width: s === storyStep ? 16 : 6, height: 6, borderRadius: 3,
+                                    backgroundColor: s === storyStep ? dotColor : 'rgba(255,255,255,0.1)'
+                                }]} />
+                            );
+                        })}
                     </View>
                     <View style={{ width: 44 }} />
                 </View>
@@ -539,7 +554,8 @@ export default function AuthScreen() {
                                 storyStep === 8 ? "Continue" : "Next"
                             } 
                             onPress={handleNextStoryboard}
-                            type="primary"
+                            variant="primary"
+                            backgroundColor={(storyStep >= 7 && (selectedFocus.build || selectedFocus.break)) ? (selectedFocus.build ? AppleColors.primary : '#FF9500') : undefined}
                         />
                     </View>
                 )}

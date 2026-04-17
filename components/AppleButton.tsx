@@ -21,6 +21,7 @@ interface AppleButtonProps {
   fullWidth?: boolean;
   icon?: React.ReactNode;
   style?: any;
+  backgroundColor?: string;
 }
 
 export const AppleButton: React.FC<AppleButtonProps> = ({
@@ -32,7 +33,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
   loading = false,
   fullWidth = false,
   icon,
-  style,
+  backgroundColor,
 }) => {
   const [scaleAnim] = useState(new Animated.Value(1));
 
@@ -75,6 +76,7 @@ export const AppleButton: React.FC<AppleButtonProps> = ({
     // States
     if (disabled) baseStyle.push(styles.buttonDisabled);
     if (fullWidth) baseStyle.push(styles.buttonFullWidth);
+    if (backgroundColor) baseStyle.push({ backgroundColor });
 
     return baseStyle;
   };
