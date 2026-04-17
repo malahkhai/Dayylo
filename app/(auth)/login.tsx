@@ -152,10 +152,10 @@ export default function AuthScreen() {
                 }
                 
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                router.replace('/(tabs)');
+                setMode('signup'); // Show 'Save your progress' screen
             } catch (e) {
                 console.error("[Heartbeat] Onboarding finalization failed", e);
-                Alert.alert("Error", "Something went wrong. Please try again.");
+                setMode('signup'); // Fail-safe: still show sign-up
             }
             return;
         }
@@ -483,10 +483,29 @@ export default function AuthScreen() {
                 <View style={styles.content}>
                     <View style={styles.centerContent}>
                         <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
+                            <Image source={require('../../assets/welcome-logo.png')} style={styles.appIcon} resizeMode="contain" />
+                        </Animated.View>
+                        <Text style={styles.headline}>Welcome to Dayylo</Text>
+                        <Text style={styles.subtext}>Habit tracker for real-life struggles, not perfect routines</Text>
+                    </View>
+                    <View style={{ width: '100%', paddingHorizontal: 4 }}>
+                        <SwipeButton title="Slide to start" onSwipeComplete={handleContinue} />
+                    </View>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    if (mode === 'signup') {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.content}>
+                    <View style={styles.centerContent}>
+                        <Animated.View style={[styles.logoContainer, animatedLogoStyle]}>
                             <LucideIcons.CloudRain size={80} color={AppleColors.primary} />
                         </Animated.View>
                         <Text style={[styles.headline, { textAlign: 'center' }]}>Save your progress</Text>
-                        <Text style={[styles.subtext, { textAlign: 'center' }]}>Don’t lose your streak — access it anytime</Text>
+                        <Text style={[styles.subtext, { textAlign: 'center' }]}>Don't lose your streak — access it anytime</Text>
                     </View>
 
                     <View style={{ width: '100%', gap: 12, paddingBottom: 20 }}>
