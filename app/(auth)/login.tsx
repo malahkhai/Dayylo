@@ -234,29 +234,28 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.stepContent}>
                         <View style={styles.sbBadge}>
-                            <LucideIcons.ShieldCheck size={12} color={AppleColors.systemBlue} />
+                            <LucideIcons.ArrowLeftRight size={12} color={AppleColors.systemBlue} />
                             <Text style={[styles.sbBadgeText, { color: AppleColors.systemBlue }]}>Your Differentiator</Text>
                         </View>
-                        <Text style={styles.sbHeadline}>Track what you want to STOP</Text>
+                        <Text style={styles.sbHeadline}>Track what you want to STOP or START</Text>
                         <Text style={styles.sbSubheadline}>Most apps track what you do.{"\n"}Dayylo tracks what you avoid.</Text>
                         
                         <View style={styles.sbStatGrid}>
                             {[
-                                { label: 'No porn', icon: 'EyeOff' },
-                                { label: 'No texting ex', icon: 'MessageCircle' },
-                                { label: 'No sugar', icon: 'Cookie' },
-                                { label: 'No junk food', icon: 'Pizza' },
-                                { label: 'No scrolling', icon: 'Smartphone' },
-                                { label: 'No smoking', icon: 'Wind' },
-                                { label: 'No late nights', icon: 'Moon' }
+                                { label: 'Yes Gym', icon: 'CheckCircle', color: AppleColors.systemGreen },
+                                { label: 'No porn', icon: 'EyeOff', color: AppleColors.systemOrange },
+                                { label: 'Yes Walk 20k', icon: 'Footprints', color: AppleColors.systemGreen },
+                                { label: 'No texting ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
+                                { label: 'Saving €20 Daily', icon: 'Wallet', color: AppleColors.systemGreen },
+                                { label: 'No sugar', icon: 'Cookie', color: AppleColors.systemOrange }
                             ].map((item, i) => (
-                                <View key={i} style={[styles.sbStatCard, { opacity: 1 - (i * 0.05) }]}>
-                                    <View style={[styles.sbStatIcon, { backgroundColor: AppleColors.systemBlue + '15' }]}>
-                                        <LucideIcons.Check size={20} color={AppleColors.systemBlue} />
+                                <View key={i} style={[styles.sbStatCard, { paddingVertical: 10, borderColor: item.color + '30' }]}>
+                                    <View style={[styles.sbStatIcon, { width: 32, height: 32, backgroundColor: item.color + '15' }]}>
+                                        <LucideIcons.Check size={16} color={item.color} />
                                     </View>
-                                    <Text style={styles.sbStatLabel}>{item.label}</Text>
+                                    <Text style={[styles.sbStatLabel, { fontSize: 13, color: '#FFF' }]}>{item.label}</Text>
                                     <View style={{ flex: 1 }} />
-                                    <LucideIcons.CheckCircle size={20} color={AppleColors.systemBlue} />
+                                    <LucideIcons.CheckCircle size={18} color={item.color} />
                                 </View>
                             ))}
                         </View>
