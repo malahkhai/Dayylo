@@ -253,22 +253,29 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.sbStatGrid}>
                         {[
-                            { label: 'Yes Gym', icon: 'CheckCircle', color: AppleColors.systemGreen },
-                            { label: 'No porn', icon: 'EyeOff', color: AppleColors.systemOrange },
+                            { label: 'Yes Gym', icon: 'Dumbbell', color: AppleColors.systemGreen },
+                            { label: 'No porn', icon: 'ShieldOff', color: AppleColors.systemOrange },
                             { label: 'Yes Walk 20k', icon: 'Footprints', color: AppleColors.systemGreen },
                             { label: 'No texting ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
-                            { label: 'Saving €20 Daily', icon: 'Wallet', color: AppleColors.systemGreen },
+                            { label: 'Saving €20 Daily', icon: 'Euro', color: AppleColors.systemGreen },
                             { label: 'No sugar', icon: 'Cookie', color: AppleColors.systemOrange }
-                        ].map((item, i) => (
-                            <View key={i} style={[styles.sbStatCard, { paddingVertical: 10, borderColor: item.color + '30' }]}>
-                                <View style={[styles.sbStatIcon, { width: 32, height: 32, backgroundColor: item.color + '15' }]}>
-                                    <LucideIcons.Check size={16} color={item.color} />
-                                </View>
-                                <Text style={[styles.sbStatLabel, { fontSize: 13, color: '#FFF' }]}>{item.label}</Text>
-                                <View style={{ flex: 1 }} />
-                                <LucideIcons.CheckCircle size={18} color={item.color} />
-                            </View>
-                        ))}
+                        ].map((item, i) => {
+                            const ItemIcon = (LucideIcons as any)[item.icon];
+                            return (
+                                <Animated.View 
+                                    key={i} 
+                                    entering={FadeInRight.delay(i * 100).duration(400).springify()}
+                                    style={[styles.sbStatCard, { paddingVertical: 10, borderColor: item.color + '30' }]}
+                                >
+                                    <View style={[styles.sbStatIcon, { width: 32, height: 32, backgroundColor: item.color + '15' }]}>
+                                        {ItemIcon && <ItemIcon size={16} color={item.color} />}
+                                    </View>
+                                    <Text style={[styles.sbStatLabel, { fontSize: 13, color: '#FFF' }]}>{item.label}</Text>
+                                    <View style={{ flex: 1 }} />
+                                    <LucideIcons.CheckCircle size={18} color={item.color} />
+                                </Animated.View>
+                            );
+                        })}
                     </View>
                 );
             case 4:
@@ -463,7 +470,7 @@ const styles = StyleSheet.create({
     
     loopContainer: { marginVertical: 40, alignItems: 'center', justifyContent: 'center', minHeight: 200 },
     
-    sbStatGrid: { marginVertical: 30, gap: 12 },
+    sbStatGrid: { marginVertical: 10, gap: 8 },
     sbStatCard: { 
         flexDirection: 'row', alignItems: 'center', gap: 14, 
         backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 18, 
