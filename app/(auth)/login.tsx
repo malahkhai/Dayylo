@@ -212,13 +212,18 @@ export default function AuthScreen() {
     };
 
     const renderHeadline = (title: string, highlight: string) => {
+        let highlightColor = AppleColors.primary;
+        if (storyStep === 7 && !selectedFocus.build) {
+            highlightColor = '#FF9500';
+        }
+
         if (!highlight) return <Text style={[styles.sbHeadline, storyStep === 6 && { textAlign: 'center' }]}>{title}</Text>;
         
         const parts = title.split(highlight);
         return (
             <Text style={[styles.sbHeadline, storyStep === 6 && { textAlign: 'center' }]}>
                 {parts[0]}
-                <Text style={{ color: AppleColors.primary }}>{highlight}</Text>
+                <Text style={{ color: highlightColor }}>{highlight}</Text>
                 {parts[1]}
             </Text>
         );
@@ -322,7 +327,7 @@ export default function AuthScreen() {
                         {/* START CARD */}
                         <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
-                                <View style={[styles.choiceIconBg, { backgroundColor: '#34C759', width: 56, height: 56, borderRadius: 16 }]}>
+                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.primary, width: 56, height: 56, borderRadius: 16 }]}>
                                     <LucideIcons.PlusCircle size={32} color="#FFF" />
                                 </View>
                                 <View style={{ flex: 1 }}>
@@ -346,7 +351,7 @@ export default function AuthScreen() {
                                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                 }}
                                 style={({ pressed }) => [
-                                    { backgroundColor: '#34C759', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+                                    { backgroundColor: AppleColors.primary, borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
                                     pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
                                 ]}
                             >
@@ -405,7 +410,7 @@ export default function AuthScreen() {
                                 value={habitInput}
                                 onChangeText={setHabitInput}
                                 autoFocus
-                                selectionColor={AppleColors.primary}
+                                selectionColor={selectedFocus.build ? AppleColors.primary : '#FF9500'}
                             />
                             <View style={styles.suggestionGrid}>
                                 {suggestions.map(s => (
