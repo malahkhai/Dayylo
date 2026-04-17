@@ -208,11 +208,11 @@ export default function AuthScreen() {
     };
 
     const renderHeadline = (title: string, highlight: string) => {
-        if (!highlight) return <Text style={styles.sbHeadline}>{title}</Text>;
+        if (!highlight) return <Text style={[styles.sbHeadline, storyStep === 6 && { textAlign: 'center' }]}>{title}</Text>;
         
         const parts = title.split(highlight);
         return (
-            <Text style={styles.sbHeadline}>
+            <Text style={[styles.sbHeadline, storyStep === 6 && { textAlign: 'center' }]}>
                 {parts[0]}
                 <Text style={{ color: AppleColors.primary }}>{highlight}</Text>
                 {parts[1]}
@@ -225,9 +225,9 @@ export default function AuthScreen() {
 
         return (
             <View style={styles.stepContent}>
-                <View style={[styles.fixedHeader, { minHeight: 140 }]}>
+                <View style={[styles.fixedHeader, { minHeight: 140 }, storyStep === 6 && { alignItems: 'center' }]}>
                     {renderHeadline(config.title, config.highlight)}
-                    <Text style={styles.sbSubheadline}>{config.sub}</Text>
+                    <Text style={[styles.sbSubheadline, storyStep === 6 && { textAlign: 'center' }]}>{config.sub}</Text>
                 </View>
 
                 <View style={styles.visualSection}>
@@ -314,23 +314,23 @@ export default function AuthScreen() {
                 );
             case 6:
                 return (
-                    <View style={[styles.choiceGrid, { gap: 20 }]}>
+                    <View style={[styles.choiceGrid, { gap: 24, marginTop: 10 }]}>
                         {/* START CARD */}
-                        <View style={styles.contrastCard}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemGreen + '20' }]}>
-                                    <LucideIcons.PlusCircle size={32} color={AppleColors.systemGreen} />
+                        <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
+                                <View style={[styles.choiceIconBg, { backgroundColor: '#34C75920', width: 56, height: 56, borderRadius: 16 }]}>
+                                    <LucideIcons.PlusCircle size={32} color="#34C759" />
                                 </View>
-                                <View>
-                                    <Text style={styles.choiceTitle}>START (Build)</Text>
-                                    <Text style={styles.choiceDesc}>Start routines that improve your life</Text>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={[styles.choiceTitle, { fontSize: 20 }]}>START (Build)</Text>
+                                    <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Start routines that improve your life</Text>
                                 </View>
                             </View>
                             
-                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
                                 {['Exercise', 'Read', 'Sleep early'].map(ex => (
-                                    <View key={ex} style={styles.suggestionPill}>
-                                        <Text style={[styles.suggestionText, { fontSize: 12 }]}>{ex}</Text>
+                                    <View key={ex} style={{ backgroundColor: '#1A1A1A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 }}>
+                                        <Text style={{ color: '#888', fontSize: 13, fontWeight: '600' }}>{ex}</Text>
                                     </View>
                                 ))}
                             </View>
@@ -342,30 +342,30 @@ export default function AuthScreen() {
                                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                 }}
                                 style={({ pressed }) => [
-                                    { backgroundColor: AppleColors.systemGreen, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-                                    pressed && { opacity: 0.8 }
+                                    { backgroundColor: '#34C759', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
                                 ]}
                             >
-                                <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '800' }}>👉 Start a habit</Text>
+                                <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Start a habit</Text>
                             </Pressable>
                         </View>
 
                         {/* STOP CARD */}
-                        <View style={styles.contrastCard}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 16 }}>
-                                <View style={[styles.choiceIconBg, { backgroundColor: AppleColors.systemOrange + '20' }]}>
-                                    <LucideIcons.MinusCircle size={32} color={AppleColors.systemOrange} />
+                        <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
+                                <View style={[styles.choiceIconBg, { backgroundColor: '#FF950020', width: 56, height: 56, borderRadius: 16 }]}>
+                                    <LucideIcons.MinusCircle size={32} color="#FF9500" />
                                 </View>
-                                <View>
-                                    <Text style={styles.choiceTitle}>STOP (Break)</Text>
-                                    <Text style={styles.choiceDesc}>Stop patterns that control you</Text>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={[styles.choiceTitle, { fontSize: 20 }]}>STOP (Break)</Text>
+                                    <Text style={[styles.choiceDesc, { fontSize: 13, color: '#888' }]}>Stop patterns that control you</Text>
                                 </View>
                             </View>
                             
-                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
                                 {['Late night scrolling', 'Texting ex', 'Porn'].map(ex => (
-                                    <View key={ex} style={styles.suggestionPill}>
-                                        <Text style={[styles.suggestionText, { fontSize: 12 }]}>{ex}</Text>
+                                    <View key={ex} style={{ backgroundColor: '#1A1A1A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 }}>
+                                        <Text style={{ color: '#888', fontSize: 13, fontWeight: '600' }}>{ex}</Text>
                                     </View>
                                 ))}
                             </View>
@@ -377,11 +377,11 @@ export default function AuthScreen() {
                                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                 }}
                                 style={({ pressed }) => [
-                                    { backgroundColor: AppleColors.systemOrange, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-                                    pressed && { opacity: 0.8 }
+                                    { backgroundColor: '#FF9500', borderRadius: 16, padding: 18, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.9 }
                                 ]}
                             >
-                                <Text style={{ color: '#FFF', fontSize: 16, fontWeight: '800' }}>👉 Break a habit</Text>
+                                <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Break a habit</Text>
                             </Pressable>
                         </View>
                     </View>
