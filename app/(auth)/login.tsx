@@ -318,8 +318,8 @@ export default function AuthScreen() {
                         {/* START CARD */}
                         <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
-                                <View style={[styles.choiceIconBg, { backgroundColor: '#34C75920', width: 56, height: 56, borderRadius: 16 }]}>
-                                    <LucideIcons.PlusCircle size={32} color="#34C759" />
+                                <View style={[styles.choiceIconBg, { backgroundColor: '#34C759', width: 56, height: 56, borderRadius: 16 }]}>
+                                    <LucideIcons.PlusCircle size={32} color="#FFF" />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={[styles.choiceTitle, { fontSize: 20 }]}>START (Build)</Text>
@@ -353,8 +353,8 @@ export default function AuthScreen() {
                         {/* STOP CARD */}
                         <View style={[styles.contrastCard, { backgroundColor: '#070707', borderColor: '#111', padding: 24 }]}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18, marginBottom: 20 }}>
-                                <View style={[styles.choiceIconBg, { backgroundColor: '#FF950020', width: 56, height: 56, borderRadius: 16 }]}>
-                                    <LucideIcons.MinusCircle size={32} color="#FF9500" />
+                                <View style={[styles.choiceIconBg, { backgroundColor: '#FF9500', width: 56, height: 56, borderRadius: 16 }]}>
+                                    <LucideIcons.MinusCircle size={32} color="#FFF" />
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     <Text style={[styles.choiceTitle, { fontSize: 20 }]}>STOP (Break)</Text>
