@@ -454,7 +454,7 @@ export default function AuthScreen() {
                                 <LucideIcons.Bell size={18} color={ac} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#FFF', fontSize: 12, fontWeight: '800', marginBottom: 2 }}>Twice-daily check-ins</Text>
+                                <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '800', marginBottom: 2 }}>Twice-daily check-ins</Text>
                                 <Text style={{ color: '#555', fontSize: 12, lineHeight: 16 }}>Morning reminder + nightly progress tracking.</Text>
                             </View>
                         </View>
@@ -463,7 +463,7 @@ export default function AuthScreen() {
                                 <LucideIcons.ShieldCheck size={18} color={ac} />
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Text style={{ color: '#FFF', fontSize: 12, fontWeight: '800', marginBottom: 2 }}>Protect your streak</Text>
+                                <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '800', marginBottom: 2 }}>Protect your streak</Text>
                                 <Text style={{ color: '#555', fontSize: 12, lineHeight: 16 }}>Sign up to save your mission and never lose progress.</Text>
                             </View>
                         </View>
