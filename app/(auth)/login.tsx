@@ -38,7 +38,6 @@ export default function AuthScreen() {
     const [animatedStreak, setAnimatedStreak] = useState(1);
     const [showConfetti, setShowConfetti] = useState(false);
     const [habitInput, setHabitInput] = useState('');
-    const [designVariant, setDesignVariant] = useState(1); // Screen 8 design picker (1-4)
     
     // Safely attempt hook resolution
     let habitsContext: any = null;
@@ -471,50 +470,8 @@ export default function AuthScreen() {
                     </View>
                 );
 
-                // ── VARIANT 1: Hero Split ──────────────────────────────
-                if (designVariant === 1) return (
-                    <View style={[styles.visualSection, { padding: 0, overflow: 'hidden' }]}>
-                        {/* Color panel top */}
-                        <View style={{ backgroundColor: ac, borderRadius: 24, marginBottom: 24, height: 180, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                            <Text style={{ position: 'absolute', fontSize: 180, fontWeight: '900', color: 'rgba(255,255,255,0.12)', letterSpacing: -10, lineHeight: 180 }}>1</Text>
-                            <Text style={{ fontSize: 11, fontWeight: '900', color: 'rgba(255,255,255,0.7)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 4 }}>{missionLabel}</Text>
-                            <Text style={{ fontSize: 48, fontWeight: '900', color: '#FFF', letterSpacing: -1 }}>DAY 1</Text>
-                        </View>
-                        {/* Content below */}
-                        <Text style={{ color: '#FFF', fontSize: 24, fontWeight: '900', letterSpacing: -0.5, marginBottom: 20 }} numberOfLines={2}>{habitName}</Text>
-                        <FeatureRows />
-                    </View>
-                );
-
-                // ── VARIANT 2: Bold Centerpiece ────────────────────────
-                if (designVariant === 2) return (
-                    <View style={[styles.visualSection, { alignItems: 'center', justifyContent: 'space-between' }]}>
-                        <View style={{ backgroundColor: ac + '20', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 6, borderWidth: 1, borderColor: ac + '50', alignSelf: 'center', marginBottom: 12 }}>
-                            <Text style={{ color: ac, fontSize: 11, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase' }}>{missionLabel}</Text>
-                        </View>
-                        {/* Giant glowing numeral */}
-                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                            <View style={{ position: 'absolute', width: 220, height: 220, borderRadius: 110, backgroundColor: ac + '10' }} />
-                            <Text style={{ fontSize: 160, fontWeight: '900', color: ac, letterSpacing: -8, lineHeight: 170, textShadowColor: ac, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 40 }}>1</Text>
-                        </View>
-                        <View style={{ width: '100%', alignItems: 'center', paddingBottom: 8 }}>
-                            <Text style={{ color: '#FFF', fontSize: 22, fontWeight: '900', letterSpacing: -0.5, marginBottom: 16, textAlign: 'center' }} numberOfLines={2}>{habitName}</Text>
-                            <View style={{ flexDirection: 'row', gap: 20 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                                    <LucideIcons.Bell size={14} color={ac} />
-                                    <Text style={{ color: '#777', fontSize: 13 }}>Daily reminders</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                                    <LucideIcons.ShieldCheck size={14} color={ac} />
-                                    <Text style={{ color: '#777', fontSize: 13 }}>Streak protection</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                );
-
-                // ── VARIANT 3: Journey Timeline ────────────────────────
-                if (designVariant === 3) return (
+                // Journey Timeline (locked design)
+                return (
                     <View style={[styles.visualSection, { flexDirection: 'row', gap: 20, paddingTop: 8 }]}>
                         {/* Left timeline */}
                         <View style={{ alignItems: 'center', width: 32 }}>
@@ -537,30 +494,6 @@ export default function AuthScreen() {
                         </View>
                     </View>
                 );
-
-                // ── VARIANT 4: Mission Card ────────────────────────────
-                if (designVariant === 4) return (
-                    <View style={[styles.visualSection, { justifyContent: 'flex-start', paddingTop: 4 }]}>
-                        {/* Hero glass card */}
-                        <View style={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 24, padding: 22, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)', marginBottom: 16 }}>
-                            <Text style={{ color: ac, fontSize: 11, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{missionLabel}</Text>
-                            <Text style={{ color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: -0.5, marginBottom: 18 }} numberOfLines={2}>{habitName}</Text>
-                            {/* Stat chips */}
-                            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
-                                {[{ label: 'Day 1', icon: '📅' }, { label: '0🔥 streak', icon: '' }, { label: '∞ days', icon: '' }].map((chip, i) => (
-                                    <View key={i} style={{ backgroundColor: i === 0 ? ac : ac + '20', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: ac + '40' }}>
-                                        <Text style={{ color: i === 0 ? '#000' : ac, fontSize: 12, fontWeight: '800' }}>{chip.label}</Text>
-                                    </View>
-                                ))}
-                            </View>
-                            {/* Divider */}
-                            <View style={{ height: 1, backgroundColor: ac + '30', marginBottom: 18 }} />
-                            <FeatureRows />
-                        </View>
-                    </View>
-                );
-
-                return null;
             }
         }
     };
@@ -652,67 +585,20 @@ export default function AuthScreen() {
 
                 {storyStep !== 6 && (
                     <View style={[styles.sbFooter, { paddingHorizontal: 20 }]}>
-                        {storyStep === 8 ? (
-                            // ── Design Picker Footer ──────────────────────────────
-                            <View style={{ gap: 12 }}>
-                                {/* Shuffle row */}
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-                                    {/* Design dots */}
-                                    <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-                                        {[1, 2, 3, 4].map((v) => {
-                                            const ac = selectedFocus.build ? AppleColors.primary : '#FF9500';
-                                            return (
-                                                <Pressable key={v} onPress={() => { setDesignVariant(v); Haptics.selectionAsync(); }}>
-                                                    <View style={{
-                                                        width: designVariant === v ? 22 : 8,
-                                                        height: 8, borderRadius: 4,
-                                                        backgroundColor: designVariant === v ? ac : 'rgba(255,255,255,0.2)',
-                                                    }} />
-                                                </Pressable>
-                                            );
-                                        })}
-                                    </View>
-                                    {/* Shuffle button */}
-                                    <Pressable
-                                        onPress={() => {
-                                            const next = designVariant === 4 ? 1 : designVariant + 1;
-                                            setDesignVariant(next);
-                                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                                        }}
-                                        style={{
-                                            flexDirection: 'row', gap: 6, alignItems: 'center',
-                                            backgroundColor: 'rgba(255,255,255,0.07)',
-                                            paddingHorizontal: 16, paddingVertical: 8,
-                                            borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)'
-                                        }}
-                                    >
-                                        <LucideIcons.Shuffle size={14} color="#FFF" />
-                                        <Text style={{ color: '#FFF', fontSize: 13, fontWeight: '700' }}>Try another</Text>
-                                    </Pressable>
-                                </View>
-                                {/* Lock in CTA */}
-                                <AppleButton
-                                    title="Lock this in →"
-                                    onPress={handleNextStoryboard}
-                                    variant="primary"
-                                    backgroundColor={selectedFocus.build ? AppleColors.primary : '#FF9500'}
-                                />
-                            </View>
-                        ) : (
-                            <AppleButton 
-                                title={
-                                    storyStep === 1 ? "👉 I'm ready to change" :
-                                    storyStep === 2 ? "👉 Break the cycle" :
-                                    storyStep === 3 ? "👉 Take control" :
-                                    storyStep === 4 ? "👉 Be accountable" :
-                                    storyStep === 5 ? "👉 Start my streak" :
-                                    storyStep === 7 ? "Start Day 1" : "Next"
-                                } 
-                                onPress={handleNextStoryboard}
-                                variant="primary"
-                                backgroundColor={(storyStep >= 7 && (selectedFocus.build || selectedFocus.break)) ? (selectedFocus.build ? AppleColors.primary : '#FF9500') : undefined}
-                            />
-                        )}
+                        <AppleButton
+                            title={
+                                storyStep === 1 ? "👉 I'm ready to change" :
+                                storyStep === 2 ? "👉 Break the cycle" :
+                                storyStep === 3 ? "👉 Take control" :
+                                storyStep === 4 ? "👉 Be accountable" :
+                                storyStep === 5 ? "👉 Start my streak" :
+                                storyStep === 7 ? "Start Day 1" :
+                                storyStep === 8 ? "Continue →" : "Next"
+                            }
+                            onPress={handleNextStoryboard}
+                            variant="primary"
+                            backgroundColor={(storyStep >= 7 && (selectedFocus.build || selectedFocus.break)) ? (selectedFocus.build ? AppleColors.primary : '#FF9500') : undefined}
+                        />
                     </View>
                 )}
             </SafeAreaView>
