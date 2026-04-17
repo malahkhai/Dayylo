@@ -421,32 +421,6 @@ export default function AuthScreen() {
                                     </Pressable>
                                 ))}
                             </View>
-
-                            <Pressable 
-                                onPress={() => {
-                                    if (habitInput.trim()) {
-                                        setStoryStep(8);
-                                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                                    }
-                                }}
-                                style={({ pressed }) => [
-                                    { 
-                                        backgroundColor: AppleColors.primary, 
-                                        borderRadius: 16, 
-                                        padding: 18, 
-                                        marginTop: 40,
-                                        flexDirection: 'row', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        gap: 10,
-                                        opacity: habitInput.trim() ? 1 : 0.5
-                                    },
-                                    pressed && { transform: [{ scale: 0.98 }], opacity: 0.8 }
-                                ]}
-                                disabled={!habitInput.trim()}
-                            >
-                                <Text style={{ color: '#FFF', fontSize: 17, fontWeight: '800' }}>👉 Start Day 1</Text>
-                            </Pressable>
                         </View>
                     </KeyboardAvoidingView>
                 );
