@@ -207,28 +207,6 @@ export default function AuthScreen() {
     };
 
     const renderStoryStep = () => {
-        // SPECIAL CASE: Screen 1 was "perfect" and should not be touched by the refactor
-        if (storyStep === 1) {
-            return (
-                <View style={[styles.stepContent, { justifyContent: 'center' }]}>
-                    <View style={styles.sbBadge}>
-                        <LucideIcons.ShieldAlert size={12} color={AppleColors.primary} />
-                        <Text style={styles.sbBadgeText}>Reality Hook</Text>
-                    </View>
-                    <Text style={styles.sbHeadline}>Be honest. What’s controlling you?</Text>
-                    <Text style={styles.sbSubheadline}>Not just habits — the things you can’t seem to stop</Text>
-                    
-                    <View style={styles.bubbleGrid}>
-                        {['Late night scrolling', 'Texting your ex', 'Skipping workouts', 'Porn', 'Junk food'].map((item, i) => (
-                            <View key={i} style={[styles.blurredBubble, { opacity: 1 - (i * 0.15), transform: [{ scale: 1 - (i * 0.05) }] }]}>
-                                <Text style={styles.bubbleText}>{item}</Text>
-                            </View>
-                        ))}
-                    </View>
-                </View>
-            );
-        }
-
         const config = getStoryStepConfig(storyStep);
         const Icon = (LucideIcons as any)[config.badgeIcon];
 
@@ -252,6 +230,16 @@ export default function AuthScreen() {
 
     const renderStepVisual = () => {
         switch(storyStep) {
+            case 1:
+                return (
+                    <View style={styles.bubbleGrid}>
+                        {['Late night scrolling', 'Texting your ex', 'Skipping workouts', 'Porn', 'Junk food'].map((item, i) => (
+                            <View key={i} style={[styles.blurredBubble, { opacity: 1 - (i * 0.15), transform: [{ scale: 1 - (i * 0.05) }] }]}>
+                                <Text style={styles.bubbleText}>{item}</Text>
+                            </View>
+                        ))}
+                    </View>
+                );
             case 2:
                 return (
                     <View style={styles.loopContainer}>
