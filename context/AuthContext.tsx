@@ -115,6 +115,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const updateUserName = async (name: string) => {
+        try {
+            const currentUser = firebaseAuth.currentUser;
+            if (currentUser) {
+                // 1. Update Firebase Auth Profile
+                await updateProfile(currentUser, { displayName: name });
+                
+                // 2. Update Firestore document
+                const userRef = doc(db, 'users', currentUser.uid);
+                await setDoc(userRef, { userName: name }, { merge: true });
+                
+                // 3. Update local state
+                setUser(firebaseAuth.currentUser);
+            }
+        } catch (error) {
+            console.error("Update Username Error:", error);
+            throw error;
+        }
+    };
+
     /**
      * Standard Email/Password Sign Up
      */

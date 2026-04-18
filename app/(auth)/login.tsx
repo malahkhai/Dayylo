@@ -45,7 +45,6 @@ export default function AuthScreen() {
     // Auth form state (restored — required for Create Account & Welcome Back screens)
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [habitDifficulty, setHabitDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
     
     // Safely attempt hook resolution
@@ -61,7 +60,8 @@ export default function AuthScreen() {
     // Only redirect NON-anonymous users — anonymous users were created
     // internally during onboarding and should not skip the flow on reload.
     useEffect(() => {
-        if (user && !user.isAnonymous && mode !== 'signup') {
+        // Redirect existing verified users directly to tabs, but STAY here if we are in onboarding
+        if (user && !user.isAnonymous && mode !== 'signup' && mode !== 'storyboard') {
             console.log('[Heartbeat] Verified user detected, redirecting to tabs');
             router.replace('/(tabs)');
         }
@@ -130,7 +130,11 @@ export default function AuthScreen() {
     };
     
     const handleNextStoryboard = async () => {
-        if (storyStep === 6) return; 
+        if (storyStep === 5) {
+            setMode('signup');
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            return;
+        }
 
         if (storyStep === 7) {
             if (!habitInput.trim()) return;
@@ -140,8 +144,31 @@ export default function AuthScreen() {
         }
 
         if (storyStep === 8) {
+            // Save the habit now that the user is signed in
+            if (habitInput.trim() && addHabit) {
+                try {
+                    console.log('[Heartbeat] Onboarding: Saving initial habit...');
+                    const habitType = selectedFocus.build ? 'build' : 'break';
+                    const formattedName = formatHabitName(habitInput, habitType);
+                    await addHabit({
+                        name: formattedName,
+                        type: habitType,
+                        icon: habitType === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
+                        color: habitType === 'build' ? AppleColors.primary : '#FF9500',
+                        frequency: [0, 1, 2, 3, 4, 5, 6],
+                        difficulty: habitDifficulty,
+                        targetValue: 1,
+                        currentValue: 0,
+                        isGood: habitType === 'build',
+                    });
+                     console.log('[Heartbeat] Onboarding: Habit saved successfully.');
+                } catch (error) {
+                    console.error('[Heartbeat] Onboarding: Failed to save initial habit:', error);
+                }
+            }
+
             try {
-                // Request notification permissions before moving to sign up
+                // Request notification permissions before entering the app
                 console.log('[Heartbeat] Requesting notification permissions...');
                 await Notifications.requestPermissionsAsync();
             } catch (error) {
@@ -149,11 +176,11 @@ export default function AuthScreen() {
             }
             
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            setMode('signup');
+            router.replace('/(tabs)');
             return;
         }
 
-        if (storyStep < 6) {
+        if (storyStep < 7) {
             setStoryStep(prev => prev + 1);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         }
@@ -239,8 +266,20 @@ export default function AuthScreen() {
 
     const handleBack = () => {
         if (mode === 'signin') { setMode('signup'); return; }
-        if (mode === 'signup') { setMode('storyboard'); return; }
+        if (mode === 'signup') { 
+            if (storyStep === 5) {
+                setMode('storyboard');
+                setStoryStep(5);
+            } else {
+                setMode('welcome');
+            }
+            return; 
+        }
         if (mode === 'storyboard') {
+            if (storyStep === 6) {
+                setMode('signup');
+                return;
+            }
             if (storyStep > 1) {
                 const prevStep = storyStep - 1;
                 if (prevStep === 6) {
@@ -260,31 +299,20 @@ export default function AuthScreen() {
     const handleSocialLogin = async (provider: 'google' | 'apple') => {
         try {
             await Analytics.logEvent('auth_started', { provider });
-            const isNewUser = provider === 'google' ? await loginWithGoogle() : await loginWithApple();
+            await (provider === 'google' ? loginWithGoogle() : await loginWithApple());
             
-            // If we have a habit input from the storyboard, save it now
-            if (habitInput.trim() && addHabit) {
-                const habitType = selectedFocus.build ? 'build' : 'break';
-                const formattedName = formatHabitName(habitInput, habitType);
-                await addHabit({
-                    name: formattedName,
-                    type: habitType,
-                    icon: habitType === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
-                    color: habitType === 'build' ? AppleColors.primary : '#FF9500',
-                    frequency: [0, 1, 2, 3, 4, 5, 6],
-                    difficulty: habitDifficulty,
-                    targetValue: 1,
-                    currentValue: 0,
-                    isGood: habitType === 'build',
-                });
-            }
-
             // If we have a name input from the storyboard, save it
             if (userName.trim() && updateUserName) {
                 await updateUserName(userName.trim());
             }
 
-            // Always go to tabs now, as we've handled the habit creation
+            // After login, if we are in onboarding, move to step 6 (Choice)
+            if (storyStep === 5) {
+                setMode('storyboard');
+                setStoryStep(6);
+                return;
+            }
+
             router.replace('/(tabs)');
         } catch (error: any) {
             if (error?.message !== 'Sign in cancelled') {
@@ -299,6 +327,13 @@ export default function AuthScreen() {
             await Analytics.logEvent('auth_started', { provider: 'email' });
             const firebaseAuth = getAuth();
             await signInWithEmailAndPassword(firebaseAuth, email.trim(), password);
+            
+            if (storyStep === 5) {
+                setMode('storyboard');
+                setStoryStep(6);
+                return;
+            }
+
             router.replace('/(tabs)');
         } catch (error: any) {
             Alert.alert('Login Failed', error.message);
@@ -307,33 +342,21 @@ export default function AuthScreen() {
 
     const handleSignup = async () => {
         if (!email || !password) return Alert.alert('Error', 'Please enter valid credentials.');
-        if (password !== confirmPassword) return Alert.alert('Error', 'Passwords do not match.');
         try {
             await Analytics.logEvent('auth_started', { provider: 'email_signup' });
             
             // LINKING: Link new Email account to current Anonymous session
             await linkEmailPassword(email.trim(), password);
             
-            // If we have a habit input from the storyboard, save it now
-            if (habitInput.trim() && addHabit) {
-                const habitType = selectedFocus.build ? 'build' : 'break';
-                const formattedName = formatHabitName(habitInput, habitType);
-                await addHabit({
-                    name: formattedName,
-                    type: habitType,
-                    icon: habitType === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
-                    color: habitType === 'build' ? AppleColors.primary : '#FF9500',
-                    frequency: [0, 1, 2, 3, 4, 5, 6],
-                    difficulty: habitDifficulty,
-                    targetValue: 1,
-                    currentValue: 0,
-                    isGood: habitType === 'build',
-                });
-            }
-
             // If we have a name input from the storyboard, save it
             if (userName.trim() && updateUserName) {
                 await updateUserName(userName.trim());
+            }
+
+            if (storyStep === 5) {
+                setMode('storyboard');
+                setStoryStep(6);
+                return;
             }
 
             router.replace('/(tabs)');
@@ -718,16 +741,16 @@ export default function AuthScreen() {
         const journeyColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
         return (
             <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+                <View style={styles.authFullView}>
                     <Pressable onPress={handleBack} style={styles.backButton}>
                         <LucideIcons.ChevronLeft size={24} color={AppleColors.label.primary} />
                     </Pressable>
 
                     <View style={styles.authHeader}>
-                        <Text style={[styles.authTitle, { color: journeyColor }]}>Create Account</Text>
+                        <Text style={[styles.authTitle, { color: journeyColor }]}>Stake Your Claim</Text>
                         <Text style={styles.authSub}>
-                            To stay active and store your streak, you need to{' '}
-                            <Text style={{ color: journeyColor, fontWeight: '700' }}>create an account</Text>.
+                            Before we build your first habit, create your account to protect your future streaks and claim your first {' '}
+                            <Text style={{ color: journeyColor, fontWeight: '700' }}>3 habit slots</Text> for free.
                         </Text>
                     </View>
 
@@ -758,14 +781,6 @@ export default function AuthScreen() {
                             placeholderTextColor={AppleColors.label.tertiary}
                             value={password}
                             onChangeText={setPassword}
-                        />
-                        <TextInput
-                            placeholder="Confirm Password"
-                            style={styles.input}
-                            secureTextEntry
-                            placeholderTextColor={AppleColors.label.tertiary}
-                            value={confirmPassword}
-                            onChangeText={setConfirmPassword}
                         />
 
                         <AppleButton title="Sign Up" onPress={handleSignup} size="large" fullWidth style={{ marginTop: 8 }} />
@@ -807,7 +822,7 @@ export default function AuthScreen() {
                             </Pressable>
                         </View>
                     </View>
-                </ScrollView>
+                </View>
             </SafeAreaView>
         );
     }
@@ -918,20 +933,24 @@ export default function AuthScreen() {
 
                 {storyStep !== 6 && (
                     <View style={[styles.sbFooter, { paddingHorizontal: 20 }]}>
-                        <AppleButton
-                            title={
-                                storyStep === 1 ? "👉 I'm ready to change" :
-                                storyStep === 2 ? "👉 Break the cycle" :
-                                storyStep === 3 ? "👉 Take control" :
-                                storyStep === 4 ? "👉 Be accountable" :
-                                storyStep === 5 ? "👉 Start my streak" :
-                                storyStep === 7 ? "Start Day 1" :
-                                storyStep === 8 ? "Continue →" : "Next"
-                            }
-                            onPress={handleNextStoryboard}
-                            variant="primary"
-                            backgroundColor={(storyStep >= 7 && (selectedFocus.build || selectedFocus.break)) ? (selectedFocus.build ? AppleColors.primary : '#FF9500') : undefined}
-                        />
+                        {(storyStep !== 5 || showConfetti) && (
+                            <Animated.View entering={FadeIn.duration(800)}>
+                                <AppleButton
+                                    title={
+                                        storyStep === 1 ? "👉 I'm ready to change" :
+                                        storyStep === 2 ? "👉 Break the cycle" :
+                                        storyStep === 3 ? "👉 Take control" :
+                                        storyStep === 4 ? "👉 Be accountable" :
+                                        storyStep === 5 ? "👉 Start my streak" :
+                                        storyStep === 7 ? "Create Habit" :
+                                        storyStep === 8 ? "Start My Journey →" : "Next"
+                                    }
+                                    onPress={handleNextStoryboard}
+                                    variant="primary"
+                                    backgroundColor={(storyStep >= 7 && (selectedFocus.build || selectedFocus.break)) ? (selectedFocus.build ? AppleColors.primary : '#FF9500') : undefined}
+                                />
+                            </Animated.View>
+                        )}
                     </View>
                 )}
             </SafeAreaView>
@@ -1017,6 +1036,7 @@ const styles = StyleSheet.create({
     dayOneNum: { fontSize: 72, fontWeight: '900', color: AppleColors.primary },
 
     // ─── Auth screens (Create Account + Welcome Back) ─────────────────────────
+    authFullView: { flex: 1, paddingHorizontal: 20, paddingBottom: 30, justifyContent: 'space-between' },
     scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 20 },
     backButton: { width: 44, height: 44, justifyContent: 'center' },
     centerContent: { flex: 1, alignItems: 'center', justifyContent: 'center' },

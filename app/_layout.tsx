@@ -46,12 +46,12 @@ function AuthGate({ children }: { children: React.ReactNode }) {
                 router.replace('/(auth)/login');
             } else if (hasUser && isAuthGroup) {
                 // We have a user (Verified or Anonymous) but we are still in Auth screens.
-                // If they are on the LOGIN screen, we only redirect if they are verified.
-                // If they are in onboarding (removed soon), handle accordingly.
+                // We stop the auto-redirect to tabs when on the login screen to allow the 
+                // onboarding flow to finish without interruption.
                 const onLoginScreen = segments[1] === 'login';
                 const isVerified = user && !user.isAnonymous;
 
-                if (isVerified || (onLoginScreen && hasUser)) {
+                if (isVerified && !onLoginScreen) {
                     router.replace('/(tabs)');
                 }
             }

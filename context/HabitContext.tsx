@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Platform, AppState } from 'react-native';
+import { Platform, AppState, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import { getFirestore, doc, setDoc, deleteField } from '@react-native-firebase/firestore';
@@ -159,12 +159,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 setDoc(userRef, { pushToken: deleteField() }, { merge: true });
             }
         }
-    }, [notificationsEnabled, loading, user]);
+    }, [notificationsEnabled, loading, user, habits]);
 
     // ── Persist + Reset ─────────────────────────────────────────────────────
 
     const loadData = async () => {
-        const currentUser = auth().currentUser;
+        const currentUser = auth.currentUser;
         if (!currentUser) return;
         
         try {
@@ -291,7 +291,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const saveHabits = async (newHabits: Habit[], resetDate?: string) => {
         setHabits(newHabits);
-        const currentUser = auth().currentUser;
+        const currentUser = auth.currentUser;
         
         if (currentUser) {
             try {
@@ -388,6 +388,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const addHabit = async (
         h: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>
     ): Promise<boolean> => {
+        // Prevent duplicates (case-insensitive)
+        const isDuplicate = habits.some(existing => existing.name.toLowerCase() === h.name.toLowerCase());
+        if (isDuplicate) {
+            Alert.alert("Duplicate Habit", "A habit with this name already exists.");
+            return false;
+        }
+
+        // Allow up to 3 habits for free users
         if (!isPremium && habits.length >= 3) return false;
 
         const newHabit: Habit = {
@@ -410,9 +418,16 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const addHabits = async (
         newHabitsList: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>[]
     ): Promise<boolean> => {
-        if (!isPremium && (habits.length + newHabitsList.length) > 5) {
-            // Cap at 5 for free users during onboarding
-            newHabitsList = newHabitsList.slice(0, 5 - habits.length);
+        // Filter out duplicates (compared to existing habits)
+        const filteredList = newHabitsList.filter(newH => 
+            !habits.some(existing => existing.name.toLowerCase() === newH.name.toLowerCase())
+        );
+
+        // Cap at 3 for free users
+        if (!isPremium && (habits.length + filteredList.length) > 3) {
+            newHabitsList = filteredList.slice(0, 3 - habits.length);
+        } else {
+            newHabitsList = filteredList;
         }
 
         const processedHabits: Habit[] = newHabitsList.map(h => ({
