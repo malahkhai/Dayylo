@@ -10,6 +10,7 @@ module.exports = {
         accent: {
           blue: "#007AFF",
           green: "#34C759",
+          orange: "#FF9500",
         },
         background: {
           light: "#f6f8f7",

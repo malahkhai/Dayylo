@@ -18,8 +18,6 @@ import * as Haptics from 'expo-haptics';
 import { AppleColors, AppleTypography, AppleShadows, AppleSpacing } from '../constants/AppleTheme';
 import { useCelebration } from '../context/CelebrationContext';
 
-// const { width: SCREEN_WIDTH } = Dimensions.get('window'); // Replaced by hook
-
 // ─── Safe Icon Component ─────────────────────────────────────────────────────
 const SafeIcon = ({ name, size, color }: { name: string; size: number; color: string }) => {
   const IconComponent = (LucideIcons as any)[name] || LucideIcons.Activity;
@@ -43,6 +41,7 @@ interface HabitCardProps {
   onPress?: () => void;
   onComplete?: () => void;
   onFail?: () => void;
+  difficulty?: string;
 }
 
 export const AppleHabitCard: React.FC<HabitCardProps> = ({
@@ -56,13 +55,21 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   onPress,
   onComplete,
   onFail,
+  difficulty,
 }) => {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const { triggerCelebration } = useCelebration();
   const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.3;
+  
+  // ── Animation Values ───────────────────────────────────────────────────────
   const translateX = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const cardHeight = useSharedValue(85);
+  const cardMargin = useSharedValue(4);
+  const cardOpacity = useSharedValue(1);
   const hasTriggeredHaptic = useSharedValue(0); // 0=none, 1=right, 2=left
 
+  // ── Handlers ───────────────────────────────────────────────────────────────
   const handleHaptic = (type: number) => {
     'worklet';
     if (hasTriggeredHaptic.value !== type) {
@@ -71,11 +78,21 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
     }
   };
 
+  const collapse = () => {
+    'worklet';
+    cardHeight.value = withSpring(0, { damping: 20, stiffness: 90 });
+    cardMargin.value = withSpring(0, { damping: 20, stiffness: 90 });
+    cardOpacity.value = withSpring(0, { duration: 250 });
+  };
+
   const handleCompleteJS = () => {
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       triggerCelebration();
-      if (onComplete) onComplete();
+      collapse();
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, 300);
     } catch (e) {
       console.error('onComplete error:', e);
     }
@@ -84,18 +101,21 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   const handleFailJS = () => {
     try {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      if (onFail) onFail();
+      collapse();
+      setTimeout(() => {
+        if (onFail) onFail();
+      }, 300);
     } catch (e) {
       console.error('onFail error:', e);
     }
   };
 
+  // ── Gesture Definition ──────────────────────────────────────────────────────
   const gesture = Gesture.Pan()
     .enabled(!trackedToday)
     .activeOffsetX([-10, 10])
     .onUpdate((event) => {
       translateX.value = event.translationX;
-
       if (event.translationX > SWIPE_THRESHOLD) {
         handleHaptic(1);
       } else if (event.translationX < -SWIPE_THRESHOLD) {
@@ -117,14 +137,14 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
       }
     });
 
-  const scale = useSharedValue(1);
-
   const rStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { scale: scale.value }
     ],
-    opacity: trackedToday ? 0.6 : 1,
+    opacity: cardOpacity.value,
+    height: cardHeight.value,
+    marginVertical: cardMargin.value,
   }));
 
   const handlePressIn = () => {
@@ -136,7 +156,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, rStyle]}>
       {/* Background Actions - Only show if not tracked */}
       {!trackedToday && (
         <View style={styles.backgroundContainer}>
@@ -152,7 +172,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
       )}
 
       <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.card, rStyle]}>
+        <Animated.View style={[styles.card]}>
           <Pressable 
             onPress={onPress} 
             onPressIn={handlePressIn}
@@ -181,10 +201,22 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
                   <Text style={styles.streakText}>{streak}</Text>
                 </View>
               )}
+
+              {!trackedToday && difficulty && (
+                <View style={[styles.difficultyMiniBadge, { borderColor: color + '40' }]}>
+                   <Text style={[styles.difficultyMiniText, { color: color }]}>
+                     {(() => {
+                        const dStr = String(difficulty).toLowerCase();
+                        const label = dStr.includes('hard') || dStr === '8' || dStr === '9' || dStr === '10' ? 'HARD' :
+                                    dStr.includes('easy') || dStr === '1' || dStr === '2' || dStr === '3' ? 'EASY' : 'MEDIUM';
+                        const xp = label === 'HARD' ? '50' : label === 'MEDIUM' ? '25' : '10';
+                        return `${label} • ${xp}XP`;
+                     })()}
+                   </Text>
+                </View>
+              )}
             </View>
           </Pressable>
-
-
 
           {/* Watermark Overlay */}
           {trackedToday && (
@@ -199,7 +231,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
           )}
         </Animated.View>
       </GestureDetector>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -272,9 +304,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  iconEmoji: {
-    fontSize: 24,
-  },
   info: {
     flex: 1,
     marginRight: AppleSpacing.sm,
@@ -312,7 +341,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: AppleColors.label.secondary,
   },
-
   watermarkOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -339,5 +367,17 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: 4,
+  },
+  difficultyMiniBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginLeft: 8,
+  },
+  difficultyMiniText: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.5,
   },
 });

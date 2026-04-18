@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Dimensions, StyleSheet, Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Pressable, Image, Dimensions, StyleSheet, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import Purchases, { PACKAGE_TYPE } from 'react-native-purchases';
 import { useHabits } from '../context/HabitContext';
 import { AppleColors, AppleTypography, AppleShadows } from '../constants/AppleTheme';
+import { Analytics } from '../services/analytics';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
@@ -14,33 +15,50 @@ export default function PaywallScreen() {
     const router = useRouter();
     const { setPremium } = useHabits();
     const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual');
+    const [offerings, setOfferings] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        Analytics.logEvent('paywall_viewed');
+        const fetchOfferings = async () => {
+            try {
+                const fetched = await Purchases.getOfferings();
+                if (fetched.current) {
+                    setOfferings(fetched.current);
+                }
+            } catch (e) {
+                console.error("Error fetching offerings", e);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOfferings();
+    }, []);
 
     const handleSubscribe = async () => {
         try {
-            const offerings = await Purchases.getOfferings();
-            if (offerings.current !== null && offerings.current.availablePackages.length !== 0) {
-                const targetType = selectedPlan === 'annual' ? PACKAGE_TYPE.ANNUAL : PACKAGE_TYPE.MONTHLY;
-                const pkg = offerings.current.availablePackages.find(p => p.packageType === targetType);
+            if (!offerings || offerings.availablePackages.length === 0) {
+                Alert.alert("Error", "Products are not available right now. Please try again later.");
+                return;
+            }
+            const targetType = selectedPlan === 'annual' ? PACKAGE_TYPE.ANNUAL : PACKAGE_TYPE.MONTHLY;
+            const pkg = offerings.availablePackages.find((p: any) => p.packageType === targetType);
 
-                if (pkg) {
-                    const { customerInfo } = await Purchases.purchasePackage(pkg);
-                    // Assume 'pro' or 'premium' entitlement name. Let's unlock if ANY entitlement is active.
-                    if (Object.keys(customerInfo.entitlements.active).length > 0) {
-                        await setPremium(true);
-                        router.back();
-                        return;
-                    }
+            if (pkg) {
+                await Analytics.logEvent('purchase_started', { package_type: targetType });
+                const { customerInfo } = await Purchases.purchasePackage(pkg);
+                if (customerInfo.entitlements.active['Premium'] || customerInfo.entitlements.active['pro']) {
+                    await Analytics.logEvent('purchase_success', { package_type: targetType });
+                    await setPremium(true);
+                    router.back();
+                    return;
                 }
             }
-            // Fallback unlock if RC is not fully configured yet in App Store Connect
-            await setPremium(true);
-            router.back();
         } catch (e: any) {
             if (!e.userCancelled) {
+                await Analytics.logEvent('purchase_error', { error: e.message || 'unknown' });
                 console.error("Purchase error", e);
-                // Fallback unlock for testing
-                await setPremium(true);
-                router.back();
+                Alert.alert("Purchase Error", e.message || "Failed to complete purchase.");
             }
         }
     };
@@ -115,7 +133,10 @@ export default function PaywallScreen() {
                                 <Text style={styles.planTitle}>Annual</Text>
                                 {selectedPlan === 'annual' && <LucideIcons.CheckCircle2 size={20} color={AppleColors.systemBlue} fill="black" />}
                             </View>
-                            <Text style={styles.planPrice}>$29.99<Text style={styles.planPeriod}>/year</Text></Text>
+                            <Text style={styles.planPrice}>
+                                {offerings?.availablePackages.find((p: any) => p.packageType === PACKAGE_TYPE.ANNUAL)?.product.priceString || '$29.99'}
+                                <Text style={styles.planPeriod}>/year</Text>
+                            </Text>
                             <Text style={styles.planTrial}>7 Days Free Trial</Text>
                             <Text style={styles.planSavings}>Save 40%</Text>
                         </Pressable>
@@ -132,7 +153,10 @@ export default function PaywallScreen() {
                                 <Text style={styles.planTitle}>Monthly</Text>
                                 {selectedPlan === 'monthly' && <LucideIcons.CheckCircle2 size={20} color={AppleColors.systemBlue} />}
                             </View>
-                            <Text style={styles.planPrice}>$4.99<Text style={styles.planPeriod}>/mo</Text></Text>
+                            <Text style={styles.planPrice}>
+                                {offerings?.availablePackages.find((p: any) => p.packageType === PACKAGE_TYPE.MONTHLY)?.product.priceString || '$4.99'}
+                                <Text style={styles.planPeriod}>/mo</Text>
+                            </Text>
                             <Text style={styles.planTrial}>No trial</Text>
                         </Pressable>
                     </View>

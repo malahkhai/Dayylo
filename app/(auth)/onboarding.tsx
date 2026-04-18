@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Dimensions, Modal, Animated, TextInput, KeyboardAvoidingView, Platform as RNPlatform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as LucideIcons from 'lucide-react-native';
 import { AppleColors, AppleTypography, AppleSpacing, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
@@ -12,7 +12,7 @@ import { SwipeButton } from '../../components/SwipeButton';
 const { width } = Dimensions.get('window');
 
 type OnboardingStep = 'WELCOME' | 'NAME' | 'HABITS';
-
+import { Analytics } from '../../services/analytics';
 interface StarterHabit {
     id: string;
     name: string;
@@ -23,32 +23,68 @@ interface StarterHabit {
 }
 
 const STARTER_HABITS: StarterHabit[] = [
-    { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: AppleColors.systemBlue, difficulty: 7 },
-    { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: AppleColors.systemCyan, difficulty: 2 },
-    { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: AppleColors.systemPurple, difficulty: 4 },
-    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: AppleColors.systemGreen, difficulty: 3 },
-    { id: 'h9', name: 'Plank', type: 'build', icon: 'Timer', color: AppleColors.systemOrange, difficulty: 6 },
-    { id: 'h-custom-build', name: 'Custom', type: 'build', icon: 'Plus', color: AppleColors.systemMint, difficulty: 5 },
-    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: AppleColors.systemRed, difficulty: 9 },
-    { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: AppleColors.systemPink, difficulty: 6 },
-    { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: AppleColors.systemIndigo, difficulty: 8 },
-    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: AppleColors.systemOrange, difficulty: 5 },
-    { id: 'h10', name: 'Don\'t call Ex', type: 'break', icon: 'PhoneOff', color: AppleColors.systemRed, difficulty: 10 },
-    { id: 'h-custom-break', name: 'Custom', type: 'break', icon: 'Plus', color: AppleColors.systemYellow, difficulty: 5 },
+    { id: 'h1', name: 'Gym', type: 'build', icon: 'Dumbbell', color: '#007AFF', difficulty: 7 },
+    { id: 'h2', name: 'Water', type: 'build', icon: 'Droplets', color: '#007AFF', difficulty: 2 },
+    { id: 'h3', name: 'Meditate', type: 'build', icon: 'Zap', color: '#007AFF', difficulty: 4 },
+    { id: 'h4', name: 'Read', type: 'build', icon: 'BookOpen', color: '#007AFF', difficulty: 3 },
+    { id: 'h9', name: 'Plank', type: 'build', icon: 'Timer', color: '#007AFF', difficulty: 6 },
+    { id: 'h5', name: 'Smoking', type: 'break', icon: 'Wind', color: '#FF9500', difficulty: 9 },
+    { id: 'h6', name: 'Social', type: 'break', icon: 'Smartphone', color: '#FF9500', difficulty: 6 },
+    { id: 'h7', name: 'Porn', type: 'break', icon: 'EyeOff', color: '#FF9500', difficulty: 8 },
+    { id: 'h8', name: 'Sugar', type: 'break', icon: 'Cookie', color: '#FF9500', difficulty: 5 },
+    { id: 'h10', name: 'Don\'t call Ex', type: 'break', icon: 'PhoneOff', color: '#FF9500', difficulty: 10 },
 ];
 
 export default function OnboardingScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams<{ 
+        initialHabitName?: string; 
+        initialHabitType?: string;
+        initialHabitDifficulty?: 'easy' | 'medium' | 'hard';
+    }>();
     const { user } = useAuth();
-    const { addHabit, updateUserName, userName } = useHabits();
+    const { addHabit, addHabits, updateUserName, userName, loading } = useHabits();
     const [currentStep, setCurrentStep] = useState<OnboardingStep>('WELCOME');
     const [tempName, setTempName] = useState(user?.displayName || '');
+    const [isFinalizing, setIsFinalizing] = useState(false);
 
     React.useEffect(() => {
         if (user?.displayName) {
             setTempName(user.displayName);
         }
     }, [user?.displayName]);
+
+    React.useEffect(() => {
+        const handleAutoSave = async () => {
+            // Wait for HabitContext sync AND ensure we have a valid UID (either Anonymous or Real)
+            if (!loading && user && params.initialHabitName && params.initialHabitType) {
+                console.log('[Heartbeat] Onboarding auto-save triggered for user:', user.uid, `(Anonymous: ${user.isAnonymous})`);
+                
+                const type = params.initialHabitType as 'build' | 'break';
+                const success = await addHabit({
+                    name: params.initialHabitName,
+                    type: type,
+                    icon: type === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
+                    color: type === 'build' ? '#007AFF' : '#FF9500',
+                    frequency: [0, 1, 2, 3, 4, 5, 6], // All days
+                    difficulty: params.initialHabitDifficulty || 'medium',
+                    targetValue: 1, // Default for non-value habits
+                    currentValue: 0,
+                    isGood: type === 'build',
+                });
+
+                if (success) {
+                    console.log('[Heartbeat] Auto-save success, syncing state and redirecting...');
+                    // Add a tiny buffer to allow Firestore write and Context state to settle
+                    setTimeout(() => {
+                        router.replace('/(tabs)');
+                    }, 500);
+                }
+            }
+        };
+
+        handleAutoSave();
+    }, [user, params.initialHabitName, loading]);
     const [selectedHabits, setSelectedHabits] = useState<{ [id: string]: number }>({});
     const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
     const [showNotificationModal, setShowNotificationModal] = useState(false);
@@ -72,11 +108,6 @@ export default function OnboardingScreen() {
     };
 
     const toggleHabit = (id: string) => {
-        if (id.includes('custom')) {
-            router.push('/add-habit');
-            return;
-        }
-
         const habit = STARTER_HABITS.find(h => h.id === id);
         if (!habit) return;
 
@@ -114,28 +145,47 @@ export default function OnboardingScreen() {
     };
 
     const finalizeOnboarding = async () => {
-        if (tempName.trim()) {
-            await updateUserName(tempName.trim());
-        }
-        for (const hid of Object.keys(selectedHabits)) {
-            const h = STARTER_HABITS.find(sh => sh.id === hid);
-            if (h) {
-                const difVal = selectedHabits[hid] || 5;
-                const difStr = difVal < 4 ? 'easy' : difVal > 7 ? 'hard' : 'medium';
-                await addHabit({
-                    name: h.name,
-                    type: h.type,
-                    icon: h.icon,
-                    color: h.color,
-                    isPrivate: false,
-                    frequency: ['daily'],
-                    difficulty: difStr,
-                    history: {},
-                });
+        setIsFinalizing(true);
+        try {
+            if (tempName.trim()) {
+                await updateUserName(tempName.trim());
             }
+            await Analytics.logEvent('onboarding_completed', { 
+                habit_count: Object.keys(selectedHabits).length 
+            });
+
+            const habitsToPush: any[] = [];
+            for (const hid of Object.keys(selectedHabits)) {
+                const h = STARTER_HABITS.find(sh => sh.id === hid);
+                if (h) {
+                    const difVal = selectedHabits[hid] || 5;
+                    const difStr = difVal < 4 ? 'easy' : difVal > 7 ? 'hard' : 'medium';
+                    habitsToPush.push({
+                        name: h.name,
+                        type: h.type,
+                        icon: h.icon,
+                        color: h.color,
+                        isPrivate: false,
+                        frequency: ['daily'],
+                        difficulty: difStr,
+                        history: {},
+                    });
+                }
+            }
+
+            if (habitsToPush.length > 0) {
+                await addHabits(habitsToPush);
+            }
+
+            // Sync buffer
+            setTimeout(() => {
+                setShowNotificationModal(false);
+                router.replace('/(tabs)');
+            }, 1000);
+        } catch (error) {
+            console.error('Finalization failed:', error);
+            setIsFinalizing(false);
         }
-        setShowNotificationModal(false);
-        router.replace('/(tabs)');
     };
 
 
@@ -183,16 +233,9 @@ export default function OnboardingScreen() {
                         </View>
                     )}
 
-                    {!isCustom && (
-                        <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }, !isSelected && { borderColor: 'rgba(255,255,255,0.15)' }]}>
-                            {isSelected && <LucideIcons.Check size={14} color="white" />}
-                        </View>
-                    )}
-                    {isCustom && (
-                        <View style={styles.plusIcon}>
-                            <LucideIcons.Plus size={14} color={AppleColors.label.tertiary} />
-                        </View>
-                    )}
+                    <View style={[styles.checkbox, isSelected && { backgroundColor: h.color, borderColor: h.color }, !isSelected && { borderColor: 'rgba(255,255,255,0.15)' }]}>
+                        {isSelected && <LucideIcons.Check size={14} color="white" />}
+                    </View>
                 </Pressable>
             </View>
         );
@@ -425,6 +468,18 @@ export default function OnboardingScreen() {
                             <Pressable onPress={() => { setShowAllowNotificationsModal(false); finalizeOnboarding(); }} style={styles.modalCancel}>
                                 <Text style={styles.modalCancelText}>Not right now</Text>
                             </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            <Modal visible={isFinalizing} transparent animationType="fade">
+                <View style={styles.modalOverlay}>
+                    <View style={styles.loadingCard}>
+                        <LucideIcons.ShieldCheck size={50} color={AppleColors.systemGreen} />
+                        <Text style={styles.loadingTitle}>Preparing Your Path</Text>
+                        <Text style={styles.loadingSubtitle}>Hardening your daily discipline...</Text>
+                        <View style={styles.progressTrack}>
+                            <Animated.View style={styles.progressBar} />
                         </View>
                     </View>
                 </View>
@@ -714,5 +769,38 @@ const styles = StyleSheet.create({
         ...AppleTypography.callout,
         color: AppleColors.label.secondary,
         fontWeight: '600',
+    },
+    loadingCard: {
+        backgroundColor: AppleColors.background.tertiary,
+        padding: 40,
+        borderRadius: 32,
+        alignItems: 'center',
+        width: '85%',
+        ...AppleShadows.card,
+    },
+    loadingTitle: {
+        ...AppleTypography.title2,
+        fontWeight: '900',
+        color: AppleColors.label.primary,
+        marginTop: 24,
+    },
+    loadingSubtitle: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    progressTrack: {
+        width: '100%',
+        height: 6,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 3,
+        marginTop: 32,
+        overflow: 'hidden',
+    },
+    progressBar: {
+        width: '60%', // Static for now, feels "working"
+        height: '100%',
+        backgroundColor: AppleColors.systemGreen,
     }
 });

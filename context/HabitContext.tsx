@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Platform, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import firestore from '@react-native-firebase/firestore';
@@ -9,7 +9,7 @@ import { useAuth } from './AuthContext';
 import { FirestoreService } from '../services/firestore';
 import { Habit } from '../types';
 import { INITIAL_HABITS } from '../constants';
-import { requestPermissionsAsync, scheduleDailyReminder, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
+import { requestPermissionsAsync, scheduleHabitReminders, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
 
 console.log('[Heartbeat] HabitContext.tsx module loaded');
 
@@ -20,6 +20,8 @@ export interface WeekDayData {
     label: string;
     date: string;
     completion: number; // 0–1
+    missedCount: number;
+    trackedCount: number;
 }
 
 export interface MonthlyData {
@@ -32,6 +34,7 @@ export interface MonthlyData {
 interface HabitContextType {
     habits: Habit[];
     addHabit: (habit: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>) => Promise<boolean>;
+    addHabits: (habits: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>[]) => Promise<boolean>;
     editHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
     toggleHabit: (id: string) => Promise<void>;
     updateHabitValue: (id: string, delta: number) => Promise<void>;
@@ -57,6 +60,8 @@ interface HabitContextType {
     updateUserName: (name: string) => Promise<void>;
     notificationsEnabled: boolean;
     setNotificationsEnabled: (val: boolean) => Promise<void>;
+    totalMissedThisWeek: number;
+    archiveHabit: (id: string, shouldArchive: boolean) => Promise<void>;
 }
 
 const HabitContext = createContext<HabitContextType | undefined>(undefined);
@@ -116,11 +121,25 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
     }, [user]);
 
+    // Handle AppState changes (e.g. returning to foreground)
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'active' && user) {
+                console.log('[Heartbeat] HabitContext: App returned to active. Refreshing data...');
+                loadData();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, [user]);
+
     useEffect(() => {
         if (!loading && user) {
             if (notificationsEnabled) {
                 requestPermissionsAsync().then(granted => {
-                    if (granted) scheduleDailyReminder(20, 0); // 8:00 PM
+                    if (granted) scheduleHabitReminders(habits);
                 });
 
                 registerForPushNotificationsAsync().then(token => {
@@ -160,7 +179,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
 
             if (JSON.stringify(parsedHabits) !== JSON.stringify(habits)) {
-                setHabits(parsedHabits);
+                // SMART GUARD: If Firestore gives us an empty list but we ALREADY have habits locally
+                // (e.g. from a storyboard auto-save or onboarding that just happened), ignore the empty sync.
+                if (parsedHabits.length === 0 && habits.length > 0) {
+                    console.log('[Heartbeat] HabitContext: Ignoring empty sync to protect local/onboarding habits');
+                } else {
+                    setHabits(parsedHabits);
+                }
             }
 
             const newIsPremium = data?.isPremium || false;
@@ -181,14 +206,26 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
                 try {
+                    // ── Initial Check ───────────────────────────────────────
                     const customerInfo = await Purchases.getCustomerInfo();
                     const hasPremium = Object.keys(customerInfo.entitlements.active).length > 0;
                     if (hasPremium && !newIsPremium) {
                         setIsPremium(true);
                         await FirestoreService.setPremiumStatus(user.uid, true);
                     }
+
+                    // ── Real-Time Listener ──────────────────────────────────
+                    Purchases.addCustomerInfoUpdateListener((info) => {
+                        const isEntitled = Object.keys(info.entitlements.active).length > 0;
+                        if (isEntitled !== isPremium) {
+                            console.log('[Heartbeat] RevenueCat: Entitlement state changed to:', isEntitled);
+                            setIsPremium(isEntitled);
+                            FirestoreService.setPremiumStatus(user.uid, isEntitled);
+                            Analytics.logEvent('premium_status_changed', { isPremium: isEntitled });
+                        }
+                    });
                 } catch (e) {
-                    console.log('[Heartbeat] RC check failed (safe ignored)', e);
+                    console.log('[Heartbeat] RC init/check failed (safe ignored)', e);
                 }
             }
 
@@ -218,11 +255,44 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // ── XP / Level ──────────────────────────────────────────────────────────
 
     const addXp = async (amount: number) => {
+        const oldLevel = level;
         const newXp = totalDiscipline + amount;
         setTotalDiscipline(newXp);
-        setLevel(Math.floor(newXp / 100) + 1);
+        const newLevel = Math.floor(newXp / 100) + 1;
+        setLevel(newLevel);
+        
+        if (newLevel > oldLevel) {
+            Analytics.logEvent('level_up', { level: newLevel });
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+
         if (user) {
             await firestore().collection('users').doc(user.uid).set({ totalDiscipline: newXp }, { merge: true });
+        }
+    };
+
+    // ── Purchase Restoration ────────────────────────────────────────────────
+    
+    const restorePurchases = async () => {
+        if (Platform.OS === 'ios' || Platform.OS === 'android') {
+            try {
+                const customerInfo = await Purchases.restorePurchases();
+                const isEntitled = Object.keys(customerInfo.entitlements.active).length > 0;
+                setIsPremium(isEntitled);
+                if (user) {
+                    await FirestoreService.setPremiumStatus(user.uid, isEntitled);
+                }
+                Analytics.logEvent('purchases_restored', { hasPremium: isEntitled });
+                if (isEntitled) {
+                    Alert.alert("Success", "Your premium features have been restored!");
+                } else {
+                    Alert.alert("No Purchases Found", "We couldn't find any active subscriptions for this account.");
+                }
+            } catch (e: any) {
+                console.error("Restore failed:", e);
+                Alert.alert("Error", e.message || "Failed to restore purchases.");
+                crashlytics().recordError(e, 'restorePurchases');
+            }
         }
     };
 
@@ -268,6 +338,33 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await Analytics.logEvent('habit_added', {
             type: h.type,
             difficulty: h.difficulty
+        });
+        return true;
+    };
+
+    const addHabits = async (
+        newHabitsList: Omit<Habit, 'id' | 'streak' | 'longestStreak' | 'completedToday' | 'trackedToday'>[]
+    ): Promise<boolean> => {
+        if (!isPremium && (habits.length + newHabitsList.length) > 5) {
+            // Cap at 5 for free users during onboarding
+            newHabitsList = newHabitsList.slice(0, 5 - habits.length);
+        }
+
+        const processedHabits: Habit[] = newHabitsList.map(h => ({
+            ...h,
+            id: Math.random().toString(36).substr(2, 9),
+            streak: 0,
+            longestStreak: 0,
+            completedToday: false,
+            trackedToday: false,
+            history: {},
+        }));
+
+        console.log(`[Heartbeat] HabitContext: Batch adding ${processedHabits.length} habits`);
+        await saveHabits([...habits, ...processedHabits]);
+        
+        await Analytics.logEvent('habits_weighted_added', {
+            count: processedHabits.length
         });
         return true;
     };
@@ -333,14 +430,24 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     const deleteHabit = async (id: string) => {
+        const habitToDelete = habits.find(h => h.id === id);
         await saveHabits(habits.filter(h => h.id !== id));
+        if (habitToDelete) {
+            await Analytics.logEvent('habit_deleted', {
+                name: habitToDelete.name,
+                type: habitToDelete.type
+            });
+        }
     };
 
     const recordHabitResult = async (id: string, success: boolean) => {
         const today = getTodayDate();
         let xpGained = 0;
+        let habitType: 'build' | 'break' | undefined;
+
         const newHabits = habits.map(h => {
             if (h.id !== id) return h;
+            habitType = h.type;
             if (success) {
                 const newStreak = h.streak + 1;
                 const diffPoints = h.difficulty === 'hard' ? 50 : h.difficulty === 'medium' ? 25 : 10;
@@ -364,8 +471,31 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 };
             }
         });
+
         await saveHabits(newHabits);
-        if (xpGained > 0) await addXp(xpGained);
+        
+        if (success) {
+            if (xpGained > 0) await addXp(xpGained);
+        } else {
+            await Analytics.logEvent('habit_missed', {
+                id,
+                type: habitType
+            });
+        }
+    };
+
+    const archiveHabit = async (id: string, shouldArchive: boolean) => {
+        const newHabits = habits.map(h => h.id === id ? { ...h, isArchived: shouldArchive } : h);
+        await saveHabits(newHabits);
+        
+        await Analytics.logEvent(shouldArchive ? 'habit_archived' : 'habit_unarchived', {
+            id,
+            name: habits.find(h => h.id === id)?.name
+        });
+
+        if (shouldArchive) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
     };
 
     // ── Computed Stats (Memoized) ─────────────────────────────────────────────
@@ -439,10 +569,15 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         const tracked = habits.filter(h => h.history && date in h.history).length;
         const completed = habits.filter(h => h.history && h.history[date] === true).length;
+        const missed = habits.filter(h => h.history && h.history[date] === false).length;
         const completion = tracked > 0 ? completed / tracked : 0;
 
-        return { day: dayName, label: dayLabel, date, completion };
+        return { day: dayName, label: dayLabel, date, completion, missedCount: missed, trackedCount: tracked };
     }), [habits]);
+
+    const totalMissedThisWeek = useMemo(() => {
+        return weeklyData.reduce((acc, d) => acc + d.missedCount, 0);
+    }, [weeklyData]);
 
     const monthlyData: MonthlyData[] = useMemo(() => Array.from({ length: 4 }, (_, i) => {
         const d = new Date();
@@ -478,16 +613,16 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }, [dailyBalanceScore, weeklyData]);
 
     const contextValue = useMemo(() => ({
-        habits, addHabit, editHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult,
+        habits, addHabit, addHabits, editHabit, toggleHabit, updateHabitValue, deleteHabit, recordHabitResult,
         isPremium, setPremium, loading, totalDiscipline, globalStreak, level,
         totalCompletions, totalTracked, successRate, avgPerDay,
-        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek,
-        userName, updateUserName, notificationsEnabled, setNotificationsEnabled,
+        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek, totalMissedThisWeek,
+        userName, updateUserName, notificationsEnabled, setNotificationsEnabled, restorePurchases, archiveHabit,
     }), [
         habits, isPremium, loading, totalDiscipline, globalStreak, level,
         totalCompletions, totalTracked, successRate, avgPerDay,
-        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek,
-        userName, notificationsEnabled
+        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek, totalMissedThisWeek,
+        userName, notificationsEnabled, restorePurchases, archiveHabit
     ]);
 
     return (

@@ -17,6 +17,7 @@ import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import { Analytics } from '../../services/analytics';
 
 import { AppleColors, AppleTypography, AppleBorderRadius, AppleShadows } from '../../constants/AppleTheme';
 import { AppleButton } from '../../components/AppleButton';
@@ -33,7 +34,7 @@ type AuthMode = 'welcome' | 'storyboard' | 'signup' | 'signin';
 
 export default function AuthScreen() {
     const router = useRouter();
-    const { user, loginWithGoogle, loginWithApple, loginAnonymously } = useAuth();
+    const { user, loginWithGoogle, loginWithApple, linkEmailPassword, loginAnonymously } = useAuth();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [storyStep, setStoryStep] = useState(1);
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
@@ -44,6 +45,7 @@ export default function AuthScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [habitDifficulty, setHabitDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
     
     // Safely attempt hook resolution
     let habitsContext: any = null;
@@ -256,9 +258,20 @@ export default function AuthScreen() {
     // Restored auth handlers — required for Create Account & Welcome Back
     const handleSocialLogin = async (provider: 'google' | 'apple') => {
         try {
+            await Analytics.logEvent('auth_started', { provider });
             const isNewUser = provider === 'google' ? await loginWithGoogle() : await loginWithApple();
             if (isNewUser) {
-                router.replace('/(auth)/onboarding');
+                await Analytics.logEvent('onboarding_started');
+                const habitType = selectedFocus.build ? 'build' : 'break';
+                const formattedName = formatHabitName(habitInput, habitType);
+                router.replace({
+                    pathname: '/(auth)/onboarding',
+                    params: { 
+                        initialHabitName: formattedName, 
+                        initialHabitType: habitType,
+                        initialHabitDifficulty: habitDifficulty
+                    }
+                });
             } else {
                 router.replace('/(tabs)');
             }
@@ -272,6 +285,7 @@ export default function AuthScreen() {
     const handleLogin = async () => {
         if (!email || !password) return Alert.alert('Error', 'Please enter email and password.');
         try {
+            await Analytics.logEvent('auth_started', { provider: 'email' });
             await auth().signInWithEmailAndPassword(email.trim(), password);
             router.replace('/(tabs)');
         } catch (error: any) {
@@ -283,8 +297,22 @@ export default function AuthScreen() {
         if (!email || !password) return Alert.alert('Error', 'Please enter valid credentials.');
         if (password !== confirmPassword) return Alert.alert('Error', 'Passwords do not match.');
         try {
-            await auth().createUserWithEmailAndPassword(email.trim(), password);
-            router.replace('/(auth)/onboarding');
+            await Analytics.logEvent('auth_started', { provider: 'email_signup' });
+            
+            // LINKING: Link new Email account to current Anonymous session
+            await linkEmailPassword(email.trim(), password);
+            
+            await Analytics.logEvent('onboarding_started');
+            const habitType = selectedFocus.build ? 'build' : 'break';
+            const formattedName = formatHabitName(habitInput, habitType);
+            router.replace({
+                pathname: '/(auth)/onboarding',
+                params: { 
+                    initialHabitName: formattedName, 
+                    initialHabitType: habitType,
+                    initialHabitDifficulty: habitDifficulty
+                }
+            });
         } catch (error: any) {
             Alert.alert('Signup Failed', error.message);
         }
@@ -380,11 +408,11 @@ export default function AuthScreen() {
                 return (
                     <View style={styles.sbStatGrid}>
                         {[
-                            { label: 'Yes to Gym', icon: 'Dumbbell', color: AppleColors.systemGreen },
-                            { label: 'No to Porn', icon: 'ShieldOff', color: AppleColors.systemOrange },
-                            { label: 'Yes to 20K daily walk', icon: 'Footprints', color: AppleColors.systemGreen },
-                            { label: 'No to texting your ex', icon: 'MessageCircle', color: AppleColors.systemOrange },
-                            { label: 'Yes to Saving daily 20 euros', icon: 'Euro', color: AppleColors.systemGreen }
+                            { label: 'Yes to Gym', icon: 'Dumbbell', color: '#007AFF' },
+                            { label: 'No to Porn', icon: 'ShieldOff', color: '#FF9500' },
+                            { label: 'Yes to 20K daily walk', icon: 'Footprints', color: '#007AFF' },
+                            { label: 'No to texting your ex', icon: 'MessageCircle', color: '#FF9500' },
+                            { label: 'Yes to Saving daily 20 euros', icon: 'Euro', color: '#007AFF' }
                         ].map((item, i) => {
                             const ItemIcon = (LucideIcons as any)[item.icon];
                             return (
@@ -536,6 +564,43 @@ export default function AuthScreen() {
                                         <Text style={styles.suggestionText}>{s}</Text>
                                     </Pressable>
                                 ))}
+                            </View>
+
+                            {/* DIFFICULTY SELECTOR */}
+                            <View style={styles.difficultyContainer}>
+                                <Text style={styles.difficultyHeader}>How difficult is this habit to be consistent?</Text>
+                                <View style={styles.difficultyRow}>
+                                    {(['easy', 'medium', 'hard'] as const).map((level) => {
+                                        const isSelected = habitDifficulty === level;
+                                        const activeColor = selectedFocus.build ? AppleColors.primary : '#FF9500';
+                                        
+                                        return (
+                                            <Pressable
+                                                key={level}
+                                                onPress={() => {
+                                                    setHabitDifficulty(level);
+                                                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                                }}
+                                                style={[
+                                                    styles.difficultyPill,
+                                                    isSelected && { borderColor: activeColor, backgroundColor: activeColor + '15' }
+                                                ]}
+                                            >
+                                                <Text style={[
+                                                    styles.difficultyLabel,
+                                                    isSelected && { color: activeColor, fontWeight: '800' }
+                                                ]}>
+                                                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                                                </Text>
+                                            </Pressable>
+                                        );
+                                    })}
+                                </View>
+                                <Text style={styles.difficultyHint}>
+                                    {habitDifficulty === 'easy' && "Low effort, consistent wins (10 XP)"}
+                                    {habitDifficulty === 'medium' && "Moderate challenge, solid growth (25 XP)"}
+                                    {habitDifficulty === 'hard' && "Significant willpower required (50 XP)"}
+                                </Text>
                             </View>
                         </View>
                     </KeyboardAvoidingView>
@@ -909,8 +974,8 @@ const styles = StyleSheet.create({
     choiceTitle: { fontSize: 17, fontWeight: '700', color: '#FFF' },
     choiceDesc: { fontSize: 13, color: AppleColors.label.secondary, marginTop: 2 },
     
-    creationContainer: { marginTop: 40, width: '100%', gap: 32 },
-    largeInput: { fontSize: 32, fontWeight: '900', color: '#FFF', textAlign: 'center', paddingVertical: 20, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
+    creationContainer: { marginTop: 15, width: '100%', gap: 18 },
+    largeInput: { fontSize: 32, fontWeight: '900', color: '#FFF', textAlign: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' },
     suggestionGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' },
     suggestionPill: { backgroundColor: 'rgba(255,255,255,0.08)', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20 },
     suggestionText: { color: AppleColors.label.secondary, fontSize: 14, fontWeight: '600' },
@@ -966,4 +1031,21 @@ const styles = StyleSheet.create({
     },
     ssoGoogleIconBg: { width: 28, height: 28, borderRadius: 14, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
     ssoGoogleText: { fontSize: 16, fontWeight: '600', color: AppleColors.label.primary, letterSpacing: -0.2 },
+    
+    // Difficulty Selector Styles
+    difficultyContainer: { marginTop: 16, width: '100%' },
+    difficultyHeader: { ...AppleTypography.labelSmall, color: '#555', marginBottom: 8, letterSpacing: 0.5 },
+    difficultyRow: { flexDirection: 'row', gap: 10 },
+    difficultyPill: {
+        flex: 1,
+        paddingVertical: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 14,
+        borderWidth: 1.5,
+        borderColor: 'transparent',
+    },
+    difficultyLabel: { ...AppleTypography.bodySmall, color: '#888', fontWeight: '600' },
+    difficultyHint: { ...AppleTypography.caption2, color: '#444', marginTop: 10, textAlign: 'center' },
 });

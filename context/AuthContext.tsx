@@ -10,6 +10,7 @@ interface AuthContextData {
     isLoading: boolean;
     loginWithGoogle: () => Promise<boolean>;
     loginWithApple: () => Promise<boolean>;
+    linkEmailPassword: (email: string, password: string) => Promise<boolean>;
     loginAnonymously: () => Promise<void>;
     logout: () => Promise<void>;
     deleteAccount: () => Promise<void>;
@@ -24,16 +25,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Configure Google Sign-In
         GoogleSignin.configure({
-            webClientId: '344264941790-v8lqvup5v8lqvup5v8lqvup5v8lqvup5.apps.googleusercontent.com', // Replace with your actual web client ID
+            webClientId: '344264941790-v8lqvup5v8lqvup5v8lqvup5v8lqvup5.apps.googleusercontent.com',
         });
 
         // Subscribe to auth state changes
-        const subscriber = auth().onAuthStateChanged((firebaseUser) => {
+        const subscriber = auth().onAuthStateChanged(async (firebaseUser) => {
             setUser(firebaseUser);
+            
+            // AUTO-ANONYMOUS: If no user exists on launch, create one silently
+            // This ensures every guest has a UID to save habits to immediately.
+            if (!firebaseUser) {
+                console.log('[Auth] No user detected, triggering silent anonymous login...');
+                try {
+                    await auth().signInAnonymously();
+                } catch (e) {
+                    console.error('[Auth] Initial anonymous login failed', e);
+                }
+            }
+
             if (isLoading) setIsLoading(false);
         });
 
-        return subscriber; // unsubscribe on unmount
+        return subscriber;
     }, []);
 
     const loginWithGoogle = async () => {
@@ -43,7 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const idToken = data?.idToken;
             if (!idToken) throw new Error("No ID Token found");
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-            const userCredential = await auth().signInWithCredential(googleCredential);
+            
+            let userCredential;
+            if (user?.isAnonymous) {
+                console.log('[Auth] Linking Google account to Anonymous user:', user.uid);
+                userCredential = await user.linkWithCredential(googleCredential);
+            } else {
+                userCredential = await auth().signInWithCredential(googleCredential);
+            }
             
             if (userCredential.user.displayName) {
                 try {
@@ -73,7 +93,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (identityToken) {
                 const appleCredential = auth.AppleAuthProvider.credential(identityToken);
-                const userCredential = await auth().signInWithCredential(appleCredential);
+                
+                let userCredential;
+                if (user?.isAnonymous) {
+                    console.log('[Auth] Linking Apple account to Anonymous user:', user.uid);
+                    userCredential = await user.linkWithCredential(appleCredential);
+                } else {
+                    userCredential = await auth().signInWithCredential(appleCredential);
+                }
                 
                 if (fullName && (fullName.givenName || fullName.familyName)) {
                     const name = [fullName.givenName, fullName.familyName].filter(Boolean).join(' ');
@@ -81,7 +108,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         try {
                             await userCredential.user.updateProfile({ displayName: name });
                             await firestore().collection('users').doc(userCredential.user.uid).set({ userName: name }, { merge: true });
-                            // Ensure the local user state is updated before returning
                             setUser(auth().currentUser);
                         } catch (e) {
                             console.error("Failed to save Apple fullName", e);
@@ -94,6 +120,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return false;
         } catch (error) {
             console.error("Apple Sign-In Error:", error);
+            throw error;
+        }
+    };
+
+    /**
+     * Link Email/Password to existing Anonymous account
+     * This prevents splitting the User ID when someone creates an account
+     */
+    const linkEmailPassword = async (email: string, password: string) => {
+        try {
+            const credential = auth.EmailAuthProvider.credential(email, password);
+            if (auth().currentUser?.isAnonymous) {
+                console.log('[Auth] Linking Email to Anonymous account:', auth().currentUser?.uid);
+                await auth().currentUser?.linkWithCredential(credential);
+                return true; 
+            } else {
+                // If for some reason they aren't anonymous, just create a new user
+                await auth().createUserWithEmailAndPassword(email, password);
+                return true;
+            }
+        } catch (error) {
+            console.error("Email Linking Error:", error);
             throw error;
         }
     };
@@ -123,11 +171,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
             const currentUser = auth().currentUser;
             if (currentUser) {
-                // 1. Delete Firestore Data
                 const { FirestoreService } = require('../services/firestore');
                 await FirestoreService.deleteUserData(currentUser.uid);
-
-                // 2. Delete Auth User
                 await currentUser.delete();
             }
         } catch (error) {
@@ -137,7 +182,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, isLoading, loginWithGoogle, loginWithApple, loginAnonymously, logout, deleteAccount }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            isLoading, 
+            loginWithGoogle, 
+            loginWithApple, 
+            linkEmailPassword,
+            loginAnonymously, 
+            logout, 
+            deleteAccount 
+        }}>
             {children}
         </AuthContext.Provider>
     );

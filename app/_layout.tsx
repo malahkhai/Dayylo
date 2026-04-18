@@ -34,13 +34,24 @@ function AuthGate({ children }: { children: React.ReactNode }) {
         const inAuthGroup = segments[0] === '(auth)';
         const isVerifiedUser = user && !user.isAnonymous;
 
-        if (isVerifiedUser && inAuthGroup) {
-            // Verified user lands on auth screen → push to app
-            router.replace('/(tabs)');
-        } else if (!isVerifiedUser && !inAuthGroup) {
-            // Anonymous or no user lands on tabs → push to onboarding
-            router.replace('/(auth)/login');
-        }
+        // Use a tiny delay to ensure the navigator is fully mounted before redirecting
+        const timeout = setTimeout(() => {
+            if (isVerifiedUser && inAuthGroup) {
+                // Verified user lands on auth screen → push to app
+                // Check if we're already navigating to prevent loops
+                if (segments[0] !== '(tabs)') {
+                    router.replace('/(tabs)');
+                }
+            } else if (!isVerifiedUser && !inAuthGroup) {
+                // Anonymous or no user lands on tabs → push to onboarding/login
+                // Check if we're already navigating to prevent loops
+                if (segments[0] !== '(auth)') {
+                    router.replace('/(auth)/login');
+                }
+            }
+        }, 1);
+
+        return () => clearTimeout(timeout);
     }, [user, isLoading, segments]);
 
     return <>{children}</>;
@@ -132,7 +143,24 @@ export default function RootLayout() {
                                             <Stack.Screen name="(auth)/onboarding" options={{ animation: 'slide_from_right' }} />
                                             <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
                                             <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-                                            <Stack.Screen name="add-habit" options={{ presentation: 'formSheet' }} />
+                                             <Stack.Screen 
+                                                name="add-habit" 
+                                                options={{ 
+                                                    presentation: 'formSheet',
+                                                    headerShown: true,
+                                                    headerStyle: {
+                                                        backgroundColor: '#000',
+                                                    },
+                                                    headerTintColor: '#fff',
+                                                    title: 'Edit Habit',
+                                                    headerTitleStyle: {
+                                                        color: '#fff',
+                                                        fontWeight: '700',
+                                                    },
+                                                    headerTitleAlign: 'center',
+                                                    headerShadowVisible: false,
+                                                }} 
+                                            />
                                             <Stack.Screen name="habit/[id]" options={{ presentation: 'card' }} />
                                         </Stack>
 

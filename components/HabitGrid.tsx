@@ -5,11 +5,19 @@ import { format, subDays, eachDayOfInterval } from 'date-fns';
 import * as LucideIcons from 'lucide-react-native';
 import { Habit } from '../types';
 
-interface HabitGridProps {
-    habits: Habit[];
+export interface GridRow {
+    id: string;
+    name: string;
+    icon: string;
+    color: string;
+    history: Record<string, boolean>;
 }
 
-export function HabitGrid({ habits }: HabitGridProps) {
+interface HabitGridProps {
+    rows: GridRow[];
+}
+
+export function HabitGrid({ rows }: HabitGridProps) {
     // Last 7 days including today
     const days = eachDayOfInterval({
         start: subDays(new Date(), 6),
@@ -38,32 +46,43 @@ export function HabitGrid({ habits }: HabitGridProps) {
                     ))}
                 </View>
 
-                {/* Rows for each habit */}
-                {habits.map(habit => {
-                    const Icon = (LucideIcons as any)[habit.icon] || LucideIcons.Circle;
+                {/* Rows for each item */}
+                {rows.map(item => {
+                    const Icon = (LucideIcons as any)[item.icon] || LucideIcons.Circle;
 
                     return (
-                        <View key={habit.id} style={styles.row}>
+                        <View key={item.id} style={styles.row}>
                             {/* Habit Label */}
                             <View style={styles.habitLabelColumn}>
                                 <View style={styles.iconContainer}>
-                                    <Icon size={14} color={habit.color} />
+                                    <Icon size={14} color={item.color} />
                                 </View>
-                                <Text style={styles.habitName} numberOfLines={1}>{habit.name}</Text>
+                                <Text style={styles.habitName} numberOfLines={1}>{item.name}</Text>
                             </View>
 
                             {/* Checks for each day */}
                             {days.map(d => {
                                 const dateStr = format(d, 'yyyy-MM-dd');
-                                // Check history safely
-                                const isDone = habit.history && habit.history[dateStr];
+                                // Check history safely: true = success, false = fail, undefined = none
+                                const status = item.history ? item.history[dateStr] : undefined;
 
                                 return (
                                     <View key={dateStr} style={styles.cell}>
                                         <View style={[
                                             styles.checkCircle,
-                                            isDone ? { backgroundColor: habit.color } : { backgroundColor: 'rgba(255,255,255,0.05)' }
-                                        ]} />
+                                            status === true ? { backgroundColor: item.color } : { backgroundColor: 'rgba(255,255,255,0.05)' }
+                                        ]}>
+                                            {status === false && (
+                                                <View style={{ 
+                                                    width: 4, 
+                                                    height: 4, 
+                                                    borderRadius: 2, 
+                                                    backgroundColor: 'rgba(255,255,255,0.4)',
+                                                    alignSelf: 'center',
+                                                    marginTop: 10 // Center approximately
+                                                }} />
+                                            )}
+                                        </View>
                                     </View>
                                 );
                             })}

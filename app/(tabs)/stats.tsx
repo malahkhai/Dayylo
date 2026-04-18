@@ -117,9 +117,9 @@ const ProgressBarRow = ({
 
 export default function StatsScreen() {
     const { 
-        habits, loading, totalDiscipline, globalStreak, level,
+        habits, globalStreak, totalDiscipline,
         totalCompletions, successRate, avgPerDay,
-        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek
+        weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek, totalMissedThisWeek
     } = useHabits();
     const router = useRouter();
     const [dailyQuote] = useState(() => getDailyQuote());
@@ -221,6 +221,12 @@ export default function StatsScreen() {
                         currentDisplay={daysCompleted} totalDisplay="7 days" 
                         color={AppleColors.systemIndigo} 
                     />
+                    <ProgressBarRow 
+                        icon="⚠️" label="Recorded Misses" 
+                        currentVal={totalMissedThisWeek} totalVal={habits.length * 7} 
+                        currentDisplay={totalMissedThisWeek} totalDisplay={`${habits.length * 7} max`} 
+                        color={AppleColors.systemRed} 
+                    />
                 </View>
 
                 {/* Performance Chart */}
@@ -235,13 +241,21 @@ export default function StatsScreen() {
                                             styles.bar,
                                             { 
                                                 height: `${(day.completion / maxCompletion) * 100}%`,
-                                                backgroundColor: day.completion > 0 ? AppleColors.primary : AppleColors.fill.tertiary
+                                                backgroundColor: day.missedCount > 0 ? AppleColors.systemRed 
+                                                    : day.completion > 0 ? AppleColors.primary 
+                                                    : AppleColors.fill.tertiary
                                             }
                                         ]} />
                                     </View>
                                     <Text style={styles.barLabel}>{day.label}</Text>
                                 </View>
                             ))}
+                        </View>
+                        <View style={styles.heatmapLegend}>
+                            <View style={[styles.legendDot, { backgroundColor: AppleColors.primary }]} />
+                            <Text style={styles.legendText}>Success</Text>
+                            <View style={[styles.legendDot, { backgroundColor: AppleColors.systemRed }]} />
+                            <Text style={styles.legendText}>Failed</Text>
                         </View>
                         <Text style={styles.chartNote}>Activity based on habit completion volume</Text>
                     </View>
@@ -320,7 +334,12 @@ const styles = StyleSheet.create({
     barColumn: { width: '100%', height: 100, justifyContent: 'flex-end', paddingHorizontal: 4 },
     bar: { width: '100%', borderRadius: 4, minHeight: 6 },
     barLabel: { ...AppleTypography.caption2, color: AppleColors.label.secondary, marginTop: AppleSpacing.sm },
-    chartNote: { ...AppleTypography.footnote, color: AppleColors.label.secondary, textAlign: 'center' },
+    chartNote: { ...AppleTypography.caption2, color: AppleColors.label.tertiary, textAlign: 'center', marginTop: 16 },
+    heatmapLegend: { 
+        flexDirection: 'row', justifyContent: 'center', gap: 12, marginTop: 12, marginBottom: 4 
+    },
+    legendDot: { width: 8, height: 8, borderRadius: 4 },
+    legendText: { ...AppleTypography.caption2, color: AppleColors.label.tertiary },
     trendRow: { flexDirection: 'row', alignItems: 'center', marginBottom: AppleSpacing.md },
     trendMonth: { ...AppleTypography.callout, color: AppleColors.label.primary, width: 40, fontWeight: '500' },
     trendBarContainer: { flex: 1, height: 8, backgroundColor: AppleColors.fill.tertiary, borderRadius: 4, overflow: 'hidden', marginHorizontal: AppleSpacing.md },

@@ -12,6 +12,7 @@ import {
 import { format } from 'date-fns';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { LayoutAnimation, Platform, UIManager } from 'react-native';
 import * as LucideIcons from 'lucide-react-native';
 import ReAnimated, {
     useSharedValue,
@@ -27,38 +28,114 @@ import { AppleHabitCard } from '../../components/AppleHabitCard';
 import { AppleButton } from '../../components/AppleButton';
 import { AppleColors, AppleTypography, AppleSpacing, AppleShadows } from '../../constants/AppleTheme';
 import { useHabits } from '../../context/HabitContext';
+import { useAuth } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDiscipline } from '../../utils/format';
 import { WeekCalendar } from '../../components/WeekCalendar';
 import { Habit } from '../../types';
 import { MotiView } from 'moti';
 
+const REVIEW_PROMPT_KEY = 'DAYYLO_REVIEW_PROMPT_SHOWN';
+
 export default function HomeScreen() {
     const router = useRouter();
     const { habits, recordHabitResult, globalStreak, totalDiscipline } = useHabits();
+    const { user } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
     const [scrollY] = useState(new Animated.Value(0));
+
+    // Handle Day 2 Review Prompt
+    React.useEffect(() => {
+        const checkReviewPrompt = async () => {
+            if (!user?.metadata?.creationTime) return;
+
+            try {
+                const hasShown = await AsyncStorage.getItem(REVIEW_PROMPT_KEY);
+                if (hasShown === 'true') return;
+
+                const creationTime = new Date(user.metadata.creationTime).getTime();
+                const now = Date.now();
+                const diffHours = (now - creationTime) / (1000 * 60 * 60);
+
+                // If user has been around for more than 24 hours (Day 2+)
+                if (diffHours >= 24) {
+                    try {
+                        // Safe inline require to prevent crash if native module is absent
+                        const StoreReview = require('expo-store-review');
+                        const isAvailable = await StoreReview.isAvailableAsync();
+                        if (isAvailable) {
+                            await StoreReview.requestReview();
+                            await AsyncStorage.setItem(REVIEW_PROMPT_KEY, 'true');
+                            console.log('[Review] Prompt triggered successfully');
+                        }
+                    } catch (nativeError) {
+                        console.log('[Review] Native StoreReview not available in this build');
+                    }
+                }
+            } catch (e) {
+                console.log('[Review] Error checking prompt status:', e);
+            }
+        };
+
+        // Delay check slightly after app load for better UX
+        const timer = setTimeout(checkReviewPrompt, 3000);
+        return () => clearTimeout(timer);
+    }, [user]);
+
+    // Enable LayoutAnimation for Android
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
 
     const [filterCategory, setFilterCategory] = useState<'All' | 'build' | 'break'>('All');
 
     // Memoized habit filtering based on category
     const visibleHabits = useMemo(() => {
-        return habits.filter(h => filterCategory === 'All' ? true : h.type === filterCategory);
+        return habits.filter(h => {
+            if (h.isArchived) return false;
+            if (h.trackedToday) return false; // Hide if already tracked (Done/Missed)
+            
+            if (filterCategory === 'All') return true;
+            
+            const color = (h.color || '').toLowerCase();
+            const type = (h.type || '').toLowerCase();
+            const isGood = (h as any).isGood;
+
+            // Robust detection for legacy habits
+            const isBuild = 
+                type === 'build' || 
+                isGood === true ||
+                ['#007aff', '#3b82f6', '#30e8ab', '#8b5cf6', '#34c759'].includes(color);
+
+            const isBreak = 
+                type === 'break' || 
+                isGood === false ||
+                ['#ff9500', '#f97316', '#ef4444', '#ff3b30', '#ff2d55'].includes(color);
+            
+            if (filterCategory === 'build') return isBuild;
+            if (filterCategory === 'break') return isBreak;
+            return false;
+        });
     }, [habits, filterCategory]);
 
     // Memoized stats calculations
     const stats = useMemo(() => {
-        const active = visibleHabits.length;
-        const completed = visibleHabits.filter(h => h.completedToday).length;
-        const breakH = visibleHabits.filter(h => h.type === 'break');
+        const activeOnly = habits.filter(h => !h.isArchived);
+        const total = activeOnly.length;
+        const completed = activeOnly.filter(h => h.completedToday).length;
+        const missed = activeOnly.filter(h => h.trackedToday && !h.completedToday).length;
+        const pending = activeOnly.filter(h => !h.trackedToday).length;
+        
         return {
-            active,
+            total,
             completed,
-            breakTotal: breakH.length,
-            breakCompleted: breakH.filter(h => h.completedToday).length
+            missed,
+            pending,
+            isMissionComplete: total > 0 && pending === 0
         };
-    }, [visibleHabits]);
+    }, [habits]);
 
-    const { active: activeHabits, completed: completedHabits } = stats;
+    const { total: totalHabits, completed: completedHabits, isMissionComplete } = stats;
 
     const onRefresh = () => {
         setRefreshing(true);
@@ -79,6 +156,59 @@ export default function HomeScreen() {
         if (hour < 18) return "☀️";
         return "🌙";
     };
+
+    // ─── Countdown Logic ──────────────────────────────────────────────────────────
+    const [timeLeft, setTimeLeft] = useState('');
+    
+    React.useEffect(() => {
+        const updateCountdown = () => {
+            const now = new Date();
+            const tomorrow = new Date();
+            tomorrow.setHours(24, 0, 0, 0);
+            
+            const diff = tomorrow.getTime() - now.getTime();
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            setTimeLeft(
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+            );
+        };
+        
+        updateCountdown();
+        const interval = setInterval(updateCountdown, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const MissionCompleteView = () => (
+        <MotiView 
+            from={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={styles.missionCard}
+        >
+            <LucideIcons.ShieldCheck size={48} color={AppleColors.systemGreen} style={{ marginBottom: 16 }} />
+            <Text style={styles.missionTitle}>Mission Complete</Text>
+            <Text style={styles.missionText}>Objectives secured. Resistance holding.</Text>
+            
+            <View style={styles.countdownContainer}>
+                <Text style={styles.countdownLabel}>NEXT BATTLE IN</Text>
+                <Text style={styles.countdownTime}>{timeLeft}</Text>
+            </View>
+            
+            <View style={styles.summaryRow}>
+                <View style={styles.summaryItem}>
+                    <Text style={styles.summaryVal}>{completedHabits}</Text>
+                    <Text style={styles.summaryLab}>WINS</Text>
+                </View>
+                <View style={styles.summaryDivider} />
+                <View style={styles.summaryItem}>
+                    <Text style={[styles.summaryVal, { color: AppleColors.systemRed }]}>{stats.missed}</Text>
+                    <Text style={styles.summaryLab}>LOSSES</Text>
+                </View>
+            </View>
+        </MotiView>
+    );
 
     // Sun/Moon rotation animation
     const rotation = useSharedValue(0);
@@ -120,9 +250,9 @@ export default function HomeScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" />
+            
             {/* Animated Header */}
             <Animated.View
                 style={[
@@ -153,7 +283,7 @@ export default function HomeScreen() {
                         </View>
                         <View style={styles.metricDivider} />
                         <View style={styles.metricItem}>
-                            <Text style={styles.streakNumber}>{completedHabits}/{activeHabits}</Text>
+                            <Text style={styles.streakNumber}>{completedHabits}/{totalHabits}</Text>
                             <Text style={styles.streakEmoji}>✅</Text>
                         </View>
                     </View>
@@ -205,9 +335,9 @@ export default function HomeScreen() {
                 }
                 renderItem={({ item: habit, index }) => (
                     <MotiView
-                        from={{ opacity: 0, translateY: 20 }}
-                        animate={{ opacity: 1, translateY: 0 }}
-                        transition={{ type: 'timing', duration: 500, delay: index * 100 }}
+                        from={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ type: 'timing', duration: 300 }}
                     >
                         <AppleHabitCard
                             id={habit.id}
@@ -218,18 +348,29 @@ export default function HomeScreen() {
                             trackedToday={habit.trackedToday}
                             color={habit.color}
                             icon={habit.icon}
+                            difficulty={(habit as any).difficulty}
                             onPress={() => handleHabitPress(habit)}
-                            onComplete={() => recordHabitResult(habit.id, true)}
-                            onFail={() => recordHabitResult(habit.id, false)}
+                            onComplete={() => {
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                recordHabitResult(habit.id, true);
+                            }}
+                            onFail={() => {
+                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                recordHabitResult(habit.id, false);
+                            }}
                         />
                     </MotiView>
                 )}
                 ListEmptyComponent={
-                    <View style={styles.emptyState}>
-                        <Text style={styles.emptyEmoji}>🌱</Text>
-                        <Text style={styles.emptyTitle}>Start your journey</Text>
-                        <Text style={styles.emptyText}>Tap the + button to add your first habit</Text>
-                    </View>
+                    isMissionComplete ? (
+                        <MissionCompleteView />
+                    ) : (
+                        <View style={styles.emptyState}>
+                            <Text style={styles.emptyEmoji}>🌱</Text>
+                            <Text style={styles.emptyTitle}>Start your journey</Text>
+                            <Text style={styles.emptyText}>Tap the + button to add your first habit</Text>
+                        </View>
+                    )
                 }
                 ListFooterComponent={
                     <View style={{ paddingBottom: 100 }}>
@@ -259,20 +400,20 @@ export default function HomeScreen() {
                 }
             />
 
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppleColors.background.secondary,
+        backgroundColor: AppleColors.background.primary,
     },
     header: {
         paddingHorizontal: AppleSpacing.base,
-        paddingTop: AppleSpacing.md,
+        paddingTop: 60,
         paddingBottom: AppleSpacing.base,
-        backgroundColor: AppleColors.background.secondary,
+        backgroundColor: 'transparent',
     },
     headerContent: {
         flexDirection: 'row',
@@ -436,5 +577,72 @@ const styles = StyleSheet.create({
         ...AppleTypography.footnote,
         color: AppleColors.label.secondary,
         marginTop: 2,
+    },
+    missionCard: {
+        marginHorizontal: AppleSpacing.base,
+        marginTop: 40,
+        backgroundColor: AppleColors.surface.glassLow,
+        borderRadius: 32,
+        padding: 32,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
+    },
+    missionTitle: {
+        ...AppleTypography.title2,
+        fontWeight: '900',
+        color: AppleColors.label.primary,
+        marginBottom: 8,
+    },
+    missionText: {
+        ...AppleTypography.body,
+        color: AppleColors.label.secondary,
+        textAlign: 'center',
+        marginBottom: 32,
+    },
+    countdownContainer: {
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        paddingHorizontal: 32,
+        paddingVertical: 16,
+        borderRadius: 24,
+        marginBottom: 32,
+    },
+    countdownLabel: {
+        ...AppleTypography.caption2,
+        fontWeight: '800',
+        color: AppleColors.label.tertiary,
+        letterSpacing: 2,
+        marginBottom: 4,
+    },
+    countdownTime: {
+        fontSize: 32,
+        fontWeight: '900',
+        color: AppleColors.primary,
+        fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 24,
+    },
+    summaryItem: {
+        alignItems: 'center',
+    },
+    summaryVal: {
+        fontSize: 24,
+        fontWeight: '900',
+        color: AppleColors.systemGreen,
+    },
+    summaryLab: {
+        ...AppleTypography.caption2,
+        fontWeight: '800',
+        color: AppleColors.label.tertiary,
+        marginTop: 4,
+    },
+    summaryDivider: {
+        width: 1,
+        height: 30,
+        backgroundColor: 'rgba(255,255,255,0.1)',
     },
 });

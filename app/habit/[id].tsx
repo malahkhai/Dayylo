@@ -32,8 +32,14 @@ function DifficultyBadge({ difficulty }: { difficulty?: string }) {
         medium: { color: AppleColors.systemOrange, label: 'Medium' },
         hard: { color: AppleColors.systemRed, label: 'Hard' },
     };
-    const d = (difficulty || 'medium').toLowerCase() as keyof typeof config;
-    const c = config[d] || config.medium;
+    const d = String(difficulty || 'medium').toLowerCase() as keyof typeof config;
+    // Handle numeric strings if any leaked in
+    let finalD: keyof typeof config = 'medium';
+    if (d.includes('easy') || d === '1' || d === '2' || d === '3') finalD = 'easy';
+    else if (d.includes('hard') || d === '8' || d === '9' || d === '10') finalD = 'hard';
+    else finalD = 'medium';
+
+    const c = config[finalD];
     return (
         <View style={[styles.badge, { backgroundColor: c.color + '20' }]}>
             <Text style={[styles.badgeText, { color: c.color }]}>{c.label}</Text>
@@ -46,7 +52,7 @@ function DifficultyBadge({ difficulty }: { difficulty?: string }) {
 export default function HabitDetailScreen() {
     const router = useRouter();
     const { id } = useLocalSearchParams();
-    const { habits, deleteHabit, toggleHabit } = useHabits();
+    const { habits, deleteHabit, toggleHabit, archiveHabit } = useHabits();
     const [moreVisible, setMoreVisible] = useState(false);
 
     const habit = habits.find(h => h.id === id);
@@ -84,23 +90,15 @@ export default function HabitDetailScreen() {
         return 'Daily';
     })();
 
-    const handleDelete = () => {
-        Alert.alert(
-            "Delete Habit",
-            "Are you sure? This cannot be undone.",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-                        await deleteHabit(habit.id);
-                        router.back();
-                    }
-                }
-            ]
-        );
+    // Move permanent delete to archived-habits.tsx (Safety-First Flow)
+
+    const handleArchive = async () => {
+        const isCurrentlyArchived = habit.isArchived;
+        await archiveHabit(habit.id, !isCurrentlyArchived);
+        setMoreVisible(false);
+        if (!isCurrentlyArchived) {
+            router.back(); // Go back if we just archived it
+        }
     };
 
     const handleToggle = async () => {
@@ -132,18 +130,27 @@ export default function HabitDetailScreen() {
 
                     <DifficultyBadge difficulty={(habit as any).difficulty} />
 
-                    <Pressable
-                        onPress={handleToggle}
-                        style={[
-                            styles.toggleButton,
-                            { backgroundColor: habit.completedToday ? habit.color : 'rgba(255,255,255,0.1)' }
-                        ]}
-                    >
-                        <LucideIcons.Check size={24} color={habit.completedToday ? '#000000' : '#FFFFFF'} />
-                        <Text style={[styles.toggleText, { color: habit.completedToday ? '#000000' : '#FFFFFF' }]}>
-                            {habit.completedToday ? 'COMPLETED TODAY ✓' : 'MARK COMPLETE'}
-                        </Text>
-                    </Pressable>
+                    {habit.isArchived && (
+                        <View style={[styles.archivedBanner, { backgroundColor: AppleColors.systemOrange + '15' }]}>
+                            <LucideIcons.Archive size={14} color={AppleColors.systemOrange} />
+                            <Text style={[styles.archivedBannerText, { color: AppleColors.systemOrange }]}>ARCHIVED HABIT</Text>
+                        </View>
+                    )}
+
+                    {!habit.isArchived && (
+                        <Pressable
+                            onPress={handleToggle}
+                            style={[
+                                styles.toggleButton,
+                                { backgroundColor: habit.completedToday ? habit.color : 'rgba(255,255,255,0.1)' }
+                            ]}
+                        >
+                            <LucideIcons.Check size={24} color={habit.completedToday ? '#000000' : '#FFFFFF'} />
+                            <Text style={[styles.toggleText, { color: habit.completedToday ? '#000000' : '#FFFFFF' }]}>
+                                {habit.completedToday ? 'COMPLETED TODAY ✓' : 'MARK COMPLETE'}
+                            </Text>
+                        </Pressable>
+                    )}
                 </View>
 
                 {/* Stats Grid */}
@@ -224,10 +231,18 @@ export default function HabitDetailScreen() {
                     </View>
                 </View>
 
-                {/* Delete button */}
-                <Pressable onPress={handleDelete} style={styles.deleteButton}>
-                    <LucideIcons.Trash2 size={20} color={AppleColors.systemRed} />
-                    <Text style={styles.deleteText}>Delete Habit</Text>
+                {/* Archive/Restore Toggle */}
+                <Pressable 
+                    onPress={handleArchive} 
+                    style={[
+                        styles.archiveButton, 
+                        { backgroundColor: habit.isArchived ? AppleColors.systemBlue + '15' : 'rgba(255,255,255,0.05)' }
+                    ]}
+                >
+                    <LucideIcons.Archive size={20} color={habit.isArchived ? AppleColors.systemBlue : AppleColors.label.secondary} />
+                    <Text style={[styles.archiveText, { color: habit.isArchived ? AppleColors.systemBlue : AppleColors.label.secondary }]}>
+                        {habit.isArchived ? 'Restore Habit to Dashboard' : 'Archive Habit'}
+                    </Text>
                 </Pressable>
 
                 <View style={{ height: 40 }} />
@@ -254,6 +269,15 @@ export default function HabitDetailScreen() {
                                 {habit.completedToday ? 'Mark as Incomplete' : 'Mark as Complete'}
                             </Text>
                         </Pressable>
+                        <Pressable
+                            style={styles.modalAction}
+                            onPress={handleArchive}
+                        >
+                            <LucideIcons.Archive size={20} color={habit.isArchived ? AppleColors.systemOrange : AppleColors.label.primary} />
+                            <Text style={styles.modalActionText}>
+                                {habit.isArchived ? 'Restore Habit' : 'Archive Habit'}
+                            </Text>
+                        </Pressable>
 
                         <Pressable
                             style={styles.modalAction}
@@ -264,14 +288,6 @@ export default function HabitDetailScreen() {
                         >
                             <LucideIcons.Edit2 size={20} color={AppleColors.label.primary} />
                             <Text style={styles.modalActionText}>Edit Habit</Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={[styles.modalAction, styles.modalActionDestructive]}
-                            onPress={() => { setMoreVisible(false); handleDelete(); }}
-                        >
-                            <LucideIcons.Trash2 size={20} color={AppleColors.systemRed} />
-                            <Text style={[styles.modalActionText, { color: AppleColors.systemRed }]}>Delete Habit</Text>
                         </Pressable>
 
                         <Pressable style={styles.modalCancel} onPress={() => setMoreVisible(false)}>
@@ -311,6 +327,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32, paddingVertical: 16, borderRadius: 12, gap: 12, ...AppleShadows.medium,
     },
     toggleText: { ...AppleTypography.headline, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1 },
+    archivedBanner: { 
+        flexDirection: 'row', alignItems: 'center', gap: 6, 
+        paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, marginBottom: 20 
+    },
+    archivedBannerText: { ...AppleTypography.caption2, fontWeight: '900', letterSpacing: 0.5 },
     statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 20 },
     statCard: {
         flex: 1, backgroundColor: AppleColors.background.tertiary,
@@ -341,11 +362,11 @@ const styles = StyleSheet.create({
     infoValue: { ...AppleTypography.body, fontWeight: '700', color: AppleColors.label.primary },
     divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginLeft: 50 },
 
-    deleteButton: {
+    archiveButton: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-        padding: 16, borderRadius: 12, backgroundColor: 'rgba(255,69,58,0.1)', gap: 8,
+        padding: 16, borderRadius: 12, borderHeight: 1, borderColor: 'rgba(255,255,255,0.05)', gap: 10,
     },
-    deleteText: { ...AppleTypography.body, fontWeight: '700', color: AppleColors.systemRed },
+    archiveText: { ...AppleTypography.body, fontWeight: '700' },
 
     // Modal styles
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },

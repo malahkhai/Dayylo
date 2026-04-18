@@ -27,7 +27,9 @@ export default function SettingsScreen() {
     };
 
     const SupportItems = [
-        { icon: 'HelpCircle', label: 'Help Center', color: '#94a3b8' },
+        { icon: 'HelpCircle', label: 'Support Email', color: '#94a3b8', url: 'mailto:support@dayylo.com?subject=Dayylo Support Request' },
+        { icon: 'Star', label: 'Rate on App Store', color: '#94a3b8', action: 'rate' },
+        { icon: 'RefreshCw', label: 'Restore Purchases', color: '#94a3b8', action: 'restore' },
         { icon: 'FileText', label: 'Terms of Service', color: '#94a3b8', url: 'https://www.notion.so/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5?source=copy_link' },
         { icon: 'Shield', label: 'Privacy Policy', color: '#94a3b8', url: 'https://malahkhai.notion.site/Privacy-Policy-Dayylo-31792d45fcc58005beeaf9c6208d9cd5' },
     ];
@@ -59,10 +61,10 @@ export default function SettingsScreen() {
                     {!isPremium && (
                         <Pressable
                             onPress={() => router.push('/paywall')}
-                            className="mt-6 bg-primary/10 border border-primary/20 px-6 py-3 rounded-2xl flex-row items-center"
+                            className="mt-6 bg-[#007AFF15] border border-[#007AFF30] px-6 py-3 rounded-2xl flex-row items-center"
                         >
-                            <LucideIcons.Crown size={16} color="#30e8ab" />
-                            <Text className="text-primary font-black text-xs uppercase tracking-widest ml-2">Upgrade to Premium</Text>
+                            <LucideIcons.Crown size={16} color="#007AFF" />
+                            <Text className="text-[#007AFF] font-black text-xs uppercase tracking-widest ml-2">Upgrade to Premium</Text>
                         </Pressable>
                     )}
                 </Pressable>
@@ -97,14 +99,14 @@ export default function SettingsScreen() {
 
                         {/* Notifications toggle */}
                         <View className="flex-row items-center p-5 border-b border-white/5">
-                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#8b5cf615' }}>
-                                <LucideIcons.Bell size={20} color="#8b5cf6" />
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#007AFF15' }}>
+                                <LucideIcons.Bell size={20} color="#007AFF" />
                             </View>
                             <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Notifications</Text>
                             <Switch
                                 value={notificationsEnabled}
                                 onValueChange={setNotificationsEnabled}
-                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#30e8ab' }}
+                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#007AFF' }}
                                 thumbColor="#fff"
                             />
                         </View>
@@ -137,21 +139,37 @@ export default function SettingsScreen() {
                             <Text className="text-[13px] font-bold text-white/30 mr-2">Dark</Text>
                             <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
                         </Pressable>
-                        <View className="flex-row items-center p-5 border-b border-white/5">
-                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#30e8ab15' }}>
-                                <LucideIcons.Lock size={20} color="#30e8ab" />
+                        <Pressable
+                            onPress={() => Alert.alert("Privacy", "Your habit data is stored securely in the cloud and is only accessible by you.")}
+                            className="flex-row items-center p-5 border-b border-white/5 active:bg-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#FF950015' }}>
+                                <LucideIcons.Lock size={20} color="#FF9500" />
                             </View>
                             <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Privacy & Security</Text>
                             <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
-                        </View>
-                        <View className="flex-row items-center p-5">
-                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#3b82f615' }}>
-                                <LucideIcons.Globe size={20} color="#3b82f6" />
+                        </Pressable>
+                        <Pressable
+                            onPress={() => Alert.alert("Language", "Dayylo is currently available in English. More languages coming soon.")}
+                            className="flex-row items-center p-5 active:bg-white/5 border-b border-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#007AFF15' }}>
+                                <LucideIcons.Globe size={20} color="#007AFF" />
                             </View>
                             <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Language</Text>
                             <Text className="text-[13px] font-bold text-white/30 mr-2">English</Text>
                             <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
-                        </View>
+                        </Pressable>
+                        <Pressable
+                            onPress={() => router.push('/archived-habits')}
+                            className="flex-row items-center p-5 active:bg-white/5"
+                        >
+                            <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#64748b15' }}>
+                                <LucideIcons.Archive size={20} color="#64748b" />
+                            </View>
+                            <Text className="flex-1 ml-4 text-[15px] font-black text-white/90">Archived Habits</Text>
+                            <LucideIcons.ChevronRight size={18} color="rgba(255,255,255,0.1)" />
+                        </Pressable>
                     </View>
                 </View>
 
@@ -164,7 +182,29 @@ export default function SettingsScreen() {
                             return (
                                 <Pressable
                                     key={i}
-                                    onPress={() => item.url && Linking.openURL(item.url)}
+                                    onPress={() => {
+                                        if (item.url) {
+                                            Linking.openURL(item.url);
+                                        } else if (item.action === 'restore') {
+                                            const { restorePurchases } = useHabits();
+                                            restorePurchases();
+                                        } else if (item.action === 'rate') {
+                                            // Trigger Store Review
+                                            try {
+                                                const StoreReview = require('expo-store-review');
+                                                StoreReview.isAvailableAsync().then((available: boolean) => {
+                                                    if (available) {
+                                                        StoreReview.requestReview();
+                                                    } else {
+                                                        Alert.alert("Available on App Store", "This feature is only available on physical devices with an App Store account.");
+                                                    }
+                                                });
+                                            } catch (e) {
+                                                console.log('[Review] Native module not available');
+                                                Alert.alert("Available on App Store", "This feature is only available on physical devices.");
+                                            }
+                                        }
+                                    }}
                                     className={`flex-row items-center p-5 active:bg-white/5 ${i < arr.length - 1 ? 'border-b border-white/5' : ''}`}
                                 >
                                     <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: `${item.color}15` }}>
@@ -258,9 +298,9 @@ export default function SettingsScreen() {
                         />
                         <Pressable
                             onPress={handleSaveName}
-                            style={{ backgroundColor: '#30e8ab', borderRadius: 16, padding: 16, alignItems: 'center' }}
+                            style={{ backgroundColor: '#007AFF', borderRadius: 16, padding: 16, alignItems: 'center' }}
                         >
-                            <Text style={{ color: '#000', fontWeight: '900', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>
+                            <Text style={{ color: '#FFF', fontWeight: '900', fontSize: 14, textTransform: 'uppercase', letterSpacing: 1 }}>
                                 Save Changes
                             </Text>
                         </Pressable>

@@ -5,7 +5,8 @@ import * as LucideIcons from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { useHabits } from '../../context/HabitContext';
 import { CalendarHeatmap } from '../../components/CalendarHeatmap';
-import { HabitGrid } from '../../components/HabitGrid';
+import { HabitGrid, GridRow } from '../../components/HabitGrid';
+import { format, subDays, eachDayOfInterval } from 'date-fns';
 
 const { width } = Dimensions.get('window');
 
@@ -106,8 +107,73 @@ export default function AnalyticsScreen() {
                     )}
                 </View>
 
-                {/* Weekly Grid per habit */}
-                <HabitGrid habits={habits} />
+                {/* Aggregated Weekly Grid */}
+                {(() => {
+                    const days = eachDayOfInterval({
+                        start: subDays(new Date(), 30), // Calculate for enough buffer
+                        end: new Date(),
+                    });
+
+                    const buildHabits = habits.filter(h => {
+                        const type = (h.type || '').toLowerCase();
+                        const color = (h.color || '').toLowerCase();
+                        const isGood = (h as any).isGood;
+                        return type === 'build' || isGood === true || ['#007aff', '#3b82f6', '#30e8ab', '#8b5cf6', '#34c759'].includes(color);
+                    });
+                    const breakHabits = habits.filter(h => {
+                        const type = (h.type || '').toLowerCase();
+                        const color = (h.color || '').toLowerCase();
+                        const isGood = (h as any).isGood;
+                        return type === 'break' || isGood === false || ['#ff9500', '#f97316', '#ef4444', '#ff3b30', '#ff2d55'].includes(color);
+                    });
+
+                    const buildHistory: Record<string, boolean> = {};
+                    const breakHistory: Record<string, boolean> = {};
+
+                    days.forEach(d => {
+                        const dateStr = format(d, 'yyyy-MM-dd');
+                        
+                        // Build Aggregation
+                        const buildStates = buildHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
+                        if (buildStates.some(v => v === true)) {
+                            buildHistory[dateStr] = true;
+                        } else if (buildStates.some(v => v === false)) {
+                            buildHistory[dateStr] = false;
+                        }
+
+                        // Break Aggregation
+                        const breakStates = breakHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
+                        if (breakStates.length > 0) {
+                            if (breakStates.every(v => v === true)) {
+                                breakHistory[dateStr] = true;
+                            } else if (breakStates.some(v => v === false)) {
+                                breakHistory[dateStr] = false;
+                            }
+                        }
+                    });
+
+                    const rows: GridRow[] = [];
+                    if (buildHabits.length > 0) {
+                        rows.push({
+                            id: 'cat-build',
+                            name: 'Build Habits',
+                            icon: 'Sparkles',
+                            color: '#007AFF', // Growth Blue
+                            history: buildHistory,
+                        });
+                    }
+                    if (breakHabits.length > 0) {
+                        rows.push({
+                            id: 'cat-break',
+                            name: 'Break Habits',
+                            icon: 'ShieldAlert', // Stronger icon for discipline
+                            color: '#FF9500', // Discipline Orange
+                            history: breakHistory,
+                        });
+                    }
+
+                    return <HabitGrid rows={rows} />;
+                })()}
 
                 {/* Monthly Calendar (Overall Activity) */}
                 <View className="mb-8">

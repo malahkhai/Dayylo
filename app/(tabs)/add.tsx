@@ -9,25 +9,25 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48 - 12) / 2;
 
 const SUGGESTED_BUILD = [
-    { name: 'Read Daily', icon: 'BookOpen', color: '#3b82f6', category: 'Mindfulness', metric: '30 mins' },
-    { name: 'Exercise', icon: 'Zap', color: '#f97316', category: 'Health', metric: '45 mins' },
-    { name: 'Meditate', icon: 'Waves', color: '#30e8ab', category: 'Mindfulness', metric: '15 mins' },
-    { name: 'Drink Water', icon: 'Droplet', color: '#3b82f6', category: 'Health', metric: '2 Liters' },
-    { name: 'Sleep Early', icon: 'Moon', color: '#8b5cf6', category: 'Health', metric: '8 hours' },
-    { name: 'Gratitude', icon: 'Heart', color: '#ef4444', category: 'Mindfulness', metric: '3 things' },
+    { name: 'Read Daily', icon: 'BookOpen', color: '#007AFF', category: 'Mindfulness', metric: '30 mins' },
+    { name: 'Exercise', icon: 'Zap', color: '#007AFF', category: 'Health', metric: '45 mins' },
+    { name: 'Meditate', icon: 'Waves', color: '#007AFF', category: 'Mindfulness', metric: '15 mins' },
+    { name: 'Drink Water', icon: 'Droplet', color: '#007AFF', category: 'Health', metric: '2 Liters' },
+    { name: 'Sleep Early', icon: 'Moon', color: '#007AFF', category: 'Health', metric: '8 hours' },
+    { name: 'Gratitude', icon: 'Heart', color: '#007AFF', category: 'Mindfulness', metric: '3 things' },
 ];
 
 const SUGGESTED_BREAK = [
-    { name: 'No Sugar', icon: 'CandyOff', color: '#f97316', category: 'Health' },
-    { name: 'Limit Social', icon: 'Smartphone', color: '#3b82f6', category: 'Productivity' },
-    { name: 'Quit Smoking', icon: 'Ban', color: '#ef4444', category: 'Health' },
-    { name: 'No Alcohol', icon: 'Wine', color: '#f97316', category: 'Health' },
-    { name: 'Limit Coffee', icon: 'Coffee', color: '#8b5cf6', category: 'Health' },
+    { name: 'No Sugar', icon: 'CandyOff', color: '#FF9500', category: 'Health' },
+    { name: 'Limit Social', icon: 'Smartphone', color: '#FF9500', category: 'Productivity' },
+    { name: 'Quit Smoking', icon: 'Ban', color: '#FF9500', category: 'Health' },
+    { name: 'No Alcohol', icon: 'Wine', color: '#FF9500', category: 'Health' },
+    { name: 'Limit Coffee', icon: 'Coffee', color: '#FF9500', category: 'Health' },
 ];
 
 export default function AddHabitScreen() {
     const router = useRouter();
-    const { addHabit } = useHabits();
+    const { addHabit, habits, isPremium } = useHabits();
     const [habitType, setHabitType] = useState<'build' | 'break'>('build');
     const [category, setCategory] = useState('All');
     const [search, setSearch] = useState('');
@@ -41,7 +41,7 @@ export default function AddHabitScreen() {
             isPrivate: false,
             frequency: ['Daily'],
             reminderTime: '09:00',
-            difficulty: 5,
+            difficulty: 'medium',
         });
         if (success) router.replace('/(tabs)');
         else router.push('/paywall');
@@ -56,13 +56,19 @@ export default function AddHabitScreen() {
     return (
         <SafeAreaView className="flex-1 bg-black">
             <View className="flex-1 px-6">
-                {/* Header */}
-                <View className="pt-8 pb-6 flex-row justify-between items-center">
-                    <Text className="text-3xl font-black text-white tracking-tight">
-                        {habitType === 'build' ? 'Build Habits' : 'Break Habits'}
-                    </Text>
+                <View className="pt-8 pb-6 flex-row justify-between items-end">
+                    <View>
+                        <Text className="text-3xl font-black text-white tracking-tight">
+                            {habitType === 'build' ? 'Build Habits' : 'Break Habits'}
+                        </Text>
+                        {!isPremium && (
+                            <Text className="text-white/40 font-bold text-[11px] uppercase tracking-wider mt-1">
+                                {habits.length}/3 Free Slots Used
+                            </Text>
+                        )}
+                    </View>
                     <Pressable onPress={() => router.back()}>
-                        <Text className="text-primary font-black text-sm uppercase">Done</Text>
+                        <Text className={`font-black text-sm uppercase ${habitType === 'build' ? 'text-primary' : 'text-accent-orange'}`}>Done</Text>
                     </Pressable>
                 </View>
 

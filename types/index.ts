@@ -19,6 +19,7 @@ export interface Habit {
     targetValue?: number;
     unit?: string;
     history: Record<string, boolean>;
+    isArchived?: boolean;
 }
 
 export interface User {
