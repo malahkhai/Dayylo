@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState, useEffect, useMemo } from '
 import { Platform, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import crashlytics from '@react-native-firebase/crashlytics';
+import { getFirestore, doc, setDoc, deleteField } from '@react-native-firebase/firestore';
+import { getAuth } from '@react-native-firebase/auth';
+import { getCrashlytics } from '@react-native-firebase/crashlytics';
 import { Analytics } from '../services/analytics';
 import { useAuth } from './AuthContext';
 import { FirestoreService } from '../services/firestore';
@@ -13,6 +13,10 @@ import { INITIAL_HABITS } from '../constants';
 import { requestPermissionsAsync, scheduleHabitReminders, cancelDailyReminder, registerForPushNotificationsAsync } from '../utils/notifications';
 
 console.log('[Heartbeat] HabitContext.tsx module loaded');
+
+const db = getFirestore();
+const auth = getAuth();
+const crashlytics = getCrashlytics();
 
 // ─── Derived Stat Types ───────────────────────────────────────────────────────
 
@@ -145,12 +149,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
                 registerForPushNotificationsAsync().then(token => {
                     if (token) {
-                        firestore().collection('users').doc(user.uid).set({ pushToken: token }, { merge: true });
+                        const userRef = doc(db, 'users', user.uid);
+                        setDoc(userRef, { pushToken: token }, { merge: true });
                     }
                 });
             } else {
                 cancelDailyReminder();
-                firestore().collection('users').doc(user.uid).set({ pushToken: firestore.FieldValue.delete() }, { merge: true });
+                const userRef = doc(db, 'users', user.uid);
+                setDoc(userRef, { pushToken: deleteField() }, { merge: true });
             }
         }
     }, [notificationsEnabled, loading, user]);
@@ -277,7 +283,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
         } catch (e: any) {
             console.error('[Heartbeat] HabitContext: Failed to load data', e);
-            crashlytics().recordError(e, 'loadData');
+            crashlytics.recordError(e);
         } finally {
             setLoading(false);
         }
@@ -290,7 +296,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (currentUser) {
             try {
                 // VERIFICATION: Ensure we are writing to the currently authenticated user
-                await firestore().collection('users').doc(currentUser.uid).set({
+                const userRef = doc(db, 'users', currentUser.uid);
+                await setDoc(userRef, {
                     habits: newHabits,
                     ...(resetDate ? { lastResetDate: resetDate } : {})
                 }, { merge: true });
@@ -301,7 +308,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                     console.warn("[Auth Transition] Habit sync delayed due to token refresh:", error.message);
                 } else {
                     console.error("Error saving habits:", error);
-                    crashlytics().recordError(error, 'saveHabits');
+                    crashlytics.recordError(error);
                 }
             }
         }
@@ -322,7 +329,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         if (user) {
-            await firestore().collection('users').doc(user.uid).set({ totalDiscipline: newXp }, { merge: true });
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, { totalDiscipline: newXp }, { merge: true });
         }
     };
 
@@ -346,7 +354,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             } catch (e: any) {
                 console.error("Restore failed:", e);
                 Alert.alert("Error", e.message || "Failed to restore purchases.");
-                crashlytics().recordError(e, 'restorePurchases');
+                crashlytics.recordError(e);
             }
         }
     };
@@ -364,14 +372,16 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const updateUserName = async (name: string) => {
         setUserName(name);
         if (user) {
-            await firestore().collection('users').doc(user.uid).set({ userName: name }, { merge: true });
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, { userName: name }, { merge: true });
         }
     };
 
     const setNotificationsEnabled = async (val: boolean) => {
         setNotifications(val);
         if (user) {
-            await firestore().collection('users').doc(user.uid).set({ notificationsEnabled: val }, { merge: true });
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, { notificationsEnabled: val }, { merge: true });
         }
     };
 

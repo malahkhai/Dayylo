@@ -1,26 +1,32 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { getAuth, signInAnonymously, signInWithCredential, linkWithCredential, signOut, createUserWithEmailAndPassword, updateProfile, EmailAuthProvider, GoogleAuthProvider, AppleAuthProvider } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore, doc, setDoc } from '@react-native-firebase/firestore';
 
 interface AuthContextData {
     user: FirebaseAuthTypes.User | null;
     isLoading: boolean;
     loginWithGoogle: () => Promise<boolean>;
     loginWithApple: () => Promise<boolean>;
+    updateUserName: (name: string) => Promise<void>;
     linkEmailPassword: (email: string, password: string) => Promise<boolean>;
-    loginAnonymously: () => Promise<void>;
     logout: () => Promise<void>;
     deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+const db = getFirestore();
+const LOGOUT_FLAG = 'dayylo_manual_logout';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const isLoggingOut = useRef(false);
+    const firebaseAuth = getAuth();
 
     useEffect(() => {
         // Configure Google Sign-In
@@ -29,18 +35,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         // Subscribe to auth state changes
-        const subscriber = auth().onAuthStateChanged(async (firebaseUser) => {
+        const subscriber = firebaseAuth.onAuthStateChanged(async (firebaseUser) => {
             setUser(firebaseUser);
             
-            // AUTO-ANONYMOUS: If no user exists on launch, create one silently
-            // This ensures every guest has a UID to save habits to immediately.
-            if (!firebaseUser) {
-                console.log('[Auth] No user detected, triggering silent anonymous login...');
-                try {
-                    await auth().signInAnonymously();
-                } catch (e) {
-                    console.error('[Auth] Initial anonymous login failed', e);
-                }
+            if (firebaseUser) {
+                // If we have a user, reset the logout flags
+                isLoggingOut.current = false;
+                await AsyncStorage.removeItem(LOGOUT_FLAG);
             }
 
             if (isLoading) setIsLoading(false);
@@ -55,19 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const { data } = await GoogleSignin.signIn();
             const idToken = data?.idToken;
             if (!idToken) throw new Error("No ID Token found");
-            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            const googleCredential = GoogleAuthProvider.credential(idToken);
             
-            let userCredential;
-            if (user?.isAnonymous) {
-                console.log('[Auth] Linking Google account to Anonymous user:', user.uid);
-                userCredential = await user.linkWithCredential(googleCredential);
-            } else {
-                userCredential = await auth().signInWithCredential(googleCredential);
-            }
+            const userCredential = await signInWithCredential(firebaseAuth, googleCredential);
             
             if (userCredential.user.displayName) {
                 try {
-                    await firestore().collection('users').doc(userCredential.user.uid).set({ userName: userCredential.user.displayName }, { merge: true });
+                    const userRef = doc(db, 'users', userCredential.user.uid);
+                    await setDoc(userRef, { userName: userCredential.user.displayName }, { merge: true });
                 } catch (e) {
                     console.error("Failed to save Google displayName", e);
                 }
@@ -92,23 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const { identityToken, fullName } = appleAuthRequestResponse;
 
             if (identityToken) {
-                const appleCredential = auth.AppleAuthProvider.credential(identityToken);
+                const appleCredential = AppleAuthProvider.credential(identityToken);
                 
-                let userCredential;
-                if (user?.isAnonymous) {
-                    console.log('[Auth] Linking Apple account to Anonymous user:', user.uid);
-                    userCredential = await user.linkWithCredential(appleCredential);
-                } else {
-                    userCredential = await auth().signInWithCredential(appleCredential);
-                }
+                const userCredential = await signInWithCredential(firebaseAuth, appleCredential);
                 
                 if (fullName && (fullName.givenName || fullName.familyName)) {
                     const name = [fullName.givenName, fullName.familyName].filter(Boolean).join(' ');
                     if (name) {
                         try {
-                            await userCredential.user.updateProfile({ displayName: name });
-                            await firestore().collection('users').doc(userCredential.user.uid).set({ userName: name }, { merge: true });
-                            setUser(auth().currentUser);
+                            await updateProfile(userCredential.user, { displayName: name });
+                            const userRef = doc(db, 'users', userCredential.user.uid);
+                            await setDoc(userRef, { userName: name }, { merge: true });
+                            setUser(firebaseAuth.currentUser);
                         } catch (e) {
                             console.error("Failed to save Apple fullName", e);
                         }
@@ -125,45 +116,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     /**
-     * Link Email/Password to existing Anonymous account
-     * This prevents splitting the User ID when someone creates an account
+     * Standard Email/Password Sign Up
      */
     const linkEmailPassword = async (email: string, password: string) => {
         try {
-            const credential = auth.EmailAuthProvider.credential(email, password);
-            if (auth().currentUser?.isAnonymous) {
-                console.log('[Auth] Linking Email to Anonymous account:', auth().currentUser?.uid);
-                await auth().currentUser?.linkWithCredential(credential);
-                return true; 
-            } else {
-                // If for some reason they aren't anonymous, just create a new user
-                await auth().createUserWithEmailAndPassword(email, password);
-                return true;
-            }
+            await createUserWithEmailAndPassword(firebaseAuth, email, password);
+            return true;
         } catch (error) {
-            console.error("Email Linking Error:", error);
-            throw error;
-        }
-    };
-
-    const loginAnonymously = async () => {
-        try {
-            await auth().signInAnonymously();
-        } catch (error) {
-            console.error("Anonymous Sign-In Error:", error);
+            console.error("Email Signup Error:", error);
             throw error;
         }
     };
 
     const logout = async () => {
         try {
-            const currentUser = auth().currentUser;
+            const currentUser = firebaseAuth.currentUser;
             if (currentUser) {
+                isLoggingOut.current = true; // Signal that this is intentional
+                await AsyncStorage.setItem(LOGOUT_FLAG, 'true');
                 const isSignedIn = await GoogleSignin.hasPreviousSignIn();
                 if (isSignedIn) {
                     await GoogleSignin.signOut();
                 }
-                await auth().signOut();
+                await signOut(firebaseAuth);
             }
         } catch (error: any) {
             // Suppress error if already logged out, otherwise log it
@@ -175,15 +150,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const deleteAccount = async () => {
         try {
-            const currentUser = auth().currentUser;
+            const currentUser = firebaseAuth.currentUser;
             if (currentUser) {
+                console.log('[Auth) Initiating account deletion for:', currentUser.uid);
+                isLoggingOut.current = true;
+                await AsyncStorage.setItem(LOGOUT_FLAG, 'true');
+                
+                // 1. Delete Firestore Data First
                 const { FirestoreService } = require('../services/firestore');
                 await FirestoreService.deleteUserData(currentUser.uid);
+                
+                // 2. Delete Auth User
                 await currentUser.delete();
+                console.log('[Auth] Account successfully deleted');
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error deleting account:", error);
-            throw error;
+            // Re-throw specific errors to be handled by the UI
+            if (error.code === 'auth/requires-recent-login') {
+                throw error;
+            }
+            throw new Error("Failed to delete account. Please try again later.");
         }
     };
 
@@ -193,8 +180,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading, 
             loginWithGoogle, 
             loginWithApple, 
+            updateUserName,
             linkEmailPassword,
-            loginAnonymously, 
             logout, 
             deleteAccount 
         }}>

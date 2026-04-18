@@ -4,7 +4,7 @@ import {
     ScrollView, Image, Linking, Alert, KeyboardAvoidingView, Platform 
 } from 'react-native';
 import { Easing } from 'react-native-reanimated';
-import auth from '@react-native-firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from '@react-native-firebase/auth';
 import Animated, { 
     useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence,
     FadeInRight, FadeIn
@@ -34,9 +34,10 @@ type AuthMode = 'welcome' | 'storyboard' | 'signup' | 'signin';
 
 export default function AuthScreen() {
     const router = useRouter();
-    const { user, loginWithGoogle, loginWithApple, linkEmailPassword, loginAnonymously } = useAuth();
+    const { user, loginWithGoogle, loginWithApple, updateUserName, linkEmailPassword, loginAnonymously } = useAuth();
     const [mode, setMode] = useState<AuthMode>('welcome');
     const [storyStep, setStoryStep] = useState(1);
+    const [userName, setUserName] = useState('');
     const [selectedFocus, setSelectedFocus] = useState<{ build: boolean, break: boolean }>({ build: false, break: false });
     const [animatedStreak, setAnimatedStreak] = useState(1);
     const [showConfetti, setShowConfetti] = useState(false);
@@ -296,7 +297,8 @@ export default function AuthScreen() {
         if (!email || !password) return Alert.alert('Error', 'Please enter email and password.');
         try {
             await Analytics.logEvent('auth_started', { provider: 'email' });
-            await auth().signInWithEmailAndPassword(email.trim(), password);
+            const firebaseAuth = getAuth();
+            await signInWithEmailAndPassword(firebaseAuth, email.trim(), password);
             router.replace('/(tabs)');
         } catch (error: any) {
             Alert.alert('Login Failed', error.message);
@@ -730,6 +732,15 @@ export default function AuthScreen() {
                     </View>
 
                     <View style={styles.authForm}>
+                        <TextInput
+                            placeholder="Full Name"
+                            style={styles.input}
+                            placeholderTextColor={AppleColors.label.tertiary}
+                            autoCapitalize="words"
+                            autoCorrect={false}
+                            value={userName}
+                            onChangeText={setUserName}
+                        />
                         <TextInput
                             placeholder="Email address"
                             style={styles.input}

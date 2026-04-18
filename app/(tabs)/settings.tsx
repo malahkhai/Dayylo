@@ -267,8 +267,16 @@ export default function SettingsScreen() {
                                             try {
                                                 await deleteAccount();
                                                 router.replace('/(auth)/login');
-                                            } catch (e) {
-                                                Alert.alert("Error", "Failed to delete account. You might need to re-authenticate first.");
+                                            } catch (e: any) {
+                                                if (e.code === 'auth/requires-recent-login') {
+                                                    Alert.alert(
+                                                        "Security Check Required", 
+                                                        "For your protection, you must have logged in recently to delete your account. Please sign out and sign back in, then try again.",
+                                                        [{ text: "OK" }]
+                                                    );
+                                                } else {
+                                                    Alert.alert("Error", "Failed to delete account. Please try again later.");
+                                                }
                                             }
                                         }
                                     }
