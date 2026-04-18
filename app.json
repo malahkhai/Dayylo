@@ -2,7 +2,13 @@
   "expo": {
     "name": "Dayylo",
     "slug": "dayylo",
-    "version": "1.0.0",
+    "version": "2.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8168b67c-7210-4507-9b48-b27485568dbf"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -72,6 +78,7 @@
         }
       ],
       "expo-tracking-transparency",
+      "expo-updates",
       "./plugins/withGTMSessionFetcherFix"
     ],
     "experiments": {

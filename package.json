@@ -29,6 +29,7 @@
     "expo-status-bar": "^3.0.9",
     "expo-store-review": "^55.0.13",
     "expo-tracking-transparency": "~6.0.8",
+    "expo-updates": "~29.0.16",
     "lottie-react-native": "~7.3.1",
     "lucide-react-native": "^0.562.0",
     "moti": "^0.30.0",
@@ -54,7 +55,7 @@
     "typescript": "~5.9.2"
   },
   "name": "Dayylo",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
