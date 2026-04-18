@@ -137,14 +137,17 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
       }
     });
 
-  const rStyle = useAnimatedStyle(() => ({
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: cardOpacity.value,
+    height: cardHeight.value,
+    marginVertical: cardMargin.value,
+  }));
+
+  const swipeStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { scale: scale.value }
     ],
-    opacity: cardOpacity.value,
-    height: cardHeight.value,
-    marginVertical: cardMargin.value,
   }));
 
   const handlePressIn = () => {
@@ -156,7 +159,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
   };
 
   return (
-    <Animated.View style={[styles.container, rStyle]}>
+    <Animated.View style={[styles.container, containerStyle]}>
       {/* Background Actions - Only show if not tracked */}
       {!trackedToday && (
         <View style={styles.backgroundContainer}>
@@ -172,7 +175,7 @@ export const AppleHabitCard: React.FC<HabitCardProps> = ({
       )}
 
       <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.card]}>
+        <Animated.View style={[styles.card, swipeStyle]}>
           <Pressable 
             onPress={onPress} 
             onPressIn={handlePressIn}

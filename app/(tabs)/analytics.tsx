@@ -29,6 +29,28 @@ export default function AnalyticsScreen() {
     const vsSign = balanceVsLastWeek >= 0 ? '+' : '';
     const vsColor = balanceVsLastWeek >= 0 ? '#30e8ab' : '#ef4444';
 
+    // ─── Local Components ────────────────────────────────────────────────────────
+
+    const PremiumLock = ({ title, subtitle }: { title: string, subtitle: string }) => (
+        <View className="bg-surface-dark/50 rounded-[40px] p-8 border border-white/5 items-center justify-center min-h-[200px]">
+            <View className="w-12 h-12 bg-white/5 rounded-2xl items-center justify-center mb-4">
+                <LucideIcons.Lock size={20} color="rgba(255,255,255,0.4)" />
+            </View>
+            <Text className="text-white font-black text-sm mb-1 text-center">{title}</Text>
+            <Text className="text-white/40 font-bold text-[10px] text-center mb-6 px-4 uppercase tracking-widest">
+                {subtitle}
+            </Text>
+            <Pressable
+                className="bg-primary/20 py-3 px-6 rounded-xl border border-primary/30"
+                onPress={() => router.push('/paywall')}
+            >
+                <Text className="text-primary font-black uppercase text-[10px] tracking-widest">
+                    Upgrade to Unlock
+                </Text>
+            </Pressable>
+        </View>
+    );
+
     if (habits.length === 0) {
         return (
             <SafeAreaView className="flex-1 bg-black">
@@ -66,119 +88,137 @@ export default function AnalyticsScreen() {
                 </View>
 
                 {/* Daily Balance Score */}
-                <View className="bg-surface-dark rounded-[40px] p-8 mb-8 border border-white/5 items-center">
-                    <Text className="text-white/40 font-black text-[10px] uppercase tracking-widest mb-6">
-                        Daily Balance Score
-                    </Text>
+                <View className="mb-8">
+                    <Text className="text-[13px] font-black text-white mb-4 px-1">Performance Score</Text>
+                    {isPremium ? (
+                        <View className="bg-surface-dark rounded-[40px] p-8 border border-white/5 items-center">
+                            <Text className="text-white/40 font-black text-[10px] uppercase tracking-widest mb-6">
+                                Daily Balance Score
+                            </Text>
 
-                    {/* Circular score ring */}
-                    <View
-                        className="w-40 h-40 rounded-full items-center justify-center mb-4"
-                        style={{
-                            borderWidth: 10,
-                            borderColor: habits.length === 0 ? 'rgba(255,255,255,0.05)' : scoreColor + '30',
-                            backgroundColor: 'rgba(255,255,255,0.02)',
-                        }}
-                    >
-                        {habits.length === 0 ? (
-                            <View className="items-center">
-                                <Text className="text-4xl font-black text-white/20">—</Text>
-                                <Text className="text-white/20 font-bold text-xs mt-1">No habits yet</Text>
+                            {/* Circular score ring */}
+                            <View
+                                className="w-40 h-40 rounded-full items-center justify-center mb-4"
+                                style={{
+                                    borderWidth: 10,
+                                    borderColor: habits.length === 0 ? 'rgba(255,255,255,0.05)' : scoreColor + '30',
+                                    backgroundColor: 'rgba(255,255,255,0.02)',
+                                }}
+                            >
+                                <View className="items-center">
+                                    <Text className="text-5xl font-black text-white">{dailyBalanceScore}</Text>
+                                    {balanceVsLastWeek !== 0 && (
+                                        <Text className="font-black text-xs uppercase mt-1" style={{ color: vsColor }}>
+                                            {vsSign}{balanceVsLastWeek}% vs LW
+                                        </Text>
+                                    )}
+                                </View>
                             </View>
-                        ) : (
-                            <View className="items-center">
-                                <Text className="text-5xl font-black text-white">{dailyBalanceScore}</Text>
-                                {balanceVsLastWeek !== 0 && (
-                                    <Text className="font-black text-xs uppercase mt-1" style={{ color: vsColor }}>
-                                        {vsSign}{balanceVsLastWeek}% vs LW
-                                    </Text>
-                                )}
-                            </View>
-                        )}
-                    </View>
 
-                    {/* Score descriptor */}
-                    {habits.length > 0 && (
-                        <Text className="font-bold text-xs uppercase tracking-widest" style={{ color: scoreColor }}>
-                            {dailyBalanceScore >= 80 ? 'Excellent' :
-                                dailyBalanceScore >= 50 ? 'On Track' :
-                                    dailyBalanceScore > 0 ? 'Needs Work' : 'Not Started'}
-                        </Text>
+                            {/* Score descriptor */}
+                            <Text className="font-bold text-xs uppercase tracking-widest" style={{ color: scoreColor }}>
+                                {dailyBalanceScore >= 80 ? 'Excellent' :
+                                    dailyBalanceScore >= 50 ? 'On Track' :
+                                        dailyBalanceScore > 0 ? 'Needs Work' : 'Not Started'}
+                            </Text>
+                        </View>
+                    ) : (
+                        <PremiumLock
+                            title="Daily Balance Score"
+                            subtitle="Real-time algorithm to measure your daily harmony."
+                        />
                     )}
                 </View>
 
                 {/* Aggregated Weekly Grid */}
-                {(() => {
-                    const days = eachDayOfInterval({
-                        start: subDays(new Date(), 30), // Calculate for enough buffer
-                        end: new Date(),
-                    });
+                <View className="mb-8">
+                    <Text className="text-[13px] font-black text-white mb-4 px-1">Volume Analysis</Text>
+                    {isPremium ? (
+                        (() => {
+                            const days = eachDayOfInterval({
+                                start: subDays(new Date(), 30), // Calculate for enough buffer
+                                end: new Date(),
+                            });
 
-                    const buildHabits = habits.filter(h => {
-                        const type = (h.type || '').toLowerCase();
-                        const color = (h.color || '').toLowerCase();
-                        const isGood = (h as any).isGood;
-                        return type === 'build' || isGood === true || ['#007aff', '#3b82f6', '#30e8ab', '#8b5cf6', '#34c759'].includes(color);
-                    });
-                    const breakHabits = habits.filter(h => {
-                        const type = (h.type || '').toLowerCase();
-                        const color = (h.color || '').toLowerCase();
-                        const isGood = (h as any).isGood;
-                        return type === 'break' || isGood === false || ['#ff9500', '#f97316', '#ef4444', '#ff3b30', '#ff2d55'].includes(color);
-                    });
+                            const buildHabits = habits.filter(h => {
+                                const type = (h.type || '').toLowerCase();
+                                const color = (h.color || '').toLowerCase();
+                                const isGood = (h as any).isGood;
+                                return type === 'build' || isGood === true || ['#007aff', '#3b82f6', '#30e8ab', '#8b5cf6', '#34c759'].includes(color);
+                            });
+                            const breakHabits = habits.filter(h => {
+                                const type = (h.type || '').toLowerCase();
+                                const color = (h.color || '').toLowerCase();
+                                const isGood = (h as any).isGood;
+                                return type === 'break' || isGood === false || ['#ff9500', '#f97316', '#ef4444', '#ff3b30', '#ff2d55'].includes(color);
+                            });
 
-                    const buildHistory: Record<string, boolean> = {};
-                    const breakHistory: Record<string, boolean> = {};
+                            const buildHistory: Record<string, boolean> = {};
+                            const breakHistory: Record<string, boolean> = {};
 
-                    days.forEach(d => {
-                        const dateStr = format(d, 'yyyy-MM-dd');
-                        
-                        // Build Aggregation
-                        const buildStates = buildHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
-                        if (buildStates.some(v => v === true)) {
-                            buildHistory[dateStr] = true;
-                        } else if (buildStates.some(v => v === false)) {
-                            buildHistory[dateStr] = false;
-                        }
+                            days.forEach(d => {
+                                const dateStr = format(d, 'yyyy-MM-dd');
+                                
+                                // Build Aggregation
+                                const buildStates = buildHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
+                                if (buildStates.some(v => v === true)) {
+                                    buildHistory[dateStr] = true;
+                                } else if (buildStates.some(v => v === false)) {
+                                    buildHistory[dateStr] = false;
+                                }
 
-                        // Break Aggregation
-                        const breakStates = breakHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
-                        if (breakStates.length > 0) {
-                            if (breakStates.every(v => v === true)) {
-                                breakHistory[dateStr] = true;
-                            } else if (breakStates.some(v => v === false)) {
-                                breakHistory[dateStr] = false;
+                                // Break Aggregation
+                                const breakStates = breakHabits.map(h => h.history?.[dateStr]).filter(v => v !== undefined);
+                                if (breakStates.length > 0) {
+                                    if (breakStates.every(v => v === true)) {
+                                        breakHistory[dateStr] = true;
+                                    } else if (breakStates.some(v => v === false)) {
+                                        breakHistory[dateStr] = false;
+                                    }
+                                }
+                            });
+
+                            const rows: GridRow[] = [];
+                            if (buildHabits.length > 0) {
+                                rows.push({
+                                    id: 'cat-build',
+                                    name: 'Build Habits',
+                                    icon: 'Sparkles',
+                                    color: '#007AFF', // Growth Blue
+                                    history: buildHistory,
+                                });
                             }
-                        }
-                    });
+                            if (breakHabits.length > 0) {
+                                rows.push({
+                                    id: 'cat-break',
+                                    name: 'Break Habits',
+                                    icon: 'ShieldAlert', // Stronger icon for discipline
+                                    color: '#FF9500', // Discipline Orange
+                                    history: breakHistory,
+                                });
+                            }
 
-                    const rows: GridRow[] = [];
-                    if (buildHabits.length > 0) {
-                        rows.push({
-                            id: 'cat-build',
-                            name: 'Build Habits',
-                            icon: 'Sparkles',
-                            color: '#007AFF', // Growth Blue
-                            history: buildHistory,
-                        });
-                    }
-                    if (breakHabits.length > 0) {
-                        rows.push({
-                            id: 'cat-break',
-                            name: 'Break Habits',
-                            icon: 'ShieldAlert', // Stronger icon for discipline
-                            color: '#FF9500', // Discipline Orange
-                            history: breakHistory,
-                        });
-                    }
-
-                    return <HabitGrid rows={rows} />;
-                })()}
+                            return <HabitGrid rows={rows} />;
+                        })()
+                    ) : (
+                        <PremiumLock
+                            title="Habit Volume Grid"
+                            subtitle="Detailed historical performance breakdown by category."
+                        />
+                    )}
+                </View>
 
                 {/* Monthly Calendar (Overall Activity) */}
                 <View className="mb-8">
                     <Text className="text-[13px] font-black text-white mb-4 px-1">Activity Calendar</Text>
-                    <CalendarHeatmap history={overallHistory} color="#007AFF" />
+                    {isPremium ? (
+                        <CalendarHeatmap history={overallHistory} color="#007AFF" />
+                    ) : (
+                        <PremiumLock
+                            title="Lifetime Activity Heatmap"
+                            subtitle="Visualize your total consistency over the last year."
+                        />
+                    )}
                 </View>
 
                 {/* Premium Trend Lock / Trend Analysis */}

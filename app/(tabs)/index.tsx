@@ -36,6 +36,41 @@ import { Habit } from '../../types';
 import { MotiView } from 'moti';
 
 const REVIEW_PROMPT_KEY = 'DAYYLO_REVIEW_PROMPT_SHOWN';
+    
+interface MissionCompleteProps {
+    timeLeft: string;
+    completed: number;
+    missed: number;
+}
+
+const MissionCompleteView = ({ timeLeft, completed, missed }: MissionCompleteProps) => (
+    <MotiView 
+        from={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        style={styles.missionCard}
+    >
+        <LucideIcons.ShieldCheck size={48} color={AppleColors.systemGreen} style={{ marginBottom: 16 }} />
+        <Text style={styles.missionTitle}>Mission Complete</Text>
+        <Text style={styles.missionText}>Objectives secured. Resistance holding.</Text>
+        
+        <View style={styles.countdownContainer}>
+            <Text style={styles.countdownLabel}>NEXT BATTLE IN</Text>
+            <Text style={styles.countdownTime}>{timeLeft}</Text>
+        </View>
+        
+        <View style={styles.summaryRow}>
+            <View style={styles.summaryItem}>
+                <Text style={styles.summaryVal}>{completed}</Text>
+                <Text style={styles.summaryLab}>WINS</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryItem}>
+                <Text style={[styles.summaryVal, { color: AppleColors.systemRed }]}>{missed}</Text>
+                <Text style={styles.summaryLab}>LOSSES</Text>
+            </View>
+        </View>
+    </MotiView>
+);
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -180,35 +215,6 @@ export default function HomeScreen() {
         const interval = setInterval(updateCountdown, 1000);
         return () => clearInterval(interval);
     }, []);
-
-    const MissionCompleteView = () => (
-        <MotiView 
-            from={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={styles.missionCard}
-        >
-            <LucideIcons.ShieldCheck size={48} color={AppleColors.systemGreen} style={{ marginBottom: 16 }} />
-            <Text style={styles.missionTitle}>Mission Complete</Text>
-            <Text style={styles.missionText}>Objectives secured. Resistance holding.</Text>
-            
-            <View style={styles.countdownContainer}>
-                <Text style={styles.countdownLabel}>NEXT BATTLE IN</Text>
-                <Text style={styles.countdownTime}>{timeLeft}</Text>
-            </View>
-            
-            <View style={styles.summaryRow}>
-                <View style={styles.summaryItem}>
-                    <Text style={styles.summaryVal}>{completedHabits}</Text>
-                    <Text style={styles.summaryLab}>WINS</Text>
-                </View>
-                <View style={styles.summaryDivider} />
-                <View style={styles.summaryItem}>
-                    <Text style={[styles.summaryVal, { color: AppleColors.systemRed }]}>{stats.missed}</Text>
-                    <Text style={styles.summaryLab}>LOSSES</Text>
-                </View>
-            </View>
-        </MotiView>
-    );
 
     // Sun/Moon rotation animation
     const rotation = useSharedValue(0);
@@ -363,7 +369,11 @@ export default function HomeScreen() {
                 )}
                 ListEmptyComponent={
                     isMissionComplete ? (
-                        <MissionCompleteView />
+                        <MissionCompleteView 
+                            timeLeft={timeLeft}
+                            completed={completedHabits}
+                            missed={stats.missed}
+                        />
                     ) : (
                         <View style={styles.emptyState}>
                             <Text style={styles.emptyEmoji}>🌱</Text>

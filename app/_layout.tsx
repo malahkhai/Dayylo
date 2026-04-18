@@ -36,17 +36,23 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
         // Use a tiny delay to ensure the navigator is fully mounted before redirecting
         const timeout = setTimeout(() => {
-            if (isVerifiedUser && inAuthGroup) {
-                // Verified user lands on auth screen → push to app
-                // Check if we're already navigating to prevent loops
-                if (segments[0] !== '(tabs)') {
+            if (isLoading) return;
+
+            const isAuthGroup = segments[0] === '(auth)';
+            const hasUser = !!user;
+
+            if (!hasUser && !isAuthGroup) {
+                // No user at all -> must go to login
+                router.replace('/(auth)/login');
+            } else if (hasUser && isAuthGroup) {
+                // We have a user (Verified or Anonymous) but we are still in Auth screens.
+                // If they are on the LOGIN screen, we only redirect if they are verified.
+                // If they are in onboarding (removed soon), handle accordingly.
+                const onLoginScreen = segments[1] === 'login';
+                const isVerified = user && !user.isAnonymous;
+
+                if (isVerified || (onLoginScreen && hasUser)) {
                     router.replace('/(tabs)');
-                }
-            } else if (!isVerifiedUser && !inAuthGroup) {
-                // Anonymous or no user lands on tabs → push to onboarding/login
-                // Check if we're already navigating to prevent loops
-                if (segments[0] !== '(auth)') {
-                    router.replace('/(auth)/login');
                 }
             }
         }, 1);
@@ -140,7 +146,6 @@ export default function RootLayout() {
                                     <View style={{ flex: 1 }}>
                                         <Stack screenOptions={{ headerShown: false }}>
                                             <Stack.Screen name="(auth)/login" options={{ animation: 'fade' }} />
-                                            <Stack.Screen name="(auth)/onboarding" options={{ animation: 'slide_from_right' }} />
                                             <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
                                             <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
                                              <Stack.Screen 

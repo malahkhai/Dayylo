@@ -260,21 +260,31 @@ export default function AuthScreen() {
         try {
             await Analytics.logEvent('auth_started', { provider });
             const isNewUser = provider === 'google' ? await loginWithGoogle() : await loginWithApple();
-            if (isNewUser) {
-                await Analytics.logEvent('onboarding_started');
+            
+            // If we have a habit input from the storyboard, save it now
+            if (habitInput.trim() && addHabit) {
                 const habitType = selectedFocus.build ? 'build' : 'break';
                 const formattedName = formatHabitName(habitInput, habitType);
-                router.replace({
-                    pathname: '/(auth)/onboarding',
-                    params: { 
-                        initialHabitName: formattedName, 
-                        initialHabitType: habitType,
-                        initialHabitDifficulty: habitDifficulty
-                    }
+                await addHabit({
+                    name: formattedName,
+                    type: habitType,
+                    icon: habitType === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
+                    color: habitType === 'build' ? AppleColors.primary : '#FF9500',
+                    frequency: [0, 1, 2, 3, 4, 5, 6],
+                    difficulty: habitDifficulty,
+                    targetValue: 1,
+                    currentValue: 0,
+                    isGood: habitType === 'build',
                 });
-            } else {
-                router.replace('/(tabs)');
             }
+
+            // If we have a name input from the storyboard, save it
+            if (userName.trim() && updateUserName) {
+                await updateUserName(userName.trim());
+            }
+
+            // Always go to tabs now, as we've handled the habit creation
+            router.replace('/(tabs)');
         } catch (error: any) {
             if (error?.message !== 'Sign in cancelled') {
                 Alert.alert('Authentication Failed', error.message || 'Please try again.');
@@ -302,17 +312,29 @@ export default function AuthScreen() {
             // LINKING: Link new Email account to current Anonymous session
             await linkEmailPassword(email.trim(), password);
             
-            await Analytics.logEvent('onboarding_started');
-            const habitType = selectedFocus.build ? 'build' : 'break';
-            const formattedName = formatHabitName(habitInput, habitType);
-            router.replace({
-                pathname: '/(auth)/onboarding',
-                params: { 
-                    initialHabitName: formattedName, 
-                    initialHabitType: habitType,
-                    initialHabitDifficulty: habitDifficulty
-                }
-            });
+            // If we have a habit input from the storyboard, save it now
+            if (habitInput.trim() && addHabit) {
+                const habitType = selectedFocus.build ? 'build' : 'break';
+                const formattedName = formatHabitName(habitInput, habitType);
+                await addHabit({
+                    name: formattedName,
+                    type: habitType,
+                    icon: habitType === 'build' ? 'PlusCircle' : 'MinusCircle' as any,
+                    color: habitType === 'build' ? AppleColors.primary : '#FF9500',
+                    frequency: [0, 1, 2, 3, 4, 5, 6],
+                    difficulty: habitDifficulty,
+                    targetValue: 1,
+                    currentValue: 0,
+                    isGood: habitType === 'build',
+                });
+            }
+
+            // If we have a name input from the storyboard, save it
+            if (userName.trim() && updateUserName) {
+                await updateUserName(userName.trim());
+            }
+
+            router.replace('/(tabs)');
         } catch (error: any) {
             Alert.alert('Signup Failed', error.message);
         }

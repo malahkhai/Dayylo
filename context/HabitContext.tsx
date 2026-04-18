@@ -3,6 +3,7 @@ import { Platform, AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Purchases from 'react-native-purchases';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { Analytics } from '../services/analytics';
 import { useAuth } from './AuthContext';
@@ -157,10 +158,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // ── Persist + Reset ─────────────────────────────────────────────────────
 
     const loadData = async () => {
-        if (!user) return;
+        const currentUser = auth().currentUser;
+        if (!currentUser) return;
+        
         try {
-            console.log('[Heartbeat] HabitContext: Loading user data for uid:', user.uid);
-            const data = await FirestoreService.getUserData(user.uid);
+            console.log('[Heartbeat] HabitContext: Loading user data for uid:', currentUser.uid);
+            const data = await FirestoreService.getUserData(currentUser.uid);
 
             const isDemoAccount = user.email === 'demo@dayylo.com';
             let parsedHabits: Habit[] = data?.habits || (isDemoAccount ? INITIAL_HABITS : []);
@@ -168,13 +171,56 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             const today = getTodayDate();
             const lastResetDate = data?.lastResetDate || '';
 
-            if (lastResetDate !== today) {
-                console.log('[Heartbeat] HabitContext: Performing daily reset');
-                parsedHabits = parsedHabits.map(h => ({
-                    ...h,
-                    completedToday: false,
-                    trackedToday: false,
-                }));
+            if (lastResetDate !== today && lastResetDate !== '') {
+                console.log('[Heartbeat] HabitContext: Performing daily reset and auto-miss backfill from:', lastResetDate);
+                
+                // Calculate missing dates to backfill
+                const getMissingDates = (start: string, end: string) => {
+                    const days = [];
+                    let curr = new Date(start + 'T12:00:00');
+                    const stop = new Date(end + 'T12:00:00');
+                    
+                    // Start from the day after the last reset
+                    curr.setDate(curr.getDate() + 1);
+                    
+                    while (curr < stop) {
+                        days.push(curr.toISOString().split('T')[0]);
+                        curr.setDate(curr.getDate() + 1);
+                    }
+                    return days;
+                };
+
+                const missingDates = getMissingDates(lastResetDate, today);
+                console.log('[Heartbeat] Backfilling missed days:', missingDates);
+
+                parsedHabits = parsedHabits.map(h => {
+                    const newHistory = { ...(h.history || {}) };
+                    
+                    // Mark each missing day as missed (false) if no entry exists
+                    missingDates.forEach(date => {
+                        if (newHistory[date] === undefined) {
+                            newHistory[date] = false;
+                        }
+                    });
+
+                    // Also handle the transition: if it wasn't tracked today yet (logic check), 
+                    // and we are resetting, it means yesterday was missed if not in history.
+                    // But missingDates already covers everything strictly BETWEEN lastReset and Today.
+                    // We also need to check lastResetDate itself if it wasn't tracked.
+                    if (newHistory[lastResetDate] === undefined) {
+                      newHistory[lastResetDate] = false;
+                    }
+
+                    return {
+                        ...h,
+                        history: newHistory,
+                        completedToday: false,
+                        trackedToday: false,
+                    };
+                });
+                saveHabits(parsedHabits, today);
+            } else if (lastResetDate === '') {
+                // First time ever or clean slate
                 saveHabits(parsedHabits, today);
             }
 
@@ -239,15 +285,24 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const saveHabits = async (newHabits: Habit[], resetDate?: string) => {
         setHabits(newHabits);
-        if (user) {
+        const currentUser = auth().currentUser;
+        
+        if (currentUser) {
             try {
-                await firestore().collection('users').doc(user.uid).set({
+                // VERIFICATION: Ensure we are writing to the currently authenticated user
+                await firestore().collection('users').doc(currentUser.uid).set({
                     habits: newHabits,
                     ...(resetDate ? { lastResetDate: resetDate } : {})
                 }, { merge: true });
             } catch (error: any) {
-                console.error("Error saving habits:", error);
-                crashlytics().recordError(error, 'saveHabits');
+                // If it's a permission error during a fast transition (signup/link), we warn instead of erroring
+                // to prevent the Dev Overlay from blocking the UI since it will retry on the next cycle.
+                if (error?.code === 'firestore/permission-denied') {
+                    console.warn("[Auth Transition] Habit sync delayed due to token refresh:", error.message);
+                } else {
+                    console.error("Error saving habits:", error);
+                    crashlytics().recordError(error, 'saveHabits');
+                }
             }
         }
     };

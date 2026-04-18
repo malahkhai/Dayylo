@@ -157,13 +157,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const logout = async () => {
         try {
-            const isSignedIn = await GoogleSignin.hasPreviousSignIn();
-            if (isSignedIn) {
-                await GoogleSignin.signOut();
+            const currentUser = auth().currentUser;
+            if (currentUser) {
+                const isSignedIn = await GoogleSignin.hasPreviousSignIn();
+                if (isSignedIn) {
+                    await GoogleSignin.signOut();
+                }
+                await auth().signOut();
             }
-            await auth().signOut();
-        } catch (error) {
-            console.error("Error signing out:", error);
+        } catch (error: any) {
+            // Suppress error if already logged out, otherwise log it
+            if (error?.code !== 'auth/no-current-user') {
+                console.error("Error signing out:", error);
+            }
         }
     };
 

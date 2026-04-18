@@ -70,9 +70,9 @@ export default function AddHabitScreen() {
                 }
                 setDifficulty(normalizedDif);
                 setIsPrivate(h.isPrivate || false);
-                setReminderTime((h as any).reminderTime || '');
-                if (h.frequency && typeof h.frequency !== 'string') {
-                    const daysArr = (h.frequency as string[]).map(d => DAY_LABELS.indexOf(d)).filter(i => i !== -1);
+                setReminderTime(h.reminderTime || '');
+                if (h.frequency) {
+                    const daysArr = h.frequency.map(d => DAY_LABELS.indexOf(d)).filter(i => i !== -1);
                     if (daysArr.length > 0) setSelectedDays(daysArr);
                 }
             }
@@ -102,7 +102,7 @@ export default function AddHabitScreen() {
             name: habitName.trim(),
             type: habitType,
             icon: selectedIcon,
-            color: habitType === 'build' ? AppleColors.primary : '#FF9500',
+            color: selectedColor,
             isPrivate,
             description: description.trim(),
             frequency: selectedDays.map(d => DAY_LABELS[d]),
@@ -141,7 +141,7 @@ export default function AddHabitScreen() {
     const SelectedIcon = (LucideIcons as any)[selectedIcon] || LucideIcons.Zap;
 
     return (
-        <View style={{ flex: 1, backgroundColor: AppleColors.background.primary }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: AppleColors.background.primary }} edges={['bottom', 'left', 'right']}>
             {/* NATIVE HEADER CONFIGURATION: System-standard 'Option B' Layout */}
             <Stack.Screen 
                 options={{
@@ -168,15 +168,14 @@ export default function AddHabitScreen() {
             <KeyboardAvoidingView 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+                keyboardVerticalOffset={0} // PageSheet modals usually don't need the 88 offset
             >
                 <ScrollView 
-                    style={{ flex: 1 }} 
+                    style={{ flex: 1 }}
                     contentContainerStyle={styles.scrollContent} 
                     showsVerticalScrollIndicator={true}
                     keyboardShouldPersistTaps="always"
                     bounces={true}
-                    overScrollMode="always"
                 >
                 {/* Icon + Name preview */}
                 <View style={[styles.previewCard, { backgroundColor: selectedColor + '15', borderColor: selectedColor + '30' }]}>
@@ -232,7 +231,11 @@ export default function AddHabitScreen() {
                         ].map(type => (
                             <TouchableOpacity
                                 key={type.value}
-                                onPress={() => { setHabitType(type.value); Haptics.selectionAsync(); }}
+                                onPress={() => { 
+                                    setHabitType(type.value); 
+                                    setSelectedColor(type.value === 'build' ? AppleColors.primary : AppleColors.systemOrange);
+                                    Haptics.selectionAsync(); 
+                                }}
                                 style={[
                                     styles.typeOption,
                                     habitType === type.value && { backgroundColor: type.value === 'build' ? AppleColors.systemGreen : AppleColors.systemOrange, borderColor: 'transparent' }
@@ -310,9 +313,11 @@ export default function AddHabitScreen() {
                     <Text style={styles.label}>Visual Identity</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(255,255,255,0.05)', padding: 16, borderRadius: 16 }}>
                         <View style={[styles.colorDot, { backgroundColor: habitType === 'build' ? AppleColors.primary : '#FF9500' }]} />
-                        <Text style={{ color: AppleColors.label.secondary, fontSize: 13, fontWeight: '600' }}>
-                            This {habitType} habit will use your {habitType === 'build' ? 'Growth Blue' : 'Discipline Orange'} identity.
-                        </Text>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ color: AppleColors.label.secondary, fontSize: 13, fontWeight: '600', flexShrink: 1 }}>
+                                This {habitType} habit will use your {habitType === 'build' ? 'Growth Blue' : 'Discipline Orange'} identity.
+                            </Text>
+                        </View>
                     </View>
                 </View>
 
@@ -398,7 +403,7 @@ export default function AddHabitScreen() {
                 <View style={{ height: 40 }} />
             </ScrollView>
         </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
     );
 }
 
@@ -416,8 +421,14 @@ const styles = StyleSheet.create({
     headerTitle: { ...AppleTypography.headline, fontWeight: '700', color: AppleColors.label.primary, flex: 1, textAlign: 'center' },
 
     previewCard: {
-        margin: AppleSpacing.base, borderRadius: 24, padding: 24,
-        alignItems: 'center', borderWidth: 1,
+        marginHorizontal: AppleSpacing.base,
+        marginTop: AppleSpacing.sm,
+        marginBottom: AppleSpacing.md,
+        borderRadius: 24,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        alignItems: 'center',
+        borderWidth: 1,
     },
     iconPreview: { width: 80, height: 80, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: 12, position: 'relative' },
     iconEditBadge: {
@@ -429,7 +440,9 @@ const styles = StyleSheet.create({
     previewSub: { ...AppleTypography.footnote, color: AppleColors.label.secondary },
 
     scrollContent: { 
-        flexGrow: 1, 
+        flexGrow: 1,
+        justifyContent: 'flex-start',
+        paddingTop: AppleSpacing.sm,
         paddingBottom: 200 
     },
     section: { marginHorizontal: AppleSpacing.base, marginBottom: AppleSpacing.lg },

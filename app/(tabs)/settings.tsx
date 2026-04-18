@@ -45,29 +45,46 @@ export default function SettingsScreen() {
         <SafeAreaView className="flex-1 bg-black">
             <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
                 {/* Profile Header */}
-                <Pressable
-                    className="pt-8 pb-10 items-center"
-                    onPress={() => { setNameInput(userName); setProfileModalVisible(true); }}
-                >
-                    <Text className="text-2xl font-black text-white">{userName}</Text>
-                    <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">
-                        Level {level} • {getLevelTitle(level)}
-                    </Text>
-                    <View className="mt-2 flex-row items-center gap-1">
-                        <LucideIcons.Pencil size={12} color="rgba(255,255,255,0.3)" />
-                        <Text className="text-white/30 text-xs font-bold">Tap to edit profile</Text>
-                    </View>
+                <View className="pt-10 pb-12 items-center">
+                    <Pressable
+                        onPress={() => { setNameInput(userName); setProfileModalVisible(true); }}
+                        className="items-center"
+                    >
+                        <View 
+                            className="w-24 h-24 rounded-full items-center justify-center mb-6 border-4 border-white/5"
+                            style={{ 
+                                backgroundColor: '#007AFF',
+                                shadowColor: '#007AFF',
+                                shadowOffset: { width: 0, height: 8 },
+                                shadowOpacity: 0.3,
+                                shadowRadius: 15,
+                                elevation: 12
+                            }}
+                        >
+                            <Text className="text-4xl font-black text-white">
+                                {userName ? userName.charAt(0).toUpperCase() : 'U'}
+                            </Text>
+                            <View className="absolute bottom-0 right-0 w-8 h-8 bg-black rounded-full items-center justify-center border-2 border-surface-dark">
+                                <LucideIcons.Pencil size={12} color="white" />
+                            </View>
+                        </View>
+                        
+                        <Text className="text-2xl font-black text-white">{userName}</Text>
+                        <Text className="text-white/40 font-bold mt-1 text-sm uppercase tracking-widest">
+                            Level {level} • {getLevelTitle(level)}
+                        </Text>
+                    </Pressable>
 
                     {!isPremium && (
                         <Pressable
                             onPress={() => router.push('/paywall')}
-                            className="mt-6 bg-[#007AFF15] border border-[#007AFF30] px-6 py-3 rounded-2xl flex-row items-center"
+                            className="mt-8 bg-[#007AFF15] border border-[#007AFF30] px-6 py-3 rounded-2xl flex-row items-center"
                         >
                             <LucideIcons.Crown size={16} color="#007AFF" />
                             <Text className="text-[#007AFF] font-black text-xs uppercase tracking-widest ml-2">Upgrade to Premium</Text>
                         </Pressable>
                     )}
-                </Pressable>
+                </View>
 
                 {/* Account */}
                 <View className="mb-8">

@@ -117,7 +117,7 @@ const ProgressBarRow = ({
 
 export default function StatsScreen() {
     const { 
-        habits, globalStreak, totalDiscipline,
+        habits, globalStreak, totalDiscipline, level,
         totalCompletions, successRate, avgPerDay,
         weeklyData, monthlyData, dailyBalanceScore, balanceVsLastWeek, totalMissedThisWeek
     } = useHabits();
@@ -222,10 +222,10 @@ export default function StatsScreen() {
                         color={AppleColors.systemIndigo} 
                     />
                     <ProgressBarRow 
-                        icon="⚠️" label="Recorded Misses" 
+                        icon="⚠️" label={`Recorded Misses ${totalMissedThisWeek > (habits.length * 7) / 2 ? '(CRITICAL)' : ''}`}
                         currentVal={totalMissedThisWeek} totalVal={habits.length * 7} 
                         currentDisplay={totalMissedThisWeek} totalDisplay={`${habits.length * 7} max`} 
-                        color={AppleColors.systemRed} 
+                        color={totalMissedThisWeek > (habits.length * 7) / 2 ? AppleColors.systemRed : AppleColors.systemOrange} 
                     />
                 </View>
 
@@ -241,8 +241,8 @@ export default function StatsScreen() {
                                             styles.bar,
                                             { 
                                                 height: `${(day.completion / maxCompletion) * 100}%`,
-                                                backgroundColor: day.missedCount > 0 ? AppleColors.systemRed 
-                                                    : day.completion > 0 ? AppleColors.primary 
+                                                backgroundColor: day.completion > 0 ? AppleColors.primary 
+                                                    : day.missedCount > 0 ? AppleColors.systemRed 
                                                     : AppleColors.fill.tertiary
                                             }
                                         ]} />
